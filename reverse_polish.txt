@@ -1,0 +1,231 @@
+INFIX notation, i.e. operators written infix-style between operands (e.g. (-b+sqrt(D)/(2*a)) is                                                                                 intuitive for humans but difficult to parse for computers.                                                                                                                      A few decades ago some calculators, such as HP35, were different from | Knowing RPN can speed up                                                                                the classic (algebraic) ones. Such calculators didn't read the        | calculations.   expression to compute as an algebraic operation (e.g. (1+2)*3) but as |                 a prefix or postfix notation (PN) (e.g. 312+*). This guaranteeed fewer|                 keystrokes as one can use the calculator to rapidly evaluate long     |                 expressions without stopping to think how the terms are grouped in the|                 expression (or using brackets), even with the calculator display      |                 covered. Some research even suggests that calculating in PN imposes less                cognitive load than calculating in algebraic expressions.                                                                                                     |                 Polish notation was described in the 1920s by Polish mathematician Jan| RPN eliminates the need to                                                                              Lukasiewicz as a logical system for the specification of mathematical | use brackets to evaluate an                                                                             equations without parentheses. There are two versions, prefix notation| expression.     and postfix notation.                                                                   1) In PREFIX notation, the operators are placed before the operand,                        e.g. +12.                                                                            2) In POSTFIX notation, this order is reversed, e.g. 12+.                               Because of Lukasiewicz, such notation is called Polish - either prefix|                 (PPN) or REVERSE POLISH NOTATION (RPN). We will focus on RPN.         |                                                                                       |                 As shown in the following example, the PN of an                       | Two different RPNs can yield                                                                            algebraic operation is not unique, therefore two different PNs        | the same result.notations can represent the same algebraic operation hence yield the  |                 same result. The following example illustrates the two.               |                                                                                                                                                                                                    Equation with parenthesis       (1 + 2) * 3                                             Prefix notation                 * 3 + 1 2       or      * + 1 2 3                       Postfix notation                1 2 + 3 *       or      3 1 2 + *                                                                                                            RPN calculators heavily rely on the STACK data structure so it's important to be familiar with it.                                                                                                                                                                      A stack is a LIFO (Last In First Out) data structure. So the last inserted element (by the "insert" operation, at the bottom) is the first one to come out (by the "pop" operation).                                                                                    In the context of the classical HP35 calculator, its stack has only 4 registers:        1) T - top                                                                              2) Z                                                                                    3) Y                                                                                    4) X - bottom                                                                           
+   +---------+
+T  |         |
+   +---------+
+Z  |         |
+   +---------+
+Y  |         |
+   +---------+
+X  |         |
+   +---------+
+
+HP35's stack supports the following operations:
+
+1) RDN (rotate down). This shifts all elements of the stack down by one position.
+   T gets copied to Z, Z to Y, Y to X and finally X to T. Therefore they are rolled
+   down circularly. Let's see an example of what happens to a full stack when we press
+   RND 4 times.
+   +---------+        +---------+         +---------+         +---------+         +---------+
+T  |    4    |        |    1    |         |    2    |         |    3    |         |    4    |
+   +---------+        +---------+         +---------+         +---------+         +---------+
+Z  |    3    |        |    4    |         |    1    |         |    2    |         |    3    |
+   +---------+        +---------+         +---------+         +---------+         +---------+
+Y  |    2    |        |    3    |         |    4    |         |    1    |         |    2    |
+   +---------+        +---------+         +---------+         +---------+         +---------+
+X  |    1    |        |    2    |         |    3    |         |    4    |         |    1    |
+   +---------+        +---------+         +---------+         +---------+         +---------+
+                RND                 RND                 RND                 RND
+   So by pressing RND one time we roll everything down and inspect the current Y and by pressing RND 4 times we restore the stack.
+
+2) INSERT. Inserts a number. This simply writes a number into the X register when we enter it via
+   the numerical keypad. Insertion stops when ENTER is pressed. The next item describes the functionality
+   of ENTER.
+
+   +---------+        +---------+
+T  |    0    |        |    0    |
+   +---------+        +---------+
+Z  |    0    |        |    0    |
+   +---------+        +---------+
+Y  |    0    |        |    0    |
+   +---------+        +---------+
+X  |    0    |        |    99   |
+   +---------+        +---------+
+                 99
+
+3) ENTER. Enter key is used to separated two numbers and save the current number in the stack. For example to do the subtraction:
+    46438
+   -19543
+   We'd press:
+   46438 ENTER 19543 -
+   And the display would print the result 26895. Pressing ENTER manipulates the stack in a different way than
+   pressing RDN. When we press ENTER, all elements of the stack are shifted up towards the T and X is copied to Y. The old content of
+   T is lost, as if it's dropped off the stack. The example below illustrates this.
+
+   +---------+        +---------+         +---------+         +---------+         +---------+
+T  |    0    |        |    0    |         |    0    |         |    0    |         |    0    |
+   +---------+        +---------+         +---------+         +---------+         +---------+
+Z  |    0    |        |    0    |         |    0    |         |    4    |         |    4    |
+   +---------+        +---------+         +---------+         +---------+         +---------+
+Y  |    0    |        |    4    |         |    4    |         |    3    |         |    3    |
+   +---------+        +---------+         +---------+         +---------+         +---------+
+X  |    4    |        |    4    |         |    3    |         |    3    |         |    2    |
+   +---------+        +---------+         +---------+         +---------+         +---------+
+4               ENT                  3                  ENT                 2
+
+4) SWAP. The swap key is used to swap the contents of registers X and Y. It is often denoted by <>.
+   It's used to inspect the value of Y. Pressing SWAP twice restores the state of X and Y.
+
+
+Single and two-operand functions
+
+Next, we'll see how functions (single or two-operand) fetch their paremeters from the stack and write back the result.
+
+Single operand functions.
+
+Single operand functions include:
+-- CHS (change sign)
+-- SIN
+-- SQRT
+-- INV (x -> 1/x)
+-- LOG
+etc.
+
+They access register X and write back to it. Let's see an example with the SQRT function.
+
+   +---------+        +---------+
+T  |    0    |        |    0    |
+   +---------+        +---------+
+Z  |    0    |        |    0    |
+   +---------+        +---------+
+Y  |    0    |        |    0    |
+   +---------+        +---------+
+X  |    4    |        |    2    |
+   +---------+        +---------+
+4               SQRT
+
+Two operand functions
+
+Two operand functions include:
+-- + - * /
+-- ^ (power)
+etc.
+
+Note that - computes Y-X and / computes Y/x.
+
+Let's say the function we want to test is + and let's call it SUM(X, Y).
+When we press + to call it, two things happen:
+
+1) The result of X+Y is written to the Y register.
+2) All registers in the stack drop by one. So X is lost, Y moves to X, Z to Y and T to Z. T gets reset (e.g. to 0).
+
+Let's see an example of a two-operand operation assuming the stack is filled with 9, 12, 7 from top to bottom.
+The key pressed is -
+
+   +---------+        +---------+
+T  |    0    |        |    0    |
+   +---------+        +---------+
+Z  |    7    |        |    0    |
+   +---------+        +---------+
+Y  |    12   |        |    7    |
+   +---------+        +---------+
+X  |    9    |        |    3    |
+   +---------+        +---------+
+                 -
+
+The concept of intermediate results floating
+in the stack above current calculations is the
+essence of the RPN calculation process.
+
+Therefore the stack the models HP35 or similar calculators must implemenet the following fundamental operations:
+
+-- peek() - look at register X
+-- swap() - swap registers X and Y
+-- rnd() - circularly rotate down all registers
+-- write_to_x(data) - write data to X register
+-- write_to_y(data) - write data to Y register
+-- shift_up() - drop the top (T) register and shift all registers towards the top (T)
+-- shift_down() - drop the bottom (X) register and shift all registers towards the bottom (X)
+
+Keypad operations can combine the fundamental operations, e.g.:
+-- insert(x) - insert a number (string of decimals) => shift_up(), write_to_x(data)
+-- enter() - shitf_up(), x=y,
+-- f(X,Y) - e.g. + key => write_to_y(f(X,Y)), shift_down()
+-- f(X) - e.g. LOG key => write_to_y(f(X)), shift_down()
+
+Before implementing the stack, let's get comfortable with it and see some examples.
+
+EXAMPLE 1.
+Calculate the expression (4+5)*(12-7)
+
+
+   +---------+        +---------+         +---------+         +---------+
+T  |    0    |        |    0    |         |    0    |         |    0    |
+   +---------+        +---------+         +---------+         +---------+
+Z  |    0    |        |    0    |         |    0    |         |    0    |
+   +---------+        +---------+         +---------+         +---------+
+Y  |    0    |        |    4    |         |    4    |         |    0    |
+   +---------+        +---------+         +---------+         +---------+
+X  |    4    |        |    4    |         |    5    |         |    9    |
+   +---------+        +---------+         +---------+         +---------+
+4               ENT                 5                    +
+
+   +---------+        +---------+         +---------+         +---------+         +---------+
+T  |    0    |        |    0    |         |    0    |         |    0    |         |    0    |
+   +---------+        +---------+         +---------+         +---------+         +---------+
+Z  |    0    |        |    9    |         |    9    |         |    0    |         |    0    |
+   +---------+        +---------+         +---------+         +---------+         +---------+
+Y  |    9    |        |    12   |         |    12   |         |    9    |         |    0    |
+   +---------+        +---------+         +---------+         +---------+         +---------+
+X  |    12   |        |    12   |         |    7    |         |    5    |         |    45   |
+   +---------+        +---------+         +---------+         +---------+         +---------+
+12               ENT                 7                   -                   *
+
+
+EXAMPLE 2.
+Calculate the fraction
+ 3*(2^7-1)
+ ---------
+(6*7)+(4/12)
+
+Function           X              Y              Z             T
+
+2                  2
+ENT                2              2
+7                  7              2
+y^x              128
+1                  1            128
+-                127
+3                  3            127
+*                381
+6                  6            381
+ENT                6              6            381
+7                  7              6            381
+*                 42            381
+4                  4             42            381
+ENT                4              4             42            381
+12                12              4             42            381
+/               0.33             42            381
++              42.33            381
+/               9.00
+
+Empty cells means that we don't care about their content.
+
+
+LASTX register
+
+The LASTX register gives a copy of the X register every time an function is executed.
+This helps avoid repetition. For example, to evaluate
+sin(6.24) * tan(6.24/2)
+we could type:
+6.24 SIN LASTX 2 / TAN *
+
+The second usage of LASTX is to correct mistakes. Suppose we pressed COS instead of TAN
+in the example above. Then RDN gets drops down the stack and  along with LASTX it can be used to correct the mistake. Let's
+view the stack to see how.
+
+
+Function           X            Y            Z           T            LASTX
+
+6.24            6.24
+SIN           -0.043                                                   6.24
+LASTX           6.24       -0.043                                      6.24
+2                  2         6.24       -0.043                         6.24
+/               3.12       -0.043                                      2
+COS            -0.99       -0.043                                      3.12
+RDN           -0.043                                 -0.99             3.12 
+LASTX           3.12       -0.043                                      3.12
+TAN           -0.021       -0.043                                      3.12
+*             0.0009                                                  -1.52
+
+Notice how we have the exact same X, Y arguements before pressing COS (accidentally) and TAN (correctly).
+Pressing RND and LASTX undoes the stack, restoring it to the state it was before the last function was pressed.
