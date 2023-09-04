@@ -1,6 +1,7 @@
 #ifndef RPN_HPP
 #define RPN_HPP
 #include <array>
+#include <iostream>
 #include <cmath>
 #include <unordered_map>
 #include <functional>
@@ -22,6 +23,7 @@ public:
     virtual void insert(double num) = 0;
     virtual void rdn() = 0;
     virtual void enter() = 0;
+    virtual double calculate(std::string operation) = 0;
 protected:
     // string to function dictionary for single and two-type functions
     // Define some example functions
@@ -40,7 +42,7 @@ public:
     void shiftUp();
     void shiftDown();
     void clear() { stack_ = { 0., 0., 0., 0. }; }
-    void writeX(double x) { stack_[IDX_REG_X] = x; }
+    double writeX(double x) { stack_[IDX_REG_X] = x; return stack_[IDX_REG_X]; }
     // index getter operator
     double operator[] (double i) const { return stack_[i]; }
     // index setter operator
@@ -56,7 +58,7 @@ private:
 class RpnBackend: RpnBase {
 public:
     RpnBackend():
-        is_init_(false)
+        pressed_enter_(false)
     {
         // Populate the map with function lambdas
         function_key_1op_["sin"] =  [](double x) -> double { return sin(x); };
@@ -65,7 +67,7 @@ public:
         function_key_1op_["log"] =  [](double x) -> double { return log10(x); };
         function_key_1op_["sqrt"] = [](double x) -> double { return sqrt(x); };
         function_key_1op_["chs"] =  [](double x) -> double { return -x; };
-        function_key_1op_["inv"] =  [](double x) -> double { return 1/(x+1e-8); };
+        function_key_1op_["inv"] =  [](double x) -> double { return 1/x; };
         function_key_2op_["+"] =    [](double x, double y) -> double { return x+y; };
         function_key_2op_["-"] =    [](double x, double y) -> double { return y-x; };
         function_key_2op_["*"] =    [](double x, double y) -> double { return x*y; };
@@ -76,15 +78,18 @@ public:
     // Make RpnStack a friend class
     //friend class RpnStack;
     virtual void swapXY() { std::swap(stack_[IDX_REG_X], stack_[IDX_REG_Y]); }
-    virtual double peek() const { return stack_[IDX_REG_X]; }
+    virtual double peek() const { std::cout << " " << stack_[IDX_REG_X] << ", " << stack_[IDX_REG_Y] << std::endl;;return stack_[IDX_REG_X]; }
     virtual void insert(double num);
     virtual void rdn();
     virtual void enter();
+    virtual double calculate(std::string operation);
+    void print();
 
 private:
     // Move any private members you want to be accessible to RpnStack to here
     RpnStack stack_;
-    bool is_init_;
+    // TODO: rename to shiftup or something
+    bool pressed_enter_;
 };
 
 #endif
