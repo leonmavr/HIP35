@@ -23,10 +23,8 @@ void RpnBackend::rdn() {
 
 void RpnBackend::insert(double num) {
     // if pressed enter don't shift up else do
-    if (!pressed_enter_) {
+    if (do_shift_up_)
         stack_.shiftUp();
-        pressed_enter_ = false;
-    }
     stack_.writeX(num);
 }
 
@@ -34,24 +32,25 @@ void RpnBackend::insert(double num) {
 void RpnBackend::enter() {
     stack_.shiftUp();
     stack_[IDX_REG_X] = stack_[IDX_REG_Y];
-    pressed_enter_ = true;
+    do_shift_up_ = false;
 }
 
+#if 0
 void RpnBackend::print() {
     for (int i = 0; i < stack_.size(); i++)
         std::cout << stack_[i] << ", ";
     std::cout << std::endl;
 }
+#endif
 
 double RpnBackend::calculate(std::string operation) {
-    pressed_enter_ = false;
+    do_shift_up_ = true;
+    // TODO: copy to LASTX register
     if (function_key_1op_.find(operation) != function_key_1op_.end()) {
         stack_.writeX(function_key_1op_[operation](stack_[IDX_REG_X]));
         return stack_[IDX_REG_X];
     }
     if (function_key_2op_.find(operation) != function_key_2op_.end()) {
-        std::cout << "2op: ";
-        print();
         stack_[IDX_REG_Y] = (function_key_2op_[operation](stack_[IDX_REG_X],
                                                           stack_[IDX_REG_Y]));
         stack_.shiftDown();

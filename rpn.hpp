@@ -58,7 +58,7 @@ private:
 class RpnBackend: RpnBase {
 public:
     RpnBackend():
-        pressed_enter_(false)
+        do_shift_up_(true)
     {
         // Populate the map with function lambdas
         function_key_1op_["sin"] =  [](double x) -> double { return sin(x); };
@@ -83,13 +83,17 @@ public:
     virtual void rdn();
     virtual void enter();
     virtual double calculate(std::string operation);
+#if 0
     void print();
+#endif
 
 private:
     // Move any private members you want to be accessible to RpnStack to here
     RpnStack stack_;
-    // TODO: rename to shiftup or something
-    bool pressed_enter_;
+    // LASTX register - stores the value of X after an function is executed
+    double lastx;
+    // shift up stack after an operation is executed (e.g. +, -, etc.)  
+    bool do_shift_up_;
 };
 
 #endif
