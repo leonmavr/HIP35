@@ -1,6 +1,10 @@
 #ifndef RPN_HPP
 #define RPN_HPP
 #include <array>
+#include <cmath>
+#include <unordered_map>
+#include <functional>
+#include <string>
 
 enum {
     IDX_REG_X = 0,
@@ -11,11 +15,19 @@ enum {
 
 class RpnBase {
 public:
+    RpnBase() {
+    }
     virtual void swapXY() = 0;
     virtual double peek() const = 0;
     virtual void insert(double num) = 0;
     virtual void rdn() = 0;
     virtual void enter() = 0;
+protected:
+    // string to function dictionary for single and two-type functions
+    // Define some example functions
+    // Create an ordered map that maps strings to function lambdas
+    std::unordered_map<std::string, std::function<double(double)>> function_key_1op_;
+    std::unordered_map<std::string, std::function<double(double, double)>> function_key_2op_;
 };
 
 class RpnBackend;
@@ -45,7 +57,21 @@ class RpnBackend: RpnBase {
 public:
     RpnBackend():
         is_init_(false)
-    {}
+    {
+        // Populate the map with function lambdas
+        function_key_1op_["sin"] =  [](double x) -> double { return sin(x); };
+        function_key_1op_["cos"] =  [](double x) -> double { return cos(x); };
+        function_key_1op_["tan"] =  [](double x) -> double { return tan(x); };
+        function_key_1op_["log"] =  [](double x) -> double { return log10(x); };
+        function_key_1op_["sqrt"] = [](double x) -> double { return sqrt(x); };
+        function_key_1op_["chs"] =  [](double x) -> double { return -x; };
+        function_key_1op_["inv"] =  [](double x) -> double { return 1/(x+1e-8); };
+        function_key_2op_["+"] =    [](double x, double y) -> double { return x+y; };
+        function_key_2op_["-"] =    [](double x, double y) -> double { return y-x; };
+        function_key_2op_["*"] =    [](double x, double y) -> double { return x*y; };
+        function_key_2op_["/"] =    [](double x, double y) -> double { return y/x; };
+        function_key_2op_["^"] =    [](double x, double y) -> double { return pow(y,x); };
+    }
     ~RpnBackend() {}
     // Make RpnStack a friend class
     //friend class RpnStack;
