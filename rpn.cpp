@@ -39,17 +39,27 @@ void RpnBackend::enter() {
     do_shift_up_ = false;
 }
 
+static std::string toLowercase(const std::string& input) {
+    std::string ret = input;
+    for (char& c : ret)
+        c = std::tolower(static_cast<unsigned char>(c)); // Convert character to lowercase
+    return ret;
+}
+
 
 double RpnBackend::calculate(std::string operation) {
     do_shift_up_ = true;
     // TODO: copy to LASTX register
     lastx_ = stack_[IDX_REG_X];
+    operation = toLowercase(operation);
     if (function_key_1op_.find(operation) != function_key_1op_.end()) {
-        stack_.writeX(function_key_1op_[operation](stack_[IDX_REG_X]));
+        stack_.writeX(function_key_1op_[toLowercase(operation)](stack_[IDX_REG_X]));
+        std::cout << "op = " << operation << std::endl;
         return stack_[IDX_REG_X];
     }
     if (function_key_2op_.find(operation) != function_key_2op_.end()) {
-        stack_[IDX_REG_Y] = (function_key_2op_[operation](stack_[IDX_REG_X],
+        std::cout << "op = " << operation << std::endl;
+        stack_[IDX_REG_Y] = (function_key_2op_[toLowercase(operation)](stack_[IDX_REG_X],
                                                           stack_[IDX_REG_Y]));
         stack_.shiftDown();
         return stack_[IDX_REG_X];
@@ -72,8 +82,8 @@ double RpnBackend::calculateFromString(std::string rpnExpression) {
         // if substring not in dictionary keys, it's a digit so enter it
         // if substring is a digit and previous substring is a digit, press enter before entering it
         // std::stood
-        auto it1 = function_key_1op_.find(substring);
-        auto it2 = function_key_2op_.find(substring);
+        auto it1 = function_key_1op_.find(toLowercase(substring));
+        auto it2 = function_key_2op_.find(toLowercase(substring));
         if (it1 != function_key_1op_.end() || it2 != function_key_2op_.end()) {
             // found 1-op or 2-op operation
             calculate(substring);
@@ -84,6 +94,16 @@ double RpnBackend::calculateFromString(std::string rpnExpression) {
                 // press enter
                 enter();
             } 
+#if 0
+ try {
+        myDouble = std::stod(str);
+        std::cout << "Converted double: " << myDouble << std::endl;
+    } catch (const std::invalid_argument& e) {
+        std::cerr << "Invalid argument: " << e.what() << std::endl;
+    } catch (const std::out_of_range& e) {
+        std::cerr << "Out of range: " << e.what() << std::endl;
+    }
+#endif
             insert(std::stod(substring));
             previousTokenIsDigit = true;
         }
