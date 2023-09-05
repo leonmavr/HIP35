@@ -1,4 +1,6 @@
 #include "rpn.hpp"
+#include <iostream> // ostream
+#include <iomanip> // setprecision
 
 
 void RpnStack::shiftUp() {
@@ -35,17 +37,11 @@ void RpnBackend::enter() {
     do_shift_up_ = false;
 }
 
-#if 0
-void RpnBackend::print() {
-    for (int i = 0; i < stack_.size(); i++)
-        std::cout << stack_[i] << ", ";
-    std::cout << std::endl;
-}
-#endif
 
 double RpnBackend::calculate(std::string operation) {
     do_shift_up_ = true;
     // TODO: copy to LASTX register
+    lastx_ = stack_[IDX_REG_X];
     if (function_key_1op_.find(operation) != function_key_1op_.end()) {
         stack_.writeX(function_key_1op_[operation](stack_[IDX_REG_X]));
         return stack_[IDX_REG_X];
@@ -58,4 +54,14 @@ double RpnBackend::calculate(std::string operation) {
     }
     // TODO:
     // throw exception
+}
+
+std::ostream& operator<<(std::ostream& os, const RpnBackend& backend) {
+    os << std::setprecision(2) << "X\tY\tZ\tT\tLASTX" << std::endl <<
+        backend.stack_[IDX_REG_X] << "\t" <<
+        backend.stack_[IDX_REG_Y] << "\t" <<
+        backend.stack_[IDX_REG_Z] << "\t" <<
+        backend.stack_[IDX_REG_T] << "\t" <<
+        backend.lastx_ << std::endl;
+    return os;
 }

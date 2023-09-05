@@ -83,15 +83,13 @@ public:
     virtual void rdn();
     virtual void enter();
     virtual double calculate(std::string operation);
-#if 0
-    void print();
-#endif
+    friend std::ostream& operator<<(std::ostream& os, const RpnBackend& backend);
 
 private:
     // Move any private members you want to be accessible to RpnStack to here
     RpnStack stack_;
-    // LASTX register - stores the value of X after an function is executed
-    double lastx;
+    // LASTX register - stores the value of X before a function is executed
+    double lastx_;
     // shift up stack after an operation is executed (e.g. +, -, etc.)  
     bool do_shift_up_;
 };

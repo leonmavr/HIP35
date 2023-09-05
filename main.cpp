@@ -14,6 +14,7 @@ int main() {
     rpn.enter();
     rpn.insert(2);
     rpn.calculate("*");
+    std::cout << rpn;
     rpn.insert(1);
     rpn.calculate("+");
     std::cout << rpn.calculate("/") << std::endl; // 2
