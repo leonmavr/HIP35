@@ -1,6 +1,8 @@
 #include "rpn.hpp"
 #include <iostream> // ostream
 #include <iomanip> // setprecision
+#include <vector> // setprecision
+#include <sstream> // istringstream
 
 
 void RpnStack::shiftUp() {
@@ -54,6 +56,39 @@ double RpnBackend::calculate(std::string operation) {
     }
     // TODO:
     // throw exception
+}
+
+double RpnBackend::calculateFromString(std::string rpnExpression) {
+    // split input by spaces
+    std::istringstream iss(rpnExpression);
+    std::vector<std::string> substrings;
+    std::string token;
+
+    while (iss >> token)
+        substrings.push_back(token);
+
+    bool previousTokenIsDigit = false;
+    for (const std::string& substring : substrings) {
+        // if substring not in dictionary keys, it's a digit so enter it
+        // if substring is a digit and previous substring is a digit, press enter before entering it
+        // std::stood
+        auto it1 = function_key_1op_.find(substring);
+        auto it2 = function_key_2op_.find(substring);
+        if (it1 != function_key_1op_.end() || it2 != function_key_2op_.end()) {
+            // found 1-op or 2-op operation
+            calculate(substring);
+            previousTokenIsDigit = false;
+        } else {
+            // decimal number
+            if (previousTokenIsDigit) {
+                // press enter
+                enter();
+            } 
+            insert(std::stod(substring));
+            previousTokenIsDigit = true;
+        }
+    }        
+    return stack_[IDX_REG_X];
 }
 
 std::ostream& operator<<(std::ostream& os, const RpnBackend& backend) {

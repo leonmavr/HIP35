@@ -18,4 +18,5 @@ int main() {
     rpn.insert(1);
     rpn.calculate("+");
     std::cout << rpn.calculate("/") << std::endl; // 2
+    std::cout << "---" << rpn.calculateFromString("2 5 * 4 + 3 2 * 1 + /") << std::endl;
 }

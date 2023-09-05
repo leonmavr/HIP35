@@ -24,6 +24,7 @@ public:
     virtual void rdn() = 0;
     virtual void enter() = 0;
     virtual double calculate(std::string operation) = 0;
+    virtual double calculateFromString(std::string rpnExpression) = 0;
 protected:
     // string to function dictionary for single and two-type functions
     // Define some example functions
@@ -83,6 +84,7 @@ public:
     virtual void rdn();
     virtual void enter();
     virtual double calculate(std::string operation);
+    virtual double calculateFromString(std::string rpnExpression);
     friend std::ostream& operator<<(std::ostream& os, const RpnBackend& backend);
 
 private:
