@@ -6,44 +6,44 @@
 #include <stdexcept> // runtime_error 
 
 
-void RpnStack::shiftUp() {
+void RpnStack::ShiftUp() {
     for (int i = stack_.size()-1; i > 0; --i)
-        stack_[i] = stack_[i-1];
+        stack_[i] = stack_[i - 1];
     stack_[0] = 0.0;
 }
 
-void RpnStack::shiftDown() {
+void RpnStack::ShiftDown() {
     for (int i = 0; i < stack_.size()-1; ++i)
-        stack_[i] = stack_[i+1];
-    stack_[stack_.size()-1] = 0.0;
+        stack_[i] = stack_[i + 1];
+    stack_[stack_.size() - 1] = 0.0;
 }
 
-void RpnBackend::rdn() {
+void RpnBackend::Rdn() {
     auto stackPtr = *stack_;
-    auto oldFirst = stackPtr[0];
+    auto old_first = stackPtr[0];
     for (int i = 0; i < stackPtr.size()-1; ++i)
         stackPtr[i] = stackPtr[i+1];
-    stackPtr[stackPtr.size()-1] = oldFirst;
+    stackPtr[stackPtr.size() - 1] = old_first;
 }
 
-void RpnBackend::swapXY() {
+void RpnBackend::SwapXY() {
     std::swap((*stack_)[IDX_REG_X], (*stack_)[IDX_REG_Y]);
 }
 
-void RpnBackend::insert(double num) {
+void RpnBackend::Insert(double num) {
     if (do_shift_up_)
-        stack_->shiftUp();
+        stack_->ShiftUp();
     stack_->writeX(num);
 }
 
 
-void RpnBackend::enter() {
-    stack_->shiftUp();
+void RpnBackend::Enter() {
+    stack_->ShiftUp();
     (*stack_)[IDX_REG_X] = (*stack_)[IDX_REG_Y];
     do_shift_up_ = false;
 }
 
-static std::string toLowercase(const std::string& input) {
+static std::string ToLowercase(const std::string& input) {
     std::string ret = input;
     for (char& c : ret)
         c = std::tolower(static_cast<unsigned char>(c));
@@ -51,7 +51,7 @@ static std::string toLowercase(const std::string& input) {
 }
 
 
-double RpnBackend::calculate(std::string operation) {
+double RpnBackend::Calculate(std::string operation) {
     // Shift up the stack next time a number is inserted
     do_shift_up_ = true;
     // We did an operation so calculator needs to store register X
@@ -59,22 +59,22 @@ double RpnBackend::calculate(std::string operation) {
     lastx_ = (*stack_)[IDX_REG_X];
     auto& registerX = (*stack_)[IDX_REG_X];
     auto& registerY = (*stack_)[IDX_REG_Y];
-    operation = toLowercase(operation);
-    bool validOperation = false;
+    operation = ToLowercase(operation);
+    bool valid_operation = false;
 
     if (function_key_1op_.find(operation) != function_key_1op_.end()) {
         // query single operand op/s such as sin, log, etc.
         registerX  = function_key_1op_[operation](registerX);
-        validOperation = true;
+        valid_operation = true;
     }
     if (function_key_2op_.find(operation) != function_key_2op_.end()) {
         // query 2-op operations such as +, /, etc.
         registerY = function_key_2op_[operation](registerX,
                                                  registerY);
-        stack_->shiftDown();
-        validOperation = true;
+        stack_->ShiftDown();
+        valid_operation = true;
     }
-    if (validOperation)
+    if (valid_operation)
     {
         return registerX;
     } else {
@@ -83,7 +83,7 @@ double RpnBackend::calculate(std::string operation) {
     }
 }
 
-double RpnBackend::calculateFromString(std::string rpnExpression) {
+double RpnBackend::CalculateFromString(std::string rpnExpression) {
     // split input by spaces
     std::istringstream iss(rpnExpression);
     // space-separated substrings
@@ -94,30 +94,30 @@ double RpnBackend::calculateFromString(std::string rpnExpression) {
     while (iss >> token)
         substrings.push_back(token);
 
-    bool previousTokenIsDigit = false;
+    bool previous_token_is_digit = false;
     for (const std::string& substring : substrings) {
         // if substring not in dictionary keys, it's a digit so enter it
         // if substring is a digit and previous substring is a digit, press enter before entering it
         // std::stood
-        auto it1 = function_key_1op_.find(toLowercase(substring));
-        auto it2 = function_key_2op_.find(toLowercase(substring));
+        auto it1 = function_key_1op_.find(ToLowercase(substring));
+        auto it2 = function_key_2op_.find(ToLowercase(substring));
         if (it1 != function_key_1op_.end() || it2 != function_key_2op_.end()) {
             // function key (1-op or 2-op) pressed
-            calculate(substring);
-            previousTokenIsDigit = false;
+            Calculate(substring);
+            previous_token_is_digit = false;
         } else {
             // number was entered
-            if (previousTokenIsDigit) {
+            if (previous_token_is_digit) {
                 // press enter to separate the numbers
-                enter();
-            } 
+                Enter();
+            }
             try {
-                insert(std::stod(substring));
+                Insert(std::stod(substring));
             } catch (const std::invalid_argument& e) {
                 std::cerr << "Invalid input: " + substring + " at "
                    << e.what() << std::endl;
             }
-            previousTokenIsDigit = true;
+            previous_token_is_digit = true;
         }
     }        
     return (*stack_)[IDX_REG_X];

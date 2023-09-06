@@ -18,14 +18,15 @@ enum {
 
 class RpnBase {
 public:
-    RpnBase() { }
-    virtual void swapXY() = 0;
-    virtual double peek() const = 0;
-    virtual void insert(double num) = 0;
-    virtual void rdn() = 0;
-    virtual void enter() = 0;
-    virtual double calculate(std::string operation) = 0;
-    virtual double calculateFromString(std::string rpnExpression) = 0;
+    RpnBase() {}
+    ~RpnBase() {}
+    virtual void SwapXY() = 0;
+    virtual double Peek() const = 0;
+    virtual void Insert(double num) = 0;
+    virtual void Rdn() = 0;
+    virtual void Enter() = 0;
+    virtual double Calculate(std::string operation) = 0;
+    virtual double CalculateFromString(std::string rpnExpression) = 0;
 protected:
     // string to function dictionary for single and two-type functions
     // Define some example functions
@@ -38,12 +39,12 @@ class RpnBackend;
 
 class RpnStack {
 public:
-    RpnStack() { clear(); }
+    RpnStack() { Clear(); }
     ~RpnStack() {}
 
-    void shiftUp();
-    void shiftDown();
-    void clear() { stack_ = { 0., 0., 0., 0. }; }
+    void ShiftUp();
+    void ShiftDown();
+    void Clear() { stack_ = { 0., 0., 0., 0. }; }
     double writeX(double x) { stack_[IDX_REG_X] = x; return stack_[IDX_REG_X]; }
     // index getter operator
     double operator[] (double i) const { return stack_[i]; }
@@ -73,26 +74,26 @@ public:
         function_key_1op_["chs"] =  [](double x) -> double { return -x; };
         function_key_1op_["inv"] =  [](double x) -> double { return 1/x; };
         // 2-operand operations supported by the calculator
-        function_key_2op_["+"] =    [](double x, double y) -> double { return x+y; };
-        function_key_2op_["-"] =    [](double x, double y) -> double { return y-x; };
-        function_key_2op_["*"] =    [](double x, double y) -> double { return x*y; };
+        function_key_2op_["+"] =    [](double x, double y) -> double { return x + y; };
+        function_key_2op_["-"] =    [](double x, double y) -> double { return y - x; };
+        function_key_2op_["*"] =    [](double x, double y) -> double { return x * y; };
         function_key_2op_["/"] =    [](double x, double y) -> double {
             if (std::fabs(x) < 1e-10)
                 throw std::runtime_error("[FATAL]: Division by zero.\n");
             return y/x; };
-        function_key_2op_["^"] =    [](double x, double y) -> double { return pow(y,x); };
+        function_key_2op_["^"] =    [](double x, double y) -> double { return pow(y, x); };
     }
         RpnBackend(const RpnBackend& other) : stack_(std::make_unique<RpnStack>(*other.stack_)), do_shift_up_(other.do_shift_up_), lastx_(other.lastx_) {}
     ~RpnBackend() {}
     // Make RpnStack a friend class
     //friend class RpnStack;
-    virtual void swapXY();
-    virtual double peek() const { return (*stack_)[IDX_REG_X]; }
-    virtual void insert(double num);
-    virtual void rdn();
-    virtual void enter();
-    virtual double calculate(std::string operation);
-    virtual double calculateFromString(std::string rpnExpression);
+    virtual void SwapXY();
+    virtual double Peek() const { return (*stack_)[IDX_REG_X]; }
+    virtual void Insert(double num);
+    virtual void Rdn();
+    virtual void Enter();
+    virtual double Calculate(std::string operation);
+    virtual double CalculateFromString(std::string rpnExpression);
     friend std::ostream& operator<<(std::ostream& os, const RpnBackend& backend);
 
 private:
