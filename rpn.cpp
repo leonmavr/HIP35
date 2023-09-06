@@ -3,6 +3,7 @@
 #include <iomanip> // setprecision
 #include <vector> // setprecision
 #include <sstream> // istringstream
+#include <stdexcept> // runtime_error 
 
 
 void RpnStack::shiftUp() {
@@ -52,26 +53,34 @@ double RpnBackend::calculate(std::string operation) {
     // TODO: copy to LASTX register
     lastx_ = stack_[IDX_REG_X];
     operation = toLowercase(operation);
+    bool validOperation = false;
     if (function_key_1op_.find(operation) != function_key_1op_.end()) {
-        stack_.writeX(function_key_1op_[toLowercase(operation)](stack_[IDX_REG_X]));
-        std::cout << "op = " << operation << std::endl;
-        return stack_[IDX_REG_X];
+        // query single operand op/s such as sin, log, etc.
+        stack_[IDX_REG_X] = function_key_1op_[operation](stack_[IDX_REG_X]);
+        validOperation = true;
     }
     if (function_key_2op_.find(operation) != function_key_2op_.end()) {
-        std::cout << "op = " << operation << std::endl;
-        stack_[IDX_REG_Y] = (function_key_2op_[toLowercase(operation)](stack_[IDX_REG_X],
+        // query 2-op operations such as +, /, etc.
+        stack_[IDX_REG_Y] = (function_key_2op_[operation](stack_[IDX_REG_X],
                                                           stack_[IDX_REG_Y]));
         stack_.shiftDown();
-        return stack_[IDX_REG_X];
+        validOperation = true;
     }
-    // TODO:
-    // throw exception
+    if (validOperation)
+    {
+        return stack_[IDX_REG_X];
+    } else {
+        throw std::runtime_error(std::string("[FATAL]: Invalid operation ") +
+                                             operation + std::string("\n"));
+    }
 }
 
 double RpnBackend::calculateFromString(std::string rpnExpression) {
     // split input by spaces
     std::istringstream iss(rpnExpression);
+    // space-separated substrings
     std::vector<std::string> substrings;
+    // current substring
     std::string token;
 
     while (iss >> token)
@@ -85,26 +94,21 @@ double RpnBackend::calculateFromString(std::string rpnExpression) {
         auto it1 = function_key_1op_.find(toLowercase(substring));
         auto it2 = function_key_2op_.find(toLowercase(substring));
         if (it1 != function_key_1op_.end() || it2 != function_key_2op_.end()) {
-            // found 1-op or 2-op operation
+            // function key (1-op or 2-op) pressed
             calculate(substring);
             previousTokenIsDigit = false;
         } else {
-            // decimal number
+            // number was entered
             if (previousTokenIsDigit) {
-                // press enter
+                // press enter to separate the numbers
                 enter();
             } 
-#if 0
- try {
-        myDouble = std::stod(str);
-        std::cout << "Converted double: " << myDouble << std::endl;
-    } catch (const std::invalid_argument& e) {
-        std::cerr << "Invalid argument: " << e.what() << std::endl;
-    } catch (const std::out_of_range& e) {
-        std::cerr << "Out of range: " << e.what() << std::endl;
-    }
-#endif
-            insert(std::stod(substring));
+            try {
+                insert(std::stod(substring));
+            } catch (const std::invalid_argument& e) {
+                std::cerr << "Invalid input: " + substring + " at "
+                   << e.what() << std::endl;
+            }
             previousTokenIsDigit = true;
         }
     }        
