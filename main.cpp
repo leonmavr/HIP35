@@ -2,7 +2,7 @@
 #include <iostream>
 
 int main() {
-    auto rpn = RpnBackend();
+    auto rpn = std::make_unique<RpnBackend>();
     // 2 5 * 4 + 3 2 * 1 + /
 #if 0
     rpn.insert(2);
@@ -20,7 +20,7 @@ int main() {
     rpn.calculate("+");
     std::cout << rpn.calculate("log") << std::endl; // 2
 #endif
-    //std::cout << "---" << rpn.calculateFromString("2 5 * 4 + 3 2 * 1 + log") << std::endl;
-    std::cout << "---" << rpn.calculateFromString("2 0 /") << std::endl;
-    std::cout << rpn << std::endl;
+    std::cout << "---" << rpn->calculateFromString("2 5 * 4 + 3 2 * 1 + /") << std::endl;
+    //std::cout << "---" << rpn.calculateFromString("2 1.4 /") << std::endl;
+    std::cout << *rpn << std::endl;
 }

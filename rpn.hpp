@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <functional>
 #include <string>
+#include <memory> // unique_ptr
+
 
 enum {
     IDX_REG_X = 0,
@@ -58,9 +60,11 @@ private:
 class RpnBackend: RpnBase {
 public:
     RpnBackend():
+        stack_(std::make_unique<RpnStack>()),
         do_shift_up_(true)
     {
         // Populate the map with function lambdas
+        // 1-operand operations supported by the calculator
         function_key_1op_["sin"] =  [](double x) -> double { return sin(x); };
         function_key_1op_["cos"] =  [](double x) -> double { return cos(x); };
         function_key_1op_["tan"] =  [](double x) -> double { return tan(x); };
@@ -68,6 +72,7 @@ public:
         function_key_1op_["sqrt"] = [](double x) -> double { return sqrt(x); };
         function_key_1op_["chs"] =  [](double x) -> double { return -x; };
         function_key_1op_["inv"] =  [](double x) -> double { return 1/x; };
+        // 2-operand operations supported by the calculator
         function_key_2op_["+"] =    [](double x, double y) -> double { return x+y; };
         function_key_2op_["-"] =    [](double x, double y) -> double { return y-x; };
         function_key_2op_["*"] =    [](double x, double y) -> double { return x*y; };
@@ -77,11 +82,12 @@ public:
             return y/x; };
         function_key_2op_["^"] =    [](double x, double y) -> double { return pow(y,x); };
     }
+        RpnBackend(const RpnBackend& other) : stack_(std::make_unique<RpnStack>(*other.stack_)), do_shift_up_(other.do_shift_up_), lastx_(other.lastx_) {}
     ~RpnBackend() {}
     // Make RpnStack a friend class
     //friend class RpnStack;
-    virtual void swapXY() { std::swap(stack_[IDX_REG_X], stack_[IDX_REG_Y]); }
-    virtual double peek() const { std::cout << " " << stack_[IDX_REG_X] << ", " << stack_[IDX_REG_Y] << std::endl;;return stack_[IDX_REG_X]; }
+    virtual void swapXY();
+    virtual double peek() const { return (*stack_)[IDX_REG_X]; }
     virtual void insert(double num);
     virtual void rdn();
     virtual void enter();
@@ -91,7 +97,9 @@ public:
 
 private:
     // Move any private members you want to be accessible to RpnStack to here
-    RpnStack stack_;
+    // owns the object - unique_ptr manages its lifetime and deallocation
+    std::unique_ptr<RpnStack> stack_; // Use std::unique_ptr to manage RpnStack
+
     // LASTX register - stores the value of X before a function is executed
     double lastx_;
     // shift up stack after an operation is executed (e.g. +, -, etc.)  

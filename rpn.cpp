@@ -19,56 +19,64 @@ void RpnStack::shiftDown() {
 }
 
 void RpnBackend::rdn() {
-    auto oldFirst = stack_[0];
-    for (int i = 0; i < stack_.size()-1; ++i)
-        stack_[i] = stack_[i+1];
-    stack_[stack_.size()-1] = oldFirst;
+    auto stackPtr = *stack_;
+    auto oldFirst = stackPtr[0];
+    for (int i = 0; i < stackPtr.size()-1; ++i)
+        stackPtr[i] = stackPtr[i+1];
+    stackPtr[stackPtr.size()-1] = oldFirst;
 }
 
+void RpnBackend::swapXY() {
+    std::swap((*stack_)[IDX_REG_X], (*stack_)[IDX_REG_Y]);
+}
 
 void RpnBackend::insert(double num) {
-    // if pressed enter don't shift up else do
     if (do_shift_up_)
-        stack_.shiftUp();
-    stack_.writeX(num);
+        stack_->shiftUp();
+    stack_->writeX(num);
 }
 
 
 void RpnBackend::enter() {
-    stack_.shiftUp();
-    stack_[IDX_REG_X] = stack_[IDX_REG_Y];
+    stack_->shiftUp();
+    (*stack_)[IDX_REG_X] = (*stack_)[IDX_REG_Y];
     do_shift_up_ = false;
 }
 
 static std::string toLowercase(const std::string& input) {
     std::string ret = input;
     for (char& c : ret)
-        c = std::tolower(static_cast<unsigned char>(c)); // Convert character to lowercase
+        c = std::tolower(static_cast<unsigned char>(c));
     return ret;
 }
 
 
 double RpnBackend::calculate(std::string operation) {
+    // Shift up the stack next time a number is inserted
     do_shift_up_ = true;
-    // TODO: copy to LASTX register
-    lastx_ = stack_[IDX_REG_X];
+    // We did an operation so calculator needs to store register X
+    // before the operation in register LASTX
+    lastx_ = (*stack_)[IDX_REG_X];
+    auto& registerX = (*stack_)[IDX_REG_X];
+    auto& registerY = (*stack_)[IDX_REG_Y];
     operation = toLowercase(operation);
     bool validOperation = false;
+
     if (function_key_1op_.find(operation) != function_key_1op_.end()) {
         // query single operand op/s such as sin, log, etc.
-        stack_[IDX_REG_X] = function_key_1op_[operation](stack_[IDX_REG_X]);
+        registerX  = function_key_1op_[operation](registerX);
         validOperation = true;
     }
     if (function_key_2op_.find(operation) != function_key_2op_.end()) {
         // query 2-op operations such as +, /, etc.
-        stack_[IDX_REG_Y] = (function_key_2op_[operation](stack_[IDX_REG_X],
-                                                          stack_[IDX_REG_Y]));
-        stack_.shiftDown();
+        registerY = function_key_2op_[operation](registerX,
+                                                 registerY);
+        stack_->shiftDown();
         validOperation = true;
     }
     if (validOperation)
     {
-        return stack_[IDX_REG_X];
+        return registerX;
     } else {
         throw std::runtime_error(std::string("[FATAL]: Invalid operation ") +
                                              operation + std::string("\n"));
@@ -112,16 +120,18 @@ double RpnBackend::calculateFromString(std::string rpnExpression) {
             previousTokenIsDigit = true;
         }
     }        
-    return stack_[IDX_REG_X];
+    return (*stack_)[IDX_REG_X];
 }
 
 std::ostream& operator<<(std::ostream& os, const RpnBackend& backend) {
+    const auto& stack = *(backend.stack_); // Dereference the unique_ptr to get the RpnStack
+
     os << std::fixed << std::setprecision(2) <<
         "X\tY\tZ\tT\tLASTX" << std::endl <<
-        backend.stack_[IDX_REG_X] << "\t" <<
-        backend.stack_[IDX_REG_Y] << "\t" <<
-        backend.stack_[IDX_REG_Z] << "\t" <<
-        backend.stack_[IDX_REG_T] << "\t" <<
+        stack[IDX_REG_X] << "\t" <<
+        stack[IDX_REG_Y] << "\t" <<
+        stack[IDX_REG_Z] << "\t" <<
+        stack[IDX_REG_T] << "\t" <<
         backend.lastx_ << std::endl;
     return os;
 }
