@@ -116,7 +116,8 @@ double RpnBackend::calculateFromString(std::string rpnExpression) {
 }
 
 std::ostream& operator<<(std::ostream& os, const RpnBackend& backend) {
-    os << std::setprecision(2) << "X\tY\tZ\tT\tLASTX" << std::endl <<
+    os << std::fixed << std::setprecision(2) <<
+        "X\tY\tZ\tT\tLASTX" << std::endl <<
         backend.stack_[IDX_REG_X] << "\t" <<
         backend.stack_[IDX_REG_Y] << "\t" <<
         backend.stack_[IDX_REG_Z] << "\t" <<

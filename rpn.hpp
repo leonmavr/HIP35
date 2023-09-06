@@ -16,8 +16,7 @@ enum {
 
 class RpnBase {
 public:
-    RpnBase() {
-    }
+    RpnBase() { }
     virtual void swapXY() = 0;
     virtual double peek() const = 0;
     virtual void insert(double num) = 0;
@@ -72,7 +71,10 @@ public:
         function_key_2op_["+"] =    [](double x, double y) -> double { return x+y; };
         function_key_2op_["-"] =    [](double x, double y) -> double { return y-x; };
         function_key_2op_["*"] =    [](double x, double y) -> double { return x*y; };
-        function_key_2op_["/"] =    [](double x, double y) -> double { return y/x; };
+        function_key_2op_["/"] =    [](double x, double y) -> double {
+            if (std::fabs(x) < 1e-10)
+                throw std::runtime_error("[FATAL]: Division by zero.\n");
+            return y/x; };
         function_key_2op_["^"] =    [](double x, double y) -> double { return pow(y,x); };
     }
     ~RpnBackend() {}
