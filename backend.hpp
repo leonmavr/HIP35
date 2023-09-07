@@ -10,8 +10,9 @@
 
 
 namespace Rpn {
+
 /**
-* @brief Implements a reverse Polish notation (RPN) calculator.
+* @brief Implements a reverse Polish notation (RPN) calculator [1].
 *        The architecture more or less follows the basic architecture
 *        of the HP35 calculator. It contains a stack of 4 registers;
 *        X, Y, Z and T (T for top, X for bottom). Therefore when we store
@@ -29,8 +30,9 @@ namespace Rpn {
 *        -- Calculate (calculator's function buttons)
 *        More details in each method's documentation.
 *
-*        Reference:
-*        [1] Enter: Reverse Polish Notation Made Easy by J. Dodin
+*        References:
+*        -----------
+*        [1] "Enter: Reverse Polish Notation Made Easy" by J. Dodin
 *            https://literature.hpcalc.org/community/enter-en.pdf
 */
 class Backend: Base {
@@ -100,7 +102,7 @@ public:
      *        Polish notation (RPN). In RPN only records operations 
      *        and operands and each operation follows its operands.
      *        Example: 12 7 - gives 5
-     *                 6 / 2 COS gives COS(6/2)
+     *                 6 2 / COS gives COS(6/2)
      *
      * @param rpnExpression A string that contains a RPN notation
      *                      expression. Operands and operations are
