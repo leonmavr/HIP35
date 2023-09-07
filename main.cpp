@@ -2,7 +2,7 @@
 #include <iostream>
 
 int main() {
-    auto rpn = std::make_unique<RpnBackend>();
+    auto rpn = std::make_unique<Rpn::Backend>();
     // 2 5 * 4 + 3 2 * 1 + /
 #if 1
     rpn->Insert(2);

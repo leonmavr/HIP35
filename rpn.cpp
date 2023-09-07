@@ -6,38 +6,38 @@
 #include <stdexcept> // runtime_error 
 
 
-void RpnStack::ShiftUp() {
-    for (int i = stack_.size()-1; i > 0; --i)
+void Rpn::Stack::ShiftUp() {
+    for (int i = stack_.size() - 1; i > 0; --i)
         stack_[i] = stack_[i - 1];
     stack_[0] = 0.0;
 }
 
-void RpnStack::ShiftDown() {
-    for (int i = 0; i < stack_.size()-1; ++i)
+void Rpn::Stack::ShiftDown() {
+    for (int i = 0; i < stack_.size() - 1; ++i)
         stack_[i] = stack_[i + 1];
     stack_[stack_.size() - 1] = 0.0;
 }
 
-void RpnBackend::Rdn() {
+void Rpn::Backend::Rdn() {
     auto stackPtr = *stack_;
     auto old_first = stackPtr[0];
-    for (int i = 0; i < stackPtr.size()-1; ++i)
+    for (int i = 0; i < stackPtr.size() - 1; ++i)
         stackPtr[i] = stackPtr[i+1];
     stackPtr[stackPtr.size() - 1] = old_first;
 }
 
-void RpnBackend::SwapXY() {
+void Rpn::Backend::SwapXY() {
     std::swap((*stack_)[IDX_REG_X], (*stack_)[IDX_REG_Y]);
 }
 
-void RpnBackend::Insert(double num) {
+void Rpn::Backend::Insert(double num) {
     if (do_shift_up_)
         stack_->ShiftUp();
     stack_->writeX(num);
 }
 
 
-void RpnBackend::Enter() {
+void Rpn::Backend::Enter() {
     stack_->ShiftUp();
     (*stack_)[IDX_REG_X] = (*stack_)[IDX_REG_Y];
     do_shift_up_ = false;
@@ -51,7 +51,7 @@ static std::string ToLowercase(const std::string& input) {
 }
 
 
-double RpnBackend::Calculate(std::string operation) {
+double Rpn::Backend::Calculate(std::string operation) {
     // Shift up the stack next time a number is inserted
     do_shift_up_ = true;
     // We did an operation so calculator needs to store register X
@@ -83,7 +83,7 @@ double RpnBackend::Calculate(std::string operation) {
     }
 }
 
-double RpnBackend::CalculateFromString(std::string rpnExpression) {
+double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
     // split input by spaces
     std::istringstream iss(rpnExpression);
     // space-separated substrings
@@ -102,7 +102,7 @@ double RpnBackend::CalculateFromString(std::string rpnExpression) {
         auto it1 = function_key_1op_.find(ToLowercase(substring));
         auto it2 = function_key_2op_.find(ToLowercase(substring));
         if (it1 != function_key_1op_.end() || it2 != function_key_2op_.end()) {
-            // function key (1-op or 2-op) pressed
+            // function key (1-op or 2-op) pressed; do the calculation
             Calculate(substring);
             previous_token_is_digit = false;
         } else {
@@ -123,15 +123,17 @@ double RpnBackend::CalculateFromString(std::string rpnExpression) {
     return (*stack_)[IDX_REG_X];
 }
 
-std::ostream& operator<<(std::ostream& os, const RpnBackend& backend) {
-    const auto& stack = *(backend.stack_); // Dereference the unique_ptr to get the RpnStack
+namespace Rpn {
+    std::ostream& operator<<(std::ostream& os, const Backend& backend) {
+        const auto& stack = *(backend.stack_);
 
-    os << std::fixed << std::setprecision(2) <<
-        "X\tY\tZ\tT\tLASTX" << std::endl <<
-        stack[IDX_REG_X] << "\t" <<
-        stack[IDX_REG_Y] << "\t" <<
-        stack[IDX_REG_Z] << "\t" <<
-        stack[IDX_REG_T] << "\t" <<
-        backend.lastx_ << std::endl;
-    return os;
-}
+        os << std::fixed << std::setprecision(2) <<
+            "X\tY\tZ\tT\tLASTX" << std::endl <<
+            stack[Rpn::IDX_REG_X] << "\t" <<
+            stack[Rpn::IDX_REG_Y] << "\t" <<
+            stack[Rpn::IDX_REG_Z] << "\t" <<
+            stack[Rpn::IDX_REG_T] << "\t" <<
+            backend.lastx_ << std::endl;
+        return os;
+    }
+} /* namespace Rpn */

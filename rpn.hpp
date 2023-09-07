@@ -3,11 +3,12 @@
 #include <array>
 #include <iostream>
 #include <cmath>
-#include <unordered_map>
-#include <functional>
+#include <unordered_map> // unordered_map
+#include <functional> // function
 #include <string>
 #include <memory> // unique_ptr
 
+namespace Rpn {
 
 enum {
     IDX_REG_X = 0,
@@ -16,10 +17,10 @@ enum {
     IDX_REG_T,
 };
 
-class RpnBase {
+class Base {
 public:
-    RpnBase() {}
-    ~RpnBase() {}
+    Base() {}
+    ~Base() {}
     virtual void SwapXY() = 0;
     virtual double Peek() const = 0;
     virtual void Insert(double num) = 0;
@@ -35,12 +36,12 @@ protected:
     std::unordered_map<std::string, std::function<double(double, double)>> function_key_2op_;
 };
 
-class RpnBackend;
+class Backend;
 
-class RpnStack {
+class Stack {
 public:
-    RpnStack() { Clear(); }
-    ~RpnStack() {}
+    Stack() { Clear(); }
+    ~Stack() {}
 
     void ShiftUp();
     void ShiftDown();
@@ -55,13 +56,14 @@ public:
 protected:
     std::array<double, 4> stack_;
 private:
-    friend class RpnBackend;
+    // Backend can access its protected and private members
+    friend class Backend;
 };
 
-class RpnBackend: RpnBase {
+class Backend: Base {
 public:
-    RpnBackend():
-        stack_(std::make_unique<RpnStack>()),
+    Backend():
+        stack_(std::make_unique<Stack>()),
         do_shift_up_(true)
     {
         // Populate the map with function lambdas
@@ -83,10 +85,8 @@ public:
             return y/x; };
         function_key_2op_["^"] =    [](double x, double y) -> double { return pow(y, x); };
     }
-        RpnBackend(const RpnBackend& other) : stack_(std::make_unique<RpnStack>(*other.stack_)), do_shift_up_(other.do_shift_up_), lastx_(other.lastx_) {}
-    ~RpnBackend() {}
-    // Make RpnStack a friend class
-    //friend class RpnStack;
+    Backend(const Backend& other) : stack_(std::make_unique<Stack>(*other.stack_)), do_shift_up_(other.do_shift_up_), lastx_(other.lastx_) {}
+    ~Backend() {}
     virtual void SwapXY();
     virtual double Peek() const { return (*stack_)[IDX_REG_X]; }
     virtual void Insert(double num);
@@ -94,18 +94,18 @@ public:
     virtual void Enter();
     virtual double Calculate(std::string operation);
     virtual double CalculateFromString(std::string rpnExpression);
-    friend std::ostream& operator<<(std::ostream& os, const RpnBackend& backend);
+    friend std::ostream& operator<<(std::ostream& os, const Backend& backend);
 
 private:
-    // Move any private members you want to be accessible to RpnStack to here
+    // Move any private members you want to be accessible to Stack to here
     // owns the object - unique_ptr manages its lifetime and deallocation
-    std::unique_ptr<RpnStack> stack_; // Use std::unique_ptr to manage RpnStack
-
+    std::unique_ptr<Stack> stack_; // Use std::unique_ptr to manage Stack
     // LASTX register - stores the value of X before a function is executed
     double lastx_;
     // shift up stack after an operation is executed (e.g. +, -, etc.)  
     bool do_shift_up_;
 };
 
-#endif
+} /* namespace Rpn */
 
+#endif /* RPN_HPP */
