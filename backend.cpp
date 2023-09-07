@@ -116,7 +116,6 @@ namespace Rpn {
         for (const std::string& substring : substrings) {
             // if substring not in dictionary keys, it's a digit so enter it
             // if substring is a digit and previous substring is a digit, press enter before entering it
-            // std::stood
             auto it1 = function_key_1op_.find(ToLowercase(substring));
             auto it2 = function_key_2op_.find(ToLowercase(substring));
             if (it1 != function_key_1op_.end() || it2 != function_key_2op_.end()) {
