@@ -1,3 +1,4 @@
+#include "observer.hpp"
 #include "backend.hpp"
 #include "stack.hpp"
 #include <iostream> // ostream
@@ -5,7 +6,25 @@
 #include <vector> // vector 
 #include <sstream> // istringstream
 #include <stdexcept> // runtime_error 
+#include <algorithm> // erase, remove
 
+
+void Subject::Detach(Observer* observer) {
+    observers_.erase(
+        std::remove(observers_.begin(), observers_.end(), observer),
+        observers_.end()
+    );
+} 
+
+void Subject::NotifyValue(double value) {
+    for (const auto& observer : observers_)
+        observer->UpdateValue(value);
+}
+
+void Subject::NotifyOperation(const std::string& operation) {
+    for (const auto& observer : observers_)
+        observer->UpdateOperation(operation);
+}
 
 Rpn::Backend::Backend():
     stack_(std::make_unique<Stack>()),
@@ -51,6 +70,9 @@ void Rpn::Backend::Insert(double num) {
     if (do_shift_up_)
         stack_->ShiftUp();
     stack_->writeX(num);
+    // notify class observers about new value
+    NotifyValue(num);
+
 }
 
 
@@ -93,6 +115,8 @@ double Rpn::Backend::Calculate(std::string operation) {
     }
     if (valid_operation)
     {
+        // Notify observers about the new operation
+        NotifyOperation(operation); 
         return registerX;
     } else {
         throw std::runtime_error(std::string("[FATAL]: Invalid operation ") +
@@ -105,7 +129,7 @@ double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
     std::istringstream iss(rpnExpression);
     // space-separated substrings
     std::vector<std::string> substrings;
-    // current substring
+    // current substring (i.e. operation or data)
     std::string token;
 
     while (iss >> token)

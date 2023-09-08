@@ -2,11 +2,46 @@
 #define BACKEND_HPP 
 
 #include "base.hpp"
+#include "observer.hpp"
 #include "stack.hpp"
 #include <string> // string
 #include <memory> // unique_ptr
 #include <cmath> // sin, cos, tan, log10, sqrt
 #include <stdexcept> // runtime_error
+#include <vector> // vector
+
+/**
+ * @brief Subject class to observe in the observer design pattern.
+ *        After creating an instance, "attach" this to the class to
+ *        observe by the `Attach` method.
+ *        This class is meant to be inherited by the class to observe.
+ *        We'll call the derived class that inherits it subject.
+ *        Inside the methods to observe, run the Subject's Notify<...>
+ *        methods.
+ *        This class HAS a bunch of observers that are notified about
+ *        the subject's changes. Through the Notify methods, it
+ *        helps the observer record the state of the subject. Therefore
+ *        you need to modify the Observer's update/get methods accordingly.
+ */
+class Subject {
+public:
+    void Attach(Observer* observer) { observers_.push_back(observer); }
+    // Remove the observer from the list
+    void Detach(Observer* observer);
+
+protected:
+    // Meant to be integrated with derived class's methods when a value
+    // is inserted
+    void NotifyValue(double value);
+    // Meant to be integrated with derived class's methods when an
+    // operation is executed  */
+    void NotifyOperation(const std::string& operation);
+
+private:
+    // we need a list of observes in order to observe multiple instances
+    // (if necessary)
+    std::vector<Observer*> observers_;
+};
 
 
 namespace Rpn {
@@ -30,12 +65,16 @@ namespace Rpn {
 *        -- Calculate (calculator's function buttons)
 *        More details in each method's documentation.
 *
+*        Inherits from:
+*        -- Base; to implement its abstract methods
+*        -- Subject; to be an observable subject by the Observer class
+*
 *        References:
 *        -----------
 *        [1] "Enter: Reverse Polish Notation Made Easy" by J. Dodin
 *            https://literature.hpcalc.org/community/enter-en.pdf
 */
-class Backend: Base {
+class Backend: Base, public Subject {
 public:
     Backend();
     Backend(const Backend& other) : stack_(std::make_unique<Stack>(*other.stack_)), do_shift_up_(other.do_shift_up_), lastx_(other.lastx_) {}
