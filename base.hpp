@@ -4,6 +4,7 @@
 #include <unordered_map> // unordered_map
 #include <functional> // function
 #include <string> // string
+#include <utility> // pair
 
 namespace Rpn {
 
@@ -12,7 +13,7 @@ class Base {
         Base() {}
         ~Base() {}
         virtual void SwapXY() = 0;
-        virtual double Peek() const = 0;
+        virtual std::pair<double, double> Peek() const = 0;
         virtual void Insert(double num) = 0;
         virtual void Rdn() = 0;
         virtual void Enter() = 0;
