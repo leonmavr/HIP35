@@ -1,5 +1,6 @@
 #include "stack.hpp"
 #include "backend.hpp"
+#include "observer.hpp"
 #include <iostream>
 
 int main() {
@@ -14,7 +15,8 @@ int main() {
     rpn->Calculate("*");
     rpn->Insert(4);
     rpn->Calculate("+");
-    std::cout << "should be + " << std::get<1>(obs1.GetState()) << std::endl;
+    std::cout << "should be + " << obs1.GetState().first << std::endl;
+    std::cout << "should some value " << obs1.GetState().second.first << obs1.GetState().second.second << std::endl;
     rpn->Insert(3);
     rpn->Enter();
     rpn->Insert(2);

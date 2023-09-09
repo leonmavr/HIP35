@@ -9,6 +9,7 @@
 #include <cmath> // sin, cos, tan, log10, sqrt
 #include <stdexcept> // runtime_error
 #include <vector> // vector
+#include <utility> // make_pair, pair
 
 /**
  * @brief Subject class to observe in the observer design pattern.
@@ -32,7 +33,7 @@ public:
 protected:
     // Meant to be integrated with derived class's methods when a value
     // is inserted
-    void NotifyValue(double value);
+    void NotifyValue(std::pair<double, double> registers);
     // Meant to be integrated with derived class's methods when an
     // operation is executed  */
     void NotifyOperation(const std::string& operation);
@@ -86,9 +87,12 @@ public:
     /**
      * @brief Gets current value of register X.
      *
-     * @return Value of register X.
+     * @return Pair of values at registers X and Y
      */
-    virtual double Peek() const { return (*stack_)[IDX_REG_X]; }
+    virtual std::pair<double, double> Peek() const {
+        return std::make_pair((*stack_)[IDX_REG_X],
+                              (*stack_)[IDX_REG_Y]);
+    }
     /**
      * @brief Insert a number in the stack. Shifts the stack up if a
      *        number is previously inserted.

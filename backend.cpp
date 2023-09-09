@@ -16,9 +16,9 @@ void Subject::Detach(Observer* observer) {
     );
 } 
 
-void Subject::NotifyValue(double value) {
+void Subject::NotifyValue(std::pair<double, double> registers) {
     for (const auto& observer : observers_)
-        observer->UpdateValue(value);
+        observer->UpdateRegisters(registers);
 }
 
 void Subject::NotifyOperation(const std::string& operation) {
@@ -71,7 +71,7 @@ void Rpn::Backend::Insert(double num) {
         stack_->ShiftUp();
     stack_->writeX(num);
     // notify class observers about new value
-    NotifyValue(num);
+    NotifyValue(Peek());
 
 }
 
@@ -98,8 +98,9 @@ double Rpn::Backend::Calculate(std::string operation) {
     lastx_ = (*stack_)[IDX_REG_X];
     auto& registerX = (*stack_)[IDX_REG_X];
     auto& registerY = (*stack_)[IDX_REG_Y];
-    operation = ToLowercase(operation);
     bool valid_operation = false;
+    // because maps always take lowercase keys
+    operation = ToLowercase(operation);
 
     if (function_key_1op_.find(operation) != function_key_1op_.end()) {
         // query single operand op/s such as sin, log, etc.
@@ -107,7 +108,7 @@ double Rpn::Backend::Calculate(std::string operation) {
         valid_operation = true;
     }
     if (function_key_2op_.find(operation) != function_key_2op_.end()) {
-        // query 2-op operations such as +, /, etc.
+        // query 2-operant operations such as +, /, etc.
         registerY = function_key_2op_[operation](registerX,
                                                 registerY);
         stack_->ShiftDown();
