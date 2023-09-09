@@ -8,11 +8,12 @@
 
 namespace Rpn {
 
-class Base {
+class IBackend {
     public:
-        Base() {}
-        ~Base() {}
+        IBackend() {}
+        ~IBackend() {}
         virtual void SwapXY() = 0;
+        /* Returns the values of two registers, e.g. X and Y */
         virtual std::pair<double, double> Peek() const = 0;
         virtual void Insert(double num) = 0;
         virtual void Rdn() = 0;

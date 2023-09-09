@@ -57,7 +57,7 @@ namespace Rpn {
 *        contains a LASTX register which stores the last value of X
 *        before a function button is pressed. Its purpose is to correct
 *        mistakes. The calculator supports the following basic operations
-*        blueprinted in the `Base` class:
+*        blueprinted in the `IBackend` class:
 *        -- swapXY
 *        -- Peek
 *        -- Insert
@@ -67,7 +67,7 @@ namespace Rpn {
 *        More details in each method's documentation.
 *
 *        Inherits from:
-*        -- Base; to implement its abstract methods
+*        -- IBackend; to implement its abstract methods
 *        -- Subject; to be an observable subject by the Observer class
 *
 *        References:
@@ -75,7 +75,7 @@ namespace Rpn {
 *        [1] "Enter: Reverse Polish Notation Made Easy" by J. Dodin
 *            https://literature.hpcalc.org/community/enter-en.pdf
 */
-class Backend: Base, public Subject {
+class Backend: IBackend, public Subject {
 public:
     Backend();
     Backend(const Backend& other) : stack_(std::make_unique<Stack>(*other.stack_)), do_shift_up_(other.do_shift_up_), lastx_(other.lastx_) {}
@@ -135,7 +135,7 @@ public:
      *
      * @param operation What operation to perform. This can be one
      *                  of the keys of function_key_1op_ or 
-     *                  function_key_2op_ - see `Base` class
+     *                  function_key_2op_ - see `IBackend` class
      *
      * @return The calculation's result 
      */
