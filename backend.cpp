@@ -164,6 +164,16 @@ double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
     return (*stack_)[IDX_REG_X];
 }
 
+std::vector<std::string> Rpn::Backend::GetFunctions() const {
+    std::vector <std::string> ret;
+    // Access the private unordered map and print its keys
+    for (const auto& pair : function_key_1op_) 
+        ret.push_back(pair.first);
+    for (const auto& pair : function_key_2op_) 
+        ret.push_back(pair.first);
+    return ret;
+}
+
 namespace Rpn {
     std::ostream& operator<<(std::ostream& os, const Backend& backend) {
         const auto& stack = *(backend.stack_);

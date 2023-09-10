@@ -28,4 +28,5 @@ int main() {
     std::cout << "---" << rpn->CalculateFromString("2 5 * 4 + 3 2 * 1 + /") << std::endl;
     //std::cout << "---" << rpn.calculateFromString("2 1.4 /") << std::endl;
     std::cout << *rpn << std::endl;
+    std::cout << rpn->GetFunctions()[0] << std::endl;
 }

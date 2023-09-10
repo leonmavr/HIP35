@@ -155,6 +155,8 @@ public:
      * @return The numberic results of the RPN. 
      */
     virtual double CalculateFromString(std::string rpnExpression);
+    /* Get the functions (e.g. log) implemented in a vector of strings */
+    std::vector<std::string> GetFunctions() const;
     /* Overrides the << operator for the class, e.g.std::cout << <Instance>; */
     friend std::ostream& operator<<(std::ostream& os, const Backend& backend);
 

@@ -5,6 +5,7 @@
 #include <functional> // function
 #include <string> // string
 #include <utility> // pair
+#include <vector> // vector 
 
 namespace Rpn {
 
