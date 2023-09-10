@@ -83,13 +83,13 @@ public:
     /**
      * @brief Swaps values of registers X and Y.
      */
-    virtual void SwapXY();
+    void SwapXY() override;
     /**
      * @brief Gets current value of register X.
      *
      * @return Pair of values at registers X and Y
      */
-    virtual std::pair<double, double> Peek() const {
+    std::pair<double, double> Peek() const override {
         return std::make_pair((*stack_)[IDX_REG_X],
                               (*stack_)[IDX_REG_Y]);
     }
@@ -99,7 +99,7 @@ public:
      *
      * @param num Decimal number to insert.
      */
-    virtual void Insert(double num);
+    void Insert(double num) override;
     /**
      * @brief Circularly rotates the stack down, e.g.:
      *           before:     after:
@@ -108,7 +108,7 @@ public:
      *        Y->   2          3
      *        X->   1          2
      */
-    virtual void Rdn();
+    void Rdn() override;
     /**
      * @brief Emulate enter key; shift the stack up, discarding T
      *        register and then clone Y into X, e.g.:
@@ -118,7 +118,7 @@ public:
      *        Y->   2          1
      *        X->   1          1
      */
-    virtual void Enter();
+    void Enter() override;
     /**
      * @brief Emulate pressing a function key. Function keys operate
      *        either on the X register (1-operand key, e.g. LOG) or
@@ -139,7 +139,7 @@ public:
      *
      * @return The calculation's result 
      */
-    virtual double Calculate(std::string operation);
+    double Calculate(std::string operation) override;
     /**
      * @brief Calculte a results of an expression written in reverse
      *        Polish notation (RPN). In RPN only records operations 
@@ -154,7 +154,7 @@ public:
      *
      * @return The numberic results of the RPN. 
      */
-    virtual double CalculateFromString(std::string rpnExpression);
+    double CalculateFromString(std::string rpnExpression) override;
     /* Get the functions (e.g. log) implemented in a vector of strings */
     std::vector<std::string> GetFunctions() const;
     /* Overrides the << operator for the class, e.g.std::cout << <Instance>; */
