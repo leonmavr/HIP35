@@ -64,6 +64,16 @@ namespace Rpn {
 *        -- RND (Rotate down)
 *        -- Enter
 *        -- Calculate (calculator's function buttons)
+*        RPN notation heavily relies on the stack. Operands are pushed
+*        on a stack. An operation (e.g. +, SIN, etc.) always follows
+*        its operand(s) and when it's complete the top of the stack
+*        gets overwritten with its result. Example:
+*        4 3 2 + -
+*        |  4  |   |     |   |     |
+*        |  3  | + |  4  | - |     |
+*        |  2  |   |  5  |   | -1  |
+*        +-----+   +-----+   +-----+ 
+*
 *        More details in each method's documentation.
 *
 *        Inherits from:
