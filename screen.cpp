@@ -61,16 +61,21 @@ void Gui::Screen::InitKeypadGrid() {
 }
 
 void Gui::Screen::DrawBox(const std::string& function, const std::string& key,
-             const Gui::Point& coords) {
+                          const Gui::Point& coords) {
+    const unsigned x = coords.x;
+    const unsigned y = coords.y;
     // TODO: set nlines and ncols from keypad dim/s
     const int nlines = 24;
     const int ncols = 50;
     // not sure if i'll need this
+    // TODO: move to c/tor
     WINDOW * win = newwin(nlines, ncols, 0, 0);
-    const unsigned x = coords.x;
-    const unsigned y = coords.y;
-#define DUMMY
-#ifdef DUMMY
+    //box(win, 0, 0);
+    wborder(win, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H');
+    wmove(win, y, x);
+    wprintw(win, function.c_str());
+    wrefresh(win);
+#if 0
     // move cursor
     int row, col;       
     char mesg[]="Just a string";            /* message to be shown on the screen */
@@ -81,10 +86,12 @@ void Gui::Screen::DrawBox(const std::string& function, const std::string& key,
     mvprintw(row-2, 0, "This screen has %d rows and %d columns\n", y, x);
     printw("Try resizing your window(if possible) and then run this program again");
     // render characters
-    refresh();
+    //refresh();
     // wait for key press 
-    getch();
 #endif
+    wgetch(win);
+    // TODO: to d/tor
+    delwin(win);
 
 }
 
@@ -95,6 +102,10 @@ void Gui::Screen::InitTerminal() {
     cbreak();
     // don't print characters 
     noecho();
+    // hide cursor
+    curs_set(0);
+    // clear the screen
+    clear();
 }
 
 void Gui::Screen::EndTerminal() {
