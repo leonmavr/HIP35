@@ -1,5 +1,6 @@
 #include "screen.hpp"
 #include <utility> // make_pair
+#include <ncurses.h>
 
 Gui::Screen::Screen(std::vector<std::string> keys):
 	active_key_(""),
@@ -7,6 +8,8 @@ Gui::Screen::Screen(std::vector<std::string> keys):
     key_height(1)
 {
 	InitKeypadGrid();
+    // prepare the terminal for drawing 
+    InitTerminal();
 }
 
 /**
@@ -26,15 +29,16 @@ Gui::Screen::Screen(std::vector<std::string> keys):
  *        +----------------------------------- 
  *        | 4.00            
  *        | 20.00
- *        +----------------------------------- <- Keypad
+ *        +---------+---------+----------+---- <- Keypad
  *        | +       | -       | *        | ...
- *        +----------------------------------- 
+ *        +---------+---------+----------+---- 
  *        | sin (s) | cos (c) | tan (t)  | ...
- *        +----------------------------------- 
+ *        +---------+---------+----------+---- 
  *        ...
  */
 void Gui::Screen::InitKeypadGrid() {
 	// arithmetic operations
+    //     text on button                text in ()         x, y
 	key_mappings_["+"] =     std::make_pair("+", Gui::Point{0, 2});
 	key_mappings_["-"] =     std::make_pair("-", Gui::Point{1, 2});
 	key_mappings_["*"] =     std::make_pair("*", Gui::Point{2, 2});
@@ -54,4 +58,46 @@ void Gui::Screen::InitKeypadGrid() {
 	key_mappings_["RND"] =   std::make_pair("v", Gui::Point{0, 5});
 	key_mappings_["SWAP"] =  std::make_pair("<", Gui::Point{1, 5});
 	key_mappings_["LASTX"] = std::make_pair("x", Gui::Point{2, 5});
+}
+
+void Gui::Screen::DrawBox(const std::string& function, const std::string& key,
+             const Gui::Point& coords) {
+    // TODO: set nlines and ncols from keypad dim/s
+    const int nlines = 24;
+    const int ncols = 50;
+    // not sure if i'll need this
+    WINDOW * win = newwin(nlines, ncols, 0, 0);
+    const unsigned x = coords.x;
+    const unsigned y = coords.y;
+#define DUMMY
+#ifdef DUMMY
+    // move cursor
+    int row, col;       
+    char mesg[]="Just a string";            /* message to be shown on the screen */
+
+    getmaxyx(stdscr, row, col);             
+    mvprintw(row/2,col/2-12,"%s", mesg);   
+    getmaxyx(stdscr, row, col);               /* get the number of rows and columns */
+    mvprintw(row-2, 0, "This screen has %d rows and %d columns\n", y, x);
+    printw("Try resizing your window(if possible) and then run this program again");
+    // render characters
+    refresh();
+    // wait for key press 
+    getch();
+#endif
+
+}
+
+void Gui::Screen::InitTerminal() {
+    // start curses mode
+    initscr();
+    // disable line buffering
+    cbreak();
+    // don't print characters 
+    noecho();
+}
+
+void Gui::Screen::EndTerminal() {
+    // end ncurses
+    endwin();
 }

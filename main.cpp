@@ -1,14 +1,16 @@
 #include "stack.hpp"
 #include "backend.hpp"
 #include "observer.hpp"
+#include "screen.hpp"
 #include <iostream>
+#include <string>
 
 int main() {
     auto obs1 = Observer();
     auto rpn = std::make_unique<Rpn::Backend>();
+#if 0
     // 2 5 * 4 + 3 2 * 1 + /
     rpn->Attach(&obs1);
-#if 1
     rpn->Insert(2);
     rpn->Enter();
     rpn->Insert(5);
@@ -24,9 +26,15 @@ int main() {
     rpn->Insert(1);
     rpn->Calculate("+");
     std::cout << rpn->Calculate("/") << std::endl; // 2
-#endif
     std::cout << "---" << rpn->CalculateFromString("2 5 * 4 + 3 2 * 1 + /") << std::endl;
     //std::cout << "---" << rpn.calculateFromString("2 1.4 /") << std::endl;
     std::cout << *rpn << std::endl;
     std::cout << rpn->GetFunctions()[0] << std::endl;
+#endif
+    auto scr = Gui::Screen(rpn->GetFunctions());
+    auto p = Gui::Point{1,1};
+    std::string s = "abc";
+    scr.DrawBox(s, s, p);
+
+
 }
