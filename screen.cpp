@@ -3,7 +3,7 @@
 
 Gui::Screen::Screen(std::vector<std::string> keys):
 	active_key_(""),
-    key_width(8),
+    key_width(9),
     key_height(1)
 {
 	InitKeypadGrid();
@@ -41,17 +41,17 @@ void Gui::Screen::InitKeypadGrid() {
 	key_mappings_["/"] =     std::make_pair("/", Gui::Point{3, 2});
 	key_mappings_["^"] =     std::make_pair("^", Gui::Point{4, 2});
 
-	key_mappings_["sin"] =   std::make_pair("s", Gui::Point{0, 2});
-	key_mappings_["cos"] =   std::make_pair("c", Gui::Point{1, 2});
-	key_mappings_["tan"] =   std::make_pair("t", Gui::Point{2, 2});
-	key_mappings_["sqrt"] =  std::make_pair("S", Gui::Point{3, 2});
-	key_mappings_["log"] =   std::make_pair("l", Gui::Point{4, 2});
+	key_mappings_["sin"] =   std::make_pair("s", Gui::Point{0, 3});
+	key_mappings_["cos"] =   std::make_pair("c", Gui::Point{1, 3});
+	key_mappings_["tan"] =   std::make_pair("t", Gui::Point{2, 3});
+	key_mappings_["sqrt"] =  std::make_pair("S", Gui::Point{3, 3});
+	key_mappings_["log"] =   std::make_pair("l", Gui::Point{4, 3});
 
-	key_mappings_["chs"] =   std::make_pair("C", Gui::Point{0, 2});
-	key_mappings_["inv"] =   std::make_pair("i", Gui::Point{1, 2});
+	key_mappings_["chs"] =   std::make_pair("C", Gui::Point{0, 4});
+	key_mappings_["inv"] =   std::make_pair("i", Gui::Point{1, 4});
     
 	// HP35 stack operations
-	key_mappings_["RND"] =   std::make_pair("v", Gui::Point{0, 2});
-	key_mappings_["SWAP"] =  std::make_pair("(", Gui::Point{1, 2});
-	key_mappings_["LASTX"] = std::make_pair("x", Gui::Point{2, 2});
+	key_mappings_["RND"] =   std::make_pair("v", Gui::Point{0, 5});
+	key_mappings_["SWAP"] =  std::make_pair("<", Gui::Point{1, 5});
+	key_mappings_["LASTX"] = std::make_pair("x", Gui::Point{2, 5});
 }
