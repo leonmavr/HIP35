@@ -70,9 +70,18 @@ void Gui::Screen::DrawBox(const std::string& function, const std::string& key,
     // not sure if i'll need this
     // TODO: move to c/tor
     WINDOW * win = newwin(nlines, ncols, 0, 0);
-    //box(win, 0, 0);
+    const int w = Gui::Screen::key_width;
+    const int h = Gui::Screen::key_height;
     wborder(win, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H');
+
+    // top left corner
     wmove(win, y, x);
+    wprintw(win, "+");
+    // top edge
+    wmove(win, y, x+1);
+    whline(win, '-', w-2);
+
+    wmove(win, y+1, x+2);
     wprintw(win, function.c_str());
     wrefresh(win);
 #if 0
