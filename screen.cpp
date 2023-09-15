@@ -64,55 +64,45 @@ void Gui::Screen::InitKeypadGrid() {
 void Gui::Screen::DrawBox(const std::string& text,
                           const Gui::Point& coords,
                           bool highlight) {
+    // if we highlight just make it bold
+    if (highlight)
+        wattron(win_, A_BOLD);
     const int w = Gui::Screen::key_width_;
     const unsigned x = coords.x;
     const unsigned y = coords.y;
-    const char edge_up_down = (highlight) ? '=' : '-';
     // top left corner
     wmove(win_, y, x);
     wprintw(win_, "+");
     // top edge
     wmove(win_, y, x+1);
-    whline(win_, edge_up_down, w-2);
+    whline(win_, '-', w-2);
     // top right corner
     wmove(win_, y, x+w-1);
     wprintw(win_, "+");
     // right edge
     wmove(win_, y+1, x+w-1);
     wprintw(win_, "|");
-    if (highlight) {
-        wmove(win_, y+1, x+w-2);
-        wprintw(win_, "|");
-    }
     // bottom right corner
     wmove(win_, y+2, x+w-1);
     wprintw(win_, "+");
     // bottom edge
     wmove(win_, y+2, x+1);
-    whline(win_, edge_up_down, w-2);
+    whline(win_, '-', w-2);
     // bottom left corner
     wmove(win_, y+2, x);
     wprintw(win_, "+");
     // left edge
     wmove(win_, y+1, x);
     wprintw(win_, "|");
-    if (highlight) {
-        wmove(win_, y+1, x+1);
-        wprintw(win_, "|");
-    }
 
     // text
     wmove(win_, y+1, x+2);
     wprintw(win_, text.c_str());
+
     wrefresh(win_);
-}
-void Gui::Screen::HighlightKey(const std::string& key) {
-    auto it = key_mappings_.find(key);
-    if (it == key_mappings_.end())
-        return;
-    Point grid_position = key_mappings_[key].second; 
-    int startx = grid_position.x * Gui::Screen::key_width_;
-    int starty = grid_position.y * Gui::Screen::key_height_;
+    // turn off highlighting
+    if (highlight)
+        wattroff(win_, A_BOLD);
 }
 
 void Gui::Screen::InitTerminal() {
@@ -136,9 +126,6 @@ void Gui::Screen::InitTerminal() {
     win_ = newwin(nlines, ncols, startx, starty);
     //            l    r    t    d   tl   tr   bl   br
     wborder(win_, '.', '.', '.', '.', '.', '.', '.', '.');
-
-    // the window that highlights the currently pressed key
-    win2_ = newwin(Gui::Screen::key_height_, Gui::Screen::key_width_, 0, 0);
 }
 
 void Gui::Screen::EndTerminal() {
