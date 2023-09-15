@@ -31,10 +31,10 @@ int main() {
     std::cout << *rpn << std::endl;
     std::cout << rpn->GetFunctions()[0] << std::endl;
 #endif
-    auto scr = Gui::Screen(rpn->GetFunctions());
+    auto scr = Gui::Screen();
     auto p = Gui::Point{1,1};
-    std::string s = "abc";
-    scr.DrawBox(s, s, p);
+    std::string s = "SQRT (S)";
+    scr.DrawBox(s, p, true);
 
-
+    getchar();
 }

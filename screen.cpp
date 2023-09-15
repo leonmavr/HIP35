@@ -1,11 +1,12 @@
 #include "screen.hpp"
 #include <utility> // make_pair
+#include <iostream> // cout
 #include <ncurses.h>
 
 Gui::Screen::Screen():
 	active_key_(""),
-    key_width(9),
-    key_height(3)
+    key_width_(12),
+    key_height_(3)
 {
     InitTerminal();
 	InitKeypadGrid();
@@ -60,58 +61,50 @@ void Gui::Screen::InitKeypadGrid() {
 	key_mappings_["LASTX"] = std::make_pair("x", Gui::Point{2, 5});
 }
 
-void Gui::Screen::DrawFrame() {
-
-}
-
-void Gui::Screen::DrawBox(const std::string& function, const std::string& key,
-                          const Gui::Point& coords) {
+void Gui::Screen::DrawBox(const std::string& text,
+                          const Gui::Point& coords,
+                          bool highlight) {
+    const int w = Gui::Screen::key_width_;
     const unsigned x = coords.x;
     const unsigned y = coords.y;
-    const int nlines = Gui::Screen::key_height * 7;
-    const int ncols = Gui::Screen::key_width * 8;
-    // not sure if i'll need this
-    // TODO: move to c/tor
-    WINDOW * win = newwin(nlines, ncols, 0, 0);
-    const int w = Gui::Screen::key_width;
-    const int h = Gui::Screen::key_height;
-    //            l    r    t    d   tl   tr   bl   br
-    wborder(win, '.', '.', '.', '.', '.', '.', '.', '.');
-
+    const char edge_up_down = (highlight) ? '=' : '-';
     // top left corner
-    wmove(win, y, x);
-    wprintw(win, "+");
+    wmove(win_, y, x);
+    wprintw(win_, "+");
     // top edge
-    wmove(win, y, x+1);
-    whline(win, '-', w-2);
+    wmove(win_, y, x+1);
+    whline(win_, edge_up_down, w-2);
     // top right corner
-    wmove(win, y, x+w-1);
-    wprintw(win, "+");
+    wmove(win_, y, x+w-1);
+    wprintw(win_, "+");
     // right edge
-    wmove(win, y+1, x+w-1);
-    wprintw(win, "|");
+    wmove(win_, y+1, x+w-1);
+    wprintw(win_, "|");
+    if (highlight) {
+        wmove(win_, y+1, x+w-2);
+        wprintw(win_, "|");
+    }
     // bottom right corner
-    wmove(win, y+2, x+w-1);
-    wprintw(win, "+");
+    wmove(win_, y+2, x+w-1);
+    wprintw(win_, "+");
     // bottom edge
-    wmove(win, y+2, x+1);
-    whline(win, '-', w-2);
+    wmove(win_, y+2, x+1);
+    whline(win_, edge_up_down, w-2);
     // bottom left corner
-    wmove(win, y+2, x);
-    wprintw(win, "+");
+    wmove(win_, y+2, x);
+    wprintw(win_, "+");
     // left edge
-    wmove(win, y+1, x);
-    wprintw(win, "|");
+    wmove(win_, y+1, x);
+    wprintw(win_, "|");
+    if (highlight) {
+        wmove(win_, y+1, x+1);
+        wprintw(win_, "|");
+    }
 
     // text
-    wmove(win, y+1, x+2);
-    wprintw(win, function.c_str());
-    wrefresh(win);
-
-    wgetch(win);
-
-    // TODO: to d/tor
-    delwin(win);
+    wmove(win_, y+1, x+2);
+    wprintw(win_, text.c_str());
+    wrefresh(win_);
 }
 
 void Gui::Screen::InitTerminal() {
@@ -125,9 +118,19 @@ void Gui::Screen::InitTerminal() {
     curs_set(0);
     // clear the screen
     clear();
+
+    // initialize window where calculator is to be drawn
+    const int nlines = Gui::Screen::key_height_ * 7;
+    const int ncols = Gui::Screen::key_width_ * 8;
+    // NOTE: newwin call needs to be AFTER initscr()!
+    win_ = newwin(nlines, ncols, 0, 0);
+    //            l    r    t    d   tl   tr   bl   br
+    wborder(win_, '.', '.', '.', '.', '.', '.', '.', '.');
 }
 
 void Gui::Screen::EndTerminal() {
+    // deallocate ncurses window
+    delwin(win_);
     // end ncurses
     endwin();
 }
