@@ -2,14 +2,14 @@
 #include <utility> // make_pair
 #include <ncurses.h>
 
-Gui::Screen::Screen(std::vector<std::string> keys):
+Gui::Screen::Screen():
 	active_key_(""),
     key_width(9),
-    key_height(1)
+    key_height(3)
 {
+    InitTerminal();
 	InitKeypadGrid();
     // prepare the terminal for drawing 
-    InitTerminal();
 }
 
 /**
@@ -31,7 +31,7 @@ Gui::Screen::Screen(std::vector<std::string> keys):
  *        | 20.00
  *        +---------+---------+----------+---- <- Keypad
  *        | +       | -       | *        | ...
- *        +---------+---------+----------+---- 
+ *        +---------+---------+----------+----
  *        | sin (s) | cos (c) | tan (t)  | ...
  *        +---------+---------+----------+---- 
  *        ...
@@ -60,19 +60,23 @@ void Gui::Screen::InitKeypadGrid() {
 	key_mappings_["LASTX"] = std::make_pair("x", Gui::Point{2, 5});
 }
 
+void Gui::Screen::DrawFrame() {
+
+}
+
 void Gui::Screen::DrawBox(const std::string& function, const std::string& key,
                           const Gui::Point& coords) {
     const unsigned x = coords.x;
     const unsigned y = coords.y;
-    // TODO: set nlines and ncols from keypad dim/s
-    const int nlines = 24;
-    const int ncols = 50;
+    const int nlines = Gui::Screen::key_height * 7;
+    const int ncols = Gui::Screen::key_width * 8;
     // not sure if i'll need this
     // TODO: move to c/tor
     WINDOW * win = newwin(nlines, ncols, 0, 0);
     const int w = Gui::Screen::key_width;
     const int h = Gui::Screen::key_height;
-    wborder(win, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H');
+    //            l    r    t    d   tl   tr   bl   br
+    wborder(win, '.', '.', '.', '.', '.', '.', '.', '.');
 
     // top left corner
     wmove(win, y, x);
@@ -80,28 +84,34 @@ void Gui::Screen::DrawBox(const std::string& function, const std::string& key,
     // top edge
     wmove(win, y, x+1);
     whline(win, '-', w-2);
+    // top right corner
+    wmove(win, y, x+w-1);
+    wprintw(win, "+");
+    // right edge
+    wmove(win, y+1, x+w-1);
+    wprintw(win, "|");
+    // bottom right corner
+    wmove(win, y+2, x+w-1);
+    wprintw(win, "+");
+    // bottom edge
+    wmove(win, y+2, x+1);
+    whline(win, '-', w-2);
+    // bottom left corner
+    wmove(win, y+2, x);
+    wprintw(win, "+");
+    // left edge
+    wmove(win, y+1, x);
+    wprintw(win, "|");
 
+    // text
     wmove(win, y+1, x+2);
     wprintw(win, function.c_str());
     wrefresh(win);
-#if 0
-    // move cursor
-    int row, col;       
-    char mesg[]="Just a string";            /* message to be shown on the screen */
 
-    getmaxyx(stdscr, row, col);             
-    mvprintw(row/2,col/2-12,"%s", mesg);   
-    getmaxyx(stdscr, row, col);               /* get the number of rows and columns */
-    mvprintw(row-2, 0, "This screen has %d rows and %d columns\n", y, x);
-    printw("Try resizing your window(if possible) and then run this program again");
-    // render characters
-    //refresh();
-    // wait for key press 
-#endif
     wgetch(win);
+
     // TODO: to d/tor
     delwin(win);
-
 }
 
 void Gui::Screen::InitTerminal() {

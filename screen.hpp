@@ -5,6 +5,7 @@
 #include <string> // string
 #include <vector> // vector
 #include <utility> // pair
+#include <ncurses.h> // WINDOW 
 
 namespace Gui {
 
@@ -18,10 +19,7 @@ typedef struct {
 class Screen
 {
 public:
-    // TODO: don't delete
-    Screen () = delete;
-	// TODO: don't need keys to initialize
-    Screen (std::vector<std::string> keys);
+    Screen ();
     ~Screen () { EndTerminal(); }
 	// TODO
 	void Draw();
@@ -33,6 +31,7 @@ private:
 	void InitKeypadGrid();
     void InitTerminal();
     void EndTerminal();
+    void DrawFrame();
     // rpn function -> (keypad test, keypad location x,y) e.g. (log -> (l, (4, 2))
 	std::unordered_map<std::string, std::pair<std::string, Point>> key_mappings_;
 	std::string active_key_;
@@ -40,6 +39,7 @@ private:
     unsigned key_height;
     // ncurses window name (on the terminal) where to draw the keypad
     std::string win_name_; 
+    WINDOW* win_;
 };
 
 }
