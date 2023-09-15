@@ -154,8 +154,13 @@ void Gui::Screen::DrawKeypad() {
         if (pair.second.first != pair.first)
             text += " (" + pair.first + ")";
         Point grid_pos = pair.second.second;
-        Point text_coords{grid_pos.x * Gui::Screen::key_width_,
+        // TODO: 4 -> screen y offset
+        Point text_coords{grid_pos.x * Gui::Screen::key_width_ + 1,
                           4 + grid_pos.y * Gui::Screen::key_height_};
+        // to remove horizontal whitespace between keys
+        if (grid_pos.x != 0) text_coords.x -= grid_pos.x;
+        // to remove vertical whitespace between keys
+        if (grid_pos.y != 0) text_coords.y -= grid_pos.y;
         DrawBox(text, text_coords);
     }
 }
