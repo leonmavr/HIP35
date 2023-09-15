@@ -32,9 +32,5 @@ int main() {
     std::cout << rpn->GetFunctions()[0] << std::endl;
 #endif
     auto scr = Gui::Screen();
-    auto p = Gui::Point{1,1};
-    std::string s = "SQRT (S)";
-    scr.DrawBox(s, p, true);
-
     getchar();
 }

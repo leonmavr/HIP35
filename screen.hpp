@@ -26,11 +26,13 @@ public:
     // TODO: private
     void DrawBox(const std::string& text, const Point& coords,
                  bool highlight = false);
+    void HighlightKey(const std::string& key);
 
 private:
 	void InitKeypadGrid();
     void InitTerminal();
     void EndTerminal();
+    void DrawKeypad();
     // rpn function -> (keypad test, keypad location x,y) e.g. (log -> (l, (4, 2))
 	std::unordered_map<std::string, std::pair<std::string, Point>> key_mappings_;
 	std::string active_key_;
@@ -39,6 +41,7 @@ private:
     // ncurses window name (on the terminal) where to draw the keypad
     std::string win_name_; 
     WINDOW* win_;
+    WINDOW* win2_;
 };
 
 }
