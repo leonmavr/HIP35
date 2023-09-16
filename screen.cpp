@@ -40,25 +40,50 @@ Gui::Screen::Screen():
  */
 void Gui::Screen::InitKeypadGrid() {
     //       text on key          text on key in ()      grid coords 
-	key_mappings_["+"] =  std::make_pair("+",     Gui::Point{0, 2});
-	key_mappings_["-"] =  std::make_pair("-",     Gui::Point{1, 2});
-	key_mappings_["*"] =  std::make_pair("*",     Gui::Point{2, 2});
-	key_mappings_["/"] =  std::make_pair("/",     Gui::Point{3, 2});
-	key_mappings_["^"] =  std::make_pair("^",     Gui::Point{4, 2});
+	key_mappings_["+"] = std::make_pair("+",     Gui::Point{0, 2});
+	key_mappings_["-"] = std::make_pair("-",     Gui::Point{1, 2});
+	key_mappings_["*"] = std::make_pair("*",     Gui::Point{2, 2});
+	key_mappings_["/"] = std::make_pair("/",     Gui::Point{3, 2});
+	key_mappings_["^"] = std::make_pair("^",     Gui::Point{4, 2});
 
-	key_mappings_["s"] =  std::make_pair("sin",   Gui::Point{0, 3});
-	key_mappings_["c"] =  std::make_pair("cos",   Gui::Point{1, 3});
-	key_mappings_["t"] =  std::make_pair("tan",   Gui::Point{2, 3});
-	key_mappings_["S"] =  std::make_pair("sqrt",  Gui::Point{3, 3});
-	key_mappings_["l"] =  std::make_pair("log",   Gui::Point{4, 3});
+	key_mappings_["s"] = std::make_pair("sin",   Gui::Point{0, 3});
+	key_mappings_["c"] = std::make_pair("cos",   Gui::Point{1, 3});
+	key_mappings_["t"] = std::make_pair("tan",   Gui::Point{2, 3});
+	key_mappings_["S"] = std::make_pair("sqrt",  Gui::Point{3, 3});
+	key_mappings_["l"] = std::make_pair("log",   Gui::Point{4, 3});
 
-	key_mappings_["C"] =  std::make_pair("chs",   Gui::Point{0, 4});
-	key_mappings_["i"] =  std::make_pair("inv",   Gui::Point{1, 4});
+	key_mappings_["C"] = std::make_pair("chs",   Gui::Point{0, 4});
+	key_mappings_["i"] = std::make_pair("inv",   Gui::Point{1, 4});
    
 	// HP35 stack operations
-	key_mappings_["v"] =  std::make_pair("RDN",   Gui::Point{0, 5});
-	key_mappings_["<"] =  std::make_pair("SWAP",  Gui::Point{1, 5});
-	key_mappings_["x"] =  std::make_pair("LASTX", Gui::Point{2, 5});
+	key_mappings_["v"] = std::make_pair("RDN",   Gui::Point{0, 5});
+	key_mappings_["<"] = std::make_pair("SWAP",  Gui::Point{1, 5});
+	key_mappings_["x"] = std::make_pair("LASTX", Gui::Point{2, 5});
+}
+
+bool Gui::Screen::DrawKey(const std::string& key, bool highlight) {
+    bool found = false;
+    const auto it = key_mappings_.find(key);
+    if (it == key_mappings_.end())
+        return found;
+
+    // compile the text on the key, e.g.: l -> log (l)
+    //                                    + -> +
+    std::string text_on_key = key_mappings_[key].first;
+    if (key != key_mappings_[key].first)
+        text_on_key += " (" + key + ")";
+    Point grid_pos = key_mappings_[key].second;
+    // TODO: 4 -> screen y offset
+    Point top_left_coords {grid_pos.x * Gui::Screen::key_width_ + 1,
+                          4 + grid_pos.y * Gui::Screen::key_height_};
+    // to remove horizontal whitespace between keys
+    if (grid_pos.x != 0) top_left_coords.x -= grid_pos.x;
+    // to remove vertical whitespace between keys
+    if (grid_pos.y != 0) top_left_coords.y -= grid_pos.y;
+    DrawBox(text_on_key, top_left_coords, highlight);
+
+    found = true;
+    return found;
 }
 
 void Gui::Screen::DrawBox(const std::string& text,
@@ -137,17 +162,6 @@ void Gui::Screen::EndTerminal() {
 
 void Gui::Screen::DrawKeypad() {
     for (const auto& pair : key_mappings_) {
-        std::string text = pair.second.first;
-        if (pair.second.first != pair.first)
-            text += " (" + pair.first + ")";
-        Point grid_pos = pair.second.second;
-        // TODO: 4 -> screen y offset
-        Point text_coords{grid_pos.x * Gui::Screen::key_width_ + 1,
-                          4 + grid_pos.y * Gui::Screen::key_height_};
-        // to remove horizontal whitespace between keys
-        if (grid_pos.x != 0) text_coords.x -= grid_pos.x;
-        // to remove vertical whitespace between keys
-        if (grid_pos.y != 0) text_coords.y -= grid_pos.y;
-        DrawBox(text, text_coords);
+        DrawKey(pair.first);
     }
 }

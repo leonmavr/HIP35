@@ -26,7 +26,7 @@ public:
     // TODO: private
     void DrawBox(const std::string& text, const Point& coords,
                  bool highlight = false);
-    void HighlightKey(const std::string& key);
+    bool DrawKey(const std::string& key, bool highlight = false);
 
 private:
 	void InitKeypadGrid();
@@ -41,9 +41,9 @@ private:
     // ncurses window name (on the terminal) where to draw the keypad
     std::string win_name_; 
     WINDOW* win_;
-    WINDOW* win2_;
 };
 
-}
+} // namespace Gui
+
 
 #endif /* SCREEN_HPP */
