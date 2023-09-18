@@ -33,11 +33,14 @@ private:
     void InitTerminal();
     void EndTerminal();
     void DrawKeypad();
+    void SetUiDimensions();
     // rpn function -> (keypad test, keypad location x,y) e.g. (log -> (l, (4, 2))
 	std::unordered_map<std::string, std::pair<std::string, Point>> key_mappings_;
 	std::string active_key_;
     unsigned key_width_;
     unsigned key_height_;
+    unsigned max_width_pixels_;
+    unsigned max_height_pixels_;
     // ncurses window name (on the terminal) where to draw the keypad
     std::string win_name_; 
     WINDOW* win_;

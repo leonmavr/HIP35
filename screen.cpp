@@ -7,11 +7,36 @@ Gui::Screen::Screen():
     key_width_(12),
     key_height_(3)
 {
-    // prepare the terminal for drawing 
-    InitTerminal();
     // state where each button is to be drawn
 	InitKeypadGrid();
+    // prepare the terminal for drawing 
+    InitTerminal();
     DrawKeypad();
+}
+
+void Gui::Screen::SetUiDimensions() {
+    max_width_pixels_ = 0;
+    max_height_pixels_ = 0;
+    for (const auto& pair: key_mappings_) {
+        if (pair.second.second.x > max_width_pixels_)
+            max_width_pixels_ = pair.second.second.x;
+        if (pair.second.second.y > max_height_pixels_)
+            max_height_pixels_ = pair.second.second.y;
+    }
+    // don't forget
+    // -- increment by 1 (since grid counting starts from 0)
+    // -- scale grid positions by width and height
+    // -- increment by a small number to leave out some padding
+    // to find UI width and height in pixels
+    // width and height
+    max_width_pixels_ += 1;
+    max_height_pixels_ += 1;
+    max_width_pixels_ *= key_width_;
+    max_height_pixels_ *= key_height_;
+    // leave out some padding
+    max_width_pixels_ += 4;
+    max_height_pixels_ += 4;
+
 }
 
 /**
@@ -59,6 +84,9 @@ void Gui::Screen::InitKeypadGrid() {
 	key_mappings_["v"] = std::make_pair("RDN",   Gui::Point{0, 5});
 	key_mappings_["<"] = std::make_pair("SWAP",  Gui::Point{1, 5});
 	key_mappings_["x"] = std::make_pair("LASTX", Gui::Point{2, 5});
+
+    // records the dimensions of the UI in pixels
+    SetUiDimensions();
 }
 
 bool Gui::Screen::DrawKey(const std::string& key, bool highlight) {
@@ -144,11 +172,11 @@ void Gui::Screen::InitTerminal() {
 
     // initialize window where calculator is to be drawn
     // TODO: initialize based on grid and key dimensions
-    const int nlines = Gui::Screen::key_height_ * 8;
-    const int ncols = Gui::Screen::key_width_ * 8;
+    //const int nlines = Gui::Screen::key_height_ * 8;
+    //const int ncols = Gui::Screen::key_width_ * 8;
     // NOTE: newwin call needs to be AFTER initscr()!
     const int startx = 0, starty = 0;
-    win_ = newwin(nlines, ncols, startx, starty);
+    win_ = newwin(max_height_pixels_, max_width_pixels_, startx, starty);
     //            l    r    t    d   tl   tr   bl   br
     wborder(win_, '.', '.', '.', '.', '.', '.', '.', '.');
 }
