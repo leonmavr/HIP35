@@ -5,13 +5,16 @@
 Gui::Screen::Screen():
 	active_key_(""),
     key_width_(12),
-    key_height_(3)
+    key_height_(3),
+    screen_height_(4),
+    dimensions_set_(false)
 {
     // state where each button is to be drawn
 	InitKeypadGrid();
     // prepare the terminal for drawing 
     InitTerminal();
     DrawKeypad();
+    DrawScreen();
 }
 
 void Gui::Screen::SetUiDimensions() {
@@ -87,6 +90,8 @@ void Gui::Screen::InitKeypadGrid() {
 
     // records the dimensions of the UI in pixels
     SetUiDimensions();
+    // so that ncurses knows it's not dealing with garbage values
+    dimensions_set_ = true;
 }
 
 bool Gui::Screen::DrawKey(const std::string& key, bool highlight) {
@@ -101,9 +106,8 @@ bool Gui::Screen::DrawKey(const std::string& key, bool highlight) {
     if (key != key_mappings_[key].first)
         text_on_key += " (" + key + ")";
     Point grid_pos = key_mappings_[key].second;
-    // TODO: 4 -> screen y offset
     Point top_left_coords {grid_pos.x * Gui::Screen::key_width_ + 1,
-                          4 + grid_pos.y * Gui::Screen::key_height_};
+                          screen_height_ + grid_pos.y * Gui::Screen::key_height_};
     // to remove horizontal whitespace between keys
     if (grid_pos.x != 0) top_left_coords.x -= grid_pos.x;
     // to remove vertical whitespace between keys
@@ -188,8 +192,23 @@ void Gui::Screen::EndTerminal() {
     endwin();
 }
 
-void Gui::Screen::DrawKeypad() {
-    for (const auto& pair : key_mappings_) {
+bool Gui::Screen::DrawKeypad() {
+    for (const auto& pair : key_mappings_)
         DrawKey(pair.first);
-    }
+    return dimensions_set_; 
+}
+
+bool Gui::Screen::DrawScreen() {
+    // wmove(win_name, y, x)
+    wmove(win_, 1, max_width_pixels_-7);
+    wprintw(win_, "HIP-35");
+    wmove(win_, 2, 1);
+    whline(win_, '-', max_width_pixels_ - 2);
+    wmove(win_, 3, 1);
+    wvline(win_, '|', 2);
+    wmove(win_, 3, max_width_pixels_ - 2);
+    wvline(win_, '|', 2);
+    wmove(win_, 5, 1);
+    whline(win_, '-', max_width_pixels_ - 2);
+    return dimensions_set_;
 }
