@@ -200,15 +200,25 @@ bool Gui::Screen::DrawKeypad() {
 }
 
 bool Gui::Screen::DrawScreen() {
+    /**
+     * (0,0)
+     * +-------------------------------------------+
+     * |                                    HIP-35 |
+     * | |----------------------------------------||
+     * |Y|                                        ||
+     * |X|                                        ||
+     * | |----------------------------------------||
+     * |                                           |
+     */
     // wmove(win_name, y, x)
     wmove(win_, 1, max_width_pixels_ - 7);
     wprintw(win_, "HIP-35");
     wmove(win_, 3, 1);
-    wprintw(win_, "X");
+    wprintw(win_, "Y");
     wmove(win_, 2, 2);
     whline(win_, '-', max_width_pixels_ - 5);
     wmove(win_, 4, 1);
-    wprintw(win_, "Y");
+    wprintw(win_, "X");
     wmove(win_, 5, 2);
     whline(win_, '-', max_width_pixels_ - 5);
     wmove(win_, 2, 2);
@@ -254,10 +264,10 @@ bool Gui::Screen::PrintRegisters(double regy, double regx) {
     regy_string = padString(regy_string, screen_width-3);
     // top screen row
     wmove(win_, 3, 3);
-    wprintw(win_, regx_string.c_str());
+    wprintw(win_, regy_string.c_str());
     // bottom screen row
     wmove(win_, 4, 3);
-    wprintw(win_, regy_string.c_str());
+    wprintw(win_, regx_string.c_str());
     wrefresh(win_);
     return dimensions_set_;
 }
