@@ -1,5 +1,8 @@
 #include "screen.hpp"
-#include <utility> // make_pair
+#include <utility> // make_pair, pair
+#include <string> // to_string
+#include <iostream> // cout 
+#include <iomanip> // setprecision
 #include <ncurses.h>
 
 Gui::Screen::Screen():
@@ -87,6 +90,7 @@ void Gui::Screen::InitKeypadGrid() {
 	key_mappings_["v"] = std::make_pair("RDN",   Gui::Point{0, 5});
 	key_mappings_["<"] = std::make_pair("SWAP",  Gui::Point{1, 5});
 	key_mappings_["x"] = std::make_pair("LASTX", Gui::Point{2, 5});
+	key_mappings_["ENTER"] = std::make_pair("ENTER", Gui::Point{3, 5});
 
     // records the dimensions of the UI in pixels
     SetUiDimensions();
@@ -175,11 +179,8 @@ void Gui::Screen::InitTerminal() {
     clear();
 
     // initialize window where calculator is to be drawn
-    // TODO: initialize based on grid and key dimensions
-    //const int nlines = Gui::Screen::key_height_ * 8;
-    //const int ncols = Gui::Screen::key_width_ * 8;
     // NOTE: newwin call needs to be AFTER initscr()!
-    const int startx = 0, starty = 0;
+    constexpr int startx = 0, starty = 0;
     win_ = newwin(max_height_pixels_, max_width_pixels_, startx, starty);
     //            l    r    t    d   tl   tr   bl   br
     wborder(win_, '.', '.', '.', '.', '.', '.', '.', '.');
@@ -200,15 +201,63 @@ bool Gui::Screen::DrawKeypad() {
 
 bool Gui::Screen::DrawScreen() {
     // wmove(win_name, y, x)
-    wmove(win_, 1, max_width_pixels_-7);
+    wmove(win_, 1, max_width_pixels_ - 7);
     wprintw(win_, "HIP-35");
-    wmove(win_, 2, 1);
-    whline(win_, '-', max_width_pixels_ - 2);
     wmove(win_, 3, 1);
-    wvline(win_, '|', 2);
-    wmove(win_, 3, max_width_pixels_ - 2);
-    wvline(win_, '|', 2);
-    wmove(win_, 5, 1);
-    whline(win_, '-', max_width_pixels_ - 2);
+    wprintw(win_, "X");
+    wmove(win_, 2, 2);
+    whline(win_, '-', max_width_pixels_ - 5);
+    wmove(win_, 4, 1);
+    wprintw(win_, "Y");
+    wmove(win_, 5, 2);
+    whline(win_, '-', max_width_pixels_ - 5);
+    wmove(win_, 2, 2);
+    wvline(win_, '|', 4);
+    wmove(win_, 2, max_width_pixels_ - 3);
+    wvline(win_, '|', 4);
+    return dimensions_set_;
+}
+
+static std::string padString(const std::string& input, std::size_t N) {
+    if (input.length() >= N) {
+        // No need to pad, return the original string
+        return input;
+    } else {
+        // Calculate the number of spaces needed
+        std::size_t spacesToAdd = N - input.length();
+        // Create a string of spaces
+        std::string padding(spacesToAdd, ' ');
+        // Concatenate the padding and the input string
+        return padding + input;
+    }
+}
+
+static std::string truncateDouble(double value, int precision) {
+    // Set the desired precision and fixed format
+    std::cout << std::fixed << std::setprecision(precision);
+    // Output the double to a string stream to apply precision
+    std::ostringstream ss;
+    ss << value;
+    // Get the string representation with desired precision
+    std::string truncated_string = ss.str();
+    // Convert the string back to a double
+    double truncated_value = std::stod(truncated_string);
+    return std::to_string(truncated_value);
+}
+
+
+bool Gui::Screen::PrintRegisters(double regy, double regx) {
+    const unsigned screen_width = max_width_pixels_ - 4;
+    std::string regx_string = std::to_string(regx);
+    std::string regy_string = std::to_string(regy);
+    regx_string = padString(regx_string, screen_width-3);
+    regy_string = padString(regy_string, screen_width-3);
+    // top screen row
+    wmove(win_, 3, 3);
+    wprintw(win_, regx_string.c_str());
+    // bottom screen row
+    wmove(win_, 4, 3);
+    wprintw(win_, regy_string.c_str());
+    wrefresh(win_);
     return dimensions_set_;
 }

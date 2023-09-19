@@ -35,5 +35,6 @@ int main() {
     scr.DrawKey("+", true);
     scr.DrawKey("t", true);
     scr.DrawKey("t");
+    scr.PrintRegisters(4.01, 20.0001);
     getchar();
 }

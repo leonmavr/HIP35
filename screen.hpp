@@ -27,6 +27,7 @@ public:
     void DrawBox(const std::string& text, const Point& coords,
                  bool highlight = false);
     bool DrawKey(const std::string& key, bool highlight = false);
+    bool PrintRegisters(double regy, double regx);
 
 private:
 	void InitKeypadGrid();
