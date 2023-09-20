@@ -38,13 +38,17 @@ int main() {
             rpn->Calculate(token);
             previous_token_is_digit = false;
         } else {
-            if (previous_token_is_digit)
+            if (previous_token_is_digit) {
                 rpn->Enter();
-            else
-                rpn->Insert(std::stod(token));
+            }
+            else {
+                previous_token_is_digit = true;
+            }
+            rpn->Insert(std::stod(token));
         }
+        std::cout << *rpn;
     }
-    std::cout << *rpn << std::endl;
+    std::cout << *rpn << rpn->Peek().first << " " << rpn->Peek().second << std::endl;
 
 #if 0
     // 2 5 * 4 + 3 2 * 1 + /
