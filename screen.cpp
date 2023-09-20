@@ -5,7 +5,9 @@
 #include <iomanip> // setprecision
 #include <ncurses.h>
 
-Gui::Screen::Screen():
+namespace Gui {
+
+Frontend::Frontend():
 	active_key_(""),
     key_width_(12),
     key_height_(3),
@@ -17,10 +19,10 @@ Gui::Screen::Screen():
     // prepare the terminal for drawing 
     InitTerminal();
     DrawKeypad();
-    DrawScreen();
+    DrawFrontend();
 }
 
-void Gui::Screen::SetUiDimensions() {
+void Frontend::SetUiDimensions() {
     max_width_pixels_ = 0;
     max_height_pixels_ = 0;
     for (const auto& pair: key_mappings_) {
@@ -55,7 +57,7 @@ void Gui::Screen::SetUiDimensions() {
  *        register Y
  *        register X
  *        
- *        Screen
+ *        Frontend
  *        |
  *        | 
  *        v
@@ -69,28 +71,28 @@ void Gui::Screen::SetUiDimensions() {
  *        +---------+---------+----------+---- 
  *        ...
  */
-void Gui::Screen::InitKeypadGrid() {
+void Frontend::InitKeypadGrid() {
     //       text on key          text on key in ()      grid coords 
-	key_mappings_["+"] = std::make_pair("+",     Gui::Point{0, 2});
-	key_mappings_["-"] = std::make_pair("-",     Gui::Point{1, 2});
-	key_mappings_["*"] = std::make_pair("*",     Gui::Point{2, 2});
-	key_mappings_["/"] = std::make_pair("/",     Gui::Point{3, 2});
-	key_mappings_["^"] = std::make_pair("^",     Gui::Point{4, 2});
+	key_mappings_["+"] = std::make_pair("+",     Point{0, 2});
+	key_mappings_["-"] = std::make_pair("-",     Point{1, 2});
+	key_mappings_["*"] = std::make_pair("*",     Point{2, 2});
+	key_mappings_["/"] = std::make_pair("/",     Point{3, 2});
+	key_mappings_["^"] = std::make_pair("^",     Point{4, 2});
 
-	key_mappings_["s"] = std::make_pair("sin",   Gui::Point{0, 3});
-	key_mappings_["c"] = std::make_pair("cos",   Gui::Point{1, 3});
-	key_mappings_["t"] = std::make_pair("tan",   Gui::Point{2, 3});
-	key_mappings_["S"] = std::make_pair("sqrt",  Gui::Point{3, 3});
-	key_mappings_["l"] = std::make_pair("log",   Gui::Point{4, 3});
+	key_mappings_["s"] = std::make_pair("sin",   Point{0, 3});
+	key_mappings_["c"] = std::make_pair("cos",   Point{1, 3});
+	key_mappings_["t"] = std::make_pair("tan",   Point{2, 3});
+	key_mappings_["S"] = std::make_pair("sqrt",  Point{3, 3});
+	key_mappings_["l"] = std::make_pair("log",   Point{4, 3});
 
-	key_mappings_["C"] = std::make_pair("chs",   Gui::Point{0, 4});
-	key_mappings_["i"] = std::make_pair("inv",   Gui::Point{1, 4});
+	key_mappings_["C"] = std::make_pair("chs",   Point{0, 4});
+	key_mappings_["i"] = std::make_pair("inv",   Point{1, 4});
    
 	// HP35 stack operations
-	key_mappings_["v"] = std::make_pair("RDN",   Gui::Point{0, 5});
-	key_mappings_["<"] = std::make_pair("SWAP",  Gui::Point{1, 5});
-	key_mappings_["x"] = std::make_pair("LASTX", Gui::Point{2, 5});
-	key_mappings_["ENTER"] = std::make_pair("ENTER", Gui::Point{3, 5});
+	key_mappings_["v"] = std::make_pair("RDN",   Point{0, 5});
+	key_mappings_["<"] = std::make_pair("SWAP",  Point{1, 5});
+	key_mappings_["x"] = std::make_pair("LASTX", Point{2, 5});
+	key_mappings_["ENTER"] = std::make_pair("ENTER", Point{3, 5});
 
     // records the dimensions of the UI in pixels
     SetUiDimensions();
@@ -98,7 +100,7 @@ void Gui::Screen::InitKeypadGrid() {
     dimensions_set_ = true;
 }
 
-bool Gui::Screen::DrawKey(const std::string& key, bool highlight) {
+bool Frontend::DrawKey(const std::string& key, bool highlight) {
     bool found = false;
     const auto it = key_mappings_.find(key);
     if (it == key_mappings_.end())
@@ -110,8 +112,8 @@ bool Gui::Screen::DrawKey(const std::string& key, bool highlight) {
     if (key != key_mappings_[key].first)
         text_on_key += " (" + key + ")";
     Point grid_pos = key_mappings_[key].second;
-    Point top_left_coords {grid_pos.x * Gui::Screen::key_width_ + 1,
-                          screen_height_ + grid_pos.y * Gui::Screen::key_height_};
+    Point top_left_coords {grid_pos.x * Frontend::key_width_ + 1,
+                          screen_height_ + grid_pos.y * Frontend::key_height_};
     // to remove horizontal whitespace between keys
     if (grid_pos.x != 0) top_left_coords.x -= grid_pos.x;
     // to remove vertical whitespace between keys
@@ -122,13 +124,13 @@ bool Gui::Screen::DrawKey(const std::string& key, bool highlight) {
     return found;
 }
 
-void Gui::Screen::DrawBox(const std::string& text,
-                          const Gui::Point& coords,
+void Frontend::DrawBox(const std::string& text,
+                          const Point& coords,
                           bool highlight) {
     // if we highlight just make it bold
     if (highlight)
         wattron(win_, A_BOLD);
-    const int w = Gui::Screen::key_width_;
+    const int w = Frontend::key_width_;
     const unsigned x = coords.x;
     const unsigned y = coords.y;
     // top left corner
@@ -166,7 +168,7 @@ void Gui::Screen::DrawBox(const std::string& text,
         wattroff(win_, A_BOLD);
 }
 
-void Gui::Screen::InitTerminal() {
+void Frontend::InitTerminal() {
     // start curses mode
     initscr();
     // disable line buffering
@@ -186,20 +188,20 @@ void Gui::Screen::InitTerminal() {
     wborder(win_, '.', '.', '.', '.', '.', '.', '.', '.');
 }
 
-void Gui::Screen::EndTerminal() {
+void Frontend::EndTerminal() {
     // deallocate ncurses window
     delwin(win_);
     // end ncurses
     endwin();
 }
 
-bool Gui::Screen::DrawKeypad() {
+bool Frontend::DrawKeypad() {
     for (const auto& pair : key_mappings_)
         DrawKey(pair.first);
     return dimensions_set_; 
 }
 
-bool Gui::Screen::DrawScreen() {
+bool Frontend::DrawFrontend() {
     /**
      * (0,0)
      * +-------------------------------------------+
@@ -216,14 +218,14 @@ bool Gui::Screen::DrawScreen() {
     wmove(win_, 3, 1);
     wprintw(win_, "Y");
     wmove(win_, 2, 2);
-    whline(win_, '-', max_width_pixels_ - 5);
+    whline(win_, '-', max_width_pixels_ - 4);
     wmove(win_, 4, 1);
     wprintw(win_, "X");
     wmove(win_, 5, 2);
-    whline(win_, '-', max_width_pixels_ - 5);
+    whline(win_, '-', max_width_pixels_ - 4);
     wmove(win_, 2, 2);
     wvline(win_, '|', 4);
-    wmove(win_, 2, max_width_pixels_ - 3);
+    wmove(win_, 2, max_width_pixels_ - 2);
     wvline(win_, '|', 4);
     return dimensions_set_;
 }
@@ -256,7 +258,7 @@ static std::string truncateDouble(double value, int precision) {
 }
 
 
-bool Gui::Screen::PrintRegisters(double regy, double regx) {
+bool Frontend::PrintRegisters(double regy, double regx) {
     const unsigned screen_width = max_width_pixels_ - 4;
     std::string regx_string = std::to_string(regx);
     std::string regy_string = std::to_string(regy);
@@ -271,3 +273,5 @@ bool Gui::Screen::PrintRegisters(double regy, double regx) {
     wrefresh(win_);
     return dimensions_set_;
 }
+
+} // namespace Gui

@@ -31,7 +31,7 @@ int main() {
     std::cout << *rpn << std::endl;
     std::cout << rpn->GetFunctions()[0] << std::endl;
 #endif
-    auto scr = Gui::Screen();
+    auto scr = Gui::Frontend();
     scr.DrawKey("+", true);
     scr.DrawKey("t", true);
     scr.DrawKey("t");
