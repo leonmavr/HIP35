@@ -19,7 +19,7 @@ Frontend::Frontend():
     // prepare the terminal for drawing 
     InitTerminal();
     DrawKeypad();
-    DrawFrontend();
+    DrawScreen();
 }
 
 void Frontend::SetUiDimensions() {
@@ -201,7 +201,7 @@ bool Frontend::DrawKeypad() {
     return dimensions_set_; 
 }
 
-bool Frontend::DrawFrontend() {
+bool Frontend::DrawScreen() {
     /**
      * (0,0)
      * +-------------------------------------------+
@@ -227,6 +227,7 @@ bool Frontend::DrawFrontend() {
     wvline(win_, '|', 4);
     wmove(win_, 2, max_width_pixels_ - 2);
     wvline(win_, '|', 4);
+    wrefresh(win_);
     return dimensions_set_;
 }
 
@@ -243,20 +244,6 @@ static std::string padString(const std::string& input, std::size_t N) {
         return padding + input;
     }
 }
-
-static std::string truncateDouble(double value, int precision) {
-    // Set the desired precision and fixed format
-    std::cout << std::fixed << std::setprecision(precision);
-    // Output the double to a string stream to apply precision
-    std::ostringstream ss;
-    ss << value;
-    // Get the string representation with desired precision
-    std::string truncated_string = ss.str();
-    // Convert the string back to a double
-    double truncated_value = std::stod(truncated_string);
-    return std::to_string(truncated_value);
-}
-
 
 bool Frontend::PrintRegisters(double regy, double regx) {
     const unsigned screen_width = max_width_pixels_ - 4;

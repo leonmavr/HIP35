@@ -34,7 +34,7 @@ private:
     void InitTerminal();
     void EndTerminal();
     bool DrawKeypad();
-    bool DrawFrontend();
+    bool DrawScreen();
     void SetUiDimensions();
     // rpn function -> (keypad test, keypad location x,y) e.g. (log -> (l, (4, 2))
 	std::unordered_map<std::string, std::pair<std::string, Point>> key_mappings_;
