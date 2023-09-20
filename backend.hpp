@@ -20,9 +20,9 @@
  *        Inside the methods to observe, run the Subject's Notify<...>
  *        methods.
  *        This class HAS a bunch of observers that are notified about
- *        the subject's changes. Through the Notify methods, it
- *        helps the observer record the state of the subject. Therefore
- *        you need to modify the Observer's update/get methods accordingly.
+ *        the subject's changes. Through the Notify methods, it helps
+ *        the observer record the state of the subject. Therefore you
+ *        need to modify the Observer's update/get methods accordingly.
  */
 class Subject {
 public:
@@ -35,7 +35,7 @@ protected:
     // is inserted
     void NotifyValue(std::pair<double, double> registers);
     // Meant to be integrated with derived class's methods when an
-    // operation is executed  */
+    // operation is executed
     void NotifyOperation(const std::string& operation);
 
 private:
@@ -69,10 +69,10 @@ namespace Rpn {
 *        its operand(s) and when it's complete the top of the stack
 *        gets overwritten with its result. Example:
 *        4 3 2 + -
-*        |  4  |   |     |   |     |
-*        |  3  | + |  4  | - |     |
-*        |  2  |   |  5  |   | -1  |
-*        +-----+   +-----+   +-----+ 
+*          |     |    |     |    |  4  |   |     |   |     |
+*        4 |     | 3  |  4  | 2  |  3  | + |  4  | - |     | <- Y
+*          |  4  |    |  3  |    |  2  |   |  5  |   | -1  | <- X
+*          +-----+    +-----+    +-----+   +-----+   +-----+ 
 *
 *        More details in each method's documentation.
 *
@@ -88,7 +88,10 @@ namespace Rpn {
 class Backend: IBackend, public Subject {
 public:
     Backend();
-    Backend(const Backend& other) : stack_(std::make_unique<Stack>(*other.stack_)), do_shift_up_(other.do_shift_up_), lastx_(other.lastx_) {}
+    Backend(const Backend& other) :
+        stack_(std::make_unique<Stack>(*other.stack_)),
+        do_shift_up_(other.do_shift_up_),
+        lastx_(other.lastx_) {}
     ~Backend() {}
     /**
      * @brief Swaps values of registers X and Y.
