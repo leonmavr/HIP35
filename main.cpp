@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <algorithm> // find
 
 static std::vector<std::string> SplitStringBySpace(const std::string& string) {
     // space-delimited tokens to return
@@ -21,16 +22,29 @@ static std::vector<std::string> SplitStringBySpace(const std::string& string) {
 }
 
 int main() {
+    // TODO: wrap these in an HP35 class
     auto obs1 = Observer();
     auto rpn = std::make_unique<Rpn::Backend>();
     rpn->Attach(&obs1);
     std::string rpn_string = "2 5 * 4 + 3 2 * 1 + /";
     auto tokens = SplitStringBySpace(rpn_string);
+    std::vector<std::string> functions = rpn->GetFunctions();
     // calculator needs enter to be pressed to separate two successive numbers
-    bool press_enter = false;
+    bool previous_token_is_digit = false;
     for (const auto& token: tokens) {
-        
+        auto it = std::find(functions.begin(), functions.end(), token);
+        if (it != functions.end()) {
+            // function token found
+            rpn->Calculate(token);
+            previous_token_is_digit = false;
+        } else {
+            if (previous_token_is_digit)
+                rpn->Enter();
+            else
+                rpn->Insert(std::stod(token));
+        }
     }
+    std::cout << *rpn << std::endl;
 
 #if 0
     // 2 5 * 4 + 3 2 * 1 + /
