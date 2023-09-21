@@ -45,6 +45,9 @@ int main() {
         } else {
             if (previous_token_is_digit) {
                 rpn->Enter();
+                scr->DrawKey(obs1.GetState().first, true);
+                usleep(1000000); // in us
+                scr->DrawKey(obs1.GetState().first);
             }
             else {
                 previous_token_is_digit = true;
