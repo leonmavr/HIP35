@@ -25,6 +25,7 @@ int main() {
     // TODO: wrap these in an HP35 class
     auto obs1 = Observer();
     auto rpn = std::make_unique<Rpn::Backend>();
+    auto scr = std::make_unique<Gui::Frontend>();
     rpn->Attach(&obs1);
     std::string rpn_string = "2 5 * 4 + 3 2 * 1 + /";
     auto tokens = SplitStringBySpace(rpn_string);
@@ -46,9 +47,9 @@ int main() {
             }
             rpn->Insert(std::stod(token));
         }
-        std::cout << *rpn;
+        scr->PrintRegisters(obs1.GetState().second.first, obs1.GetState().second.second);
     }
-    std::cout << *rpn << rpn->Peek().first << " " << rpn->Peek().second << std::endl;
+    getchar();
 
 #if 0
     // 2 5 * 4 + 3 2 * 1 + /

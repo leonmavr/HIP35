@@ -116,8 +116,9 @@ double Rpn::Backend::Calculate(std::string operation) {
     }
     if (valid_operation)
     {
-        // Notify observers about the new operation
+        // Notify observers about the new operation and value
         NotifyOperation(operation); 
+        NotifyValue(Peek()); 
         return registerX;
     } else {
         throw std::runtime_error(std::string("[FATAL]: Invalid operation ") +

@@ -21,13 +21,8 @@ class Frontend
 public:
     Frontend ();
     ~Frontend () { EndTerminal(); }
-	// TODO
-	void Draw();
-    // TODO: private
-    void DrawBox(const std::string& text, const Point& coords,
-                 bool highlight = false);
     bool DrawKey(const std::string& key, bool highlight = false);
-    bool PrintRegisters(double regy, double regx);
+    bool PrintRegisters(double regx, double regy);
 
 private:
 	void InitKeypadGrid();
@@ -35,9 +30,13 @@ private:
     void EndTerminal();
     bool DrawKeypad();
     bool DrawScreen();
+    void DrawBox(const std::string& text, const Point& coords,
+                 bool highlight = false);
     void SetUiDimensions();
-    // rpn function -> (keypad test, keypad location x,y) e.g. (log -> (l, (4, 2))
-	std::unordered_map<std::string, std::pair<std::string, Point>> key_mappings_;
+    // keypad short text -> (keypad long text, keypad location x,y) e.g.
+    // (log -> (l, (4, 2))
+	std::unordered_map<std::string,
+                       std::pair<std::string, Point>> key_mappings_;
 	std::string active_key_;
     unsigned key_width_;
     unsigned key_height_;
@@ -45,8 +44,7 @@ private:
     unsigned max_width_pixels_;
     unsigned max_height_pixels_;
     bool dimensions_set_;
-    // ncurses window name (on the terminal) where to draw the keypad
-    std::string win_name_; 
+    // ncurses window (on the terminal) where to draw the keypad
     WINDOW* win_;
 };
 
