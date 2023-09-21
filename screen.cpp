@@ -133,12 +133,13 @@ void Frontend::DrawBox(const std::string& text,
     const int w = Frontend::key_width_;
     const unsigned x = coords.x;
     const unsigned y = coords.y;
+    const char edge_up_down = (highlight) ? '=' : '-';
     // top left corner
     wmove(win_, y, x);
     wprintw(win_, "+");
     // top edge
     wmove(win_, y, x+1);
-    whline(win_, '-', w-2);
+    whline(win_, edge_up_down, w-2);
     // top right corner
     wmove(win_, y, x+w-1);
     wprintw(win_, "+");
@@ -150,7 +151,7 @@ void Frontend::DrawBox(const std::string& text,
     wprintw(win_, "+");
     // bottom edge
     wmove(win_, y+2, x+1);
-    whline(win_, '-', w-2);
+    whline(win_, edge_up_down, w-2);
     // bottom left corner
     wmove(win_, y+2, x);
     wprintw(win_, "+");

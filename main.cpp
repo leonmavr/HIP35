@@ -6,6 +6,7 @@
 #include <sstream>
 #include <string>
 #include <algorithm> // find
+#include <unistd.h> // usleep
 
 static std::vector<std::string> SplitStringBySpace(const std::string& string) {
     // space-delimited tokens to return
@@ -38,6 +39,9 @@ int main() {
             // function token found
             rpn->Calculate(token);
             previous_token_is_digit = false;
+            scr->DrawKey(obs1.GetState().first, true);
+            usleep(1000000); // in us
+            scr->DrawKey(obs1.GetState().first);
         } else {
             if (previous_token_is_digit) {
                 rpn->Enter();
@@ -50,34 +54,4 @@ int main() {
         scr->PrintRegisters(obs1.GetState().second.first, obs1.GetState().second.second);
     }
     getchar();
-
-#if 0
-    // 2 5 * 4 + 3 2 * 1 + /
-    rpn->Attach(&obs1);
-    rpn->Insert(2);
-    rpn->Enter();
-    rpn->Insert(5);
-    rpn->Calculate("*");
-    rpn->Insert(4);
-    rpn->Calculate("+");
-    std::cout << "should be + " << obs1.GetState().first << std::endl;
-    std::cout << "should some value " << obs1.GetState().second.first << obs1.GetState().second.second << std::endl;
-    rpn->Insert(3);
-    rpn->Enter();
-    rpn->Insert(2);
-    rpn->Calculate("*");
-    rpn->Insert(1);
-    rpn->Calculate("+");
-    std::cout << rpn->Calculate("/") << std::endl; // 2
-    std::cout << "---" << rpn->CalculateFromString("2 5 * 4 + 3 2 * 1 + /") << std::endl;
-    //std::cout << "---" << rpn.calculateFromString("2 1.4 /") << std::endl;
-    std::cout << *rpn << std::endl;
-    std::cout << rpn->GetFunctions()[0] << std::endl;
-    auto scr = Gui::Frontend();
-    scr.DrawKey("+", true);
-    scr.DrawKey("t", true);
-    scr.DrawKey("t");
-    scr.PrintRegisters(4.01, 20.0001);
-    getchar();
-#endif
 }
