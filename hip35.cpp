@@ -3,6 +3,7 @@
 #include "screen.hpp"
 #include "observer.hpp"
 #include <memory> // unique_ptr
+#include <iostream> // endl
 
 Hip35::Hip35() {
     backend_ = std::make_unique<Rpn::Backend>();
@@ -32,15 +33,24 @@ void Hip35::RunUI() {
     bool previous_token_is_digit = false;
     while (1) {
         std::cin >> input_char;
-        // check if it is space
-        if (input_char == ' ') {
+        token += input_char;
             // look at the token and decide if it's a number or function
             if (backend_->IsInFunctions(token)) {
                 // process calculation stuff
+                backend_->Calculate(token);
+                // clear it before the next token
+                token = "";
+            } else if (token == "\n"){
+                // enter pressed
+                backend_->Enter();
+                token = "";
             } else if (IsDecimal(token)) {
-                // process insertion stuff
+                backend_->Insert(std::stod(token));
+                const auto regy = observer_->GetState().second.second; 
+                // update the screen with the currently entered number at reg. X
+                frontend_->PrintRegisters(std::stod(token), regy);
+            } else {
+                throw std::invalid_argument("[FATAL]: Unknown token " + token + "\n");
             }
-            token = "";
-        }
     }
 }
