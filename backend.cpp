@@ -167,6 +167,16 @@ double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
     return (*stack_)[IDX_REG_X];
 }
 
+bool Rpn::Backend::IsInFunctions(const std::string& string) const {
+    auto it1 = function_key_1op_.find(ToLowercase(string));
+    if (it1 != function_key_1op_.end())
+        return true;
+    auto it2 = function_key_2op_.find(ToLowercase(string));
+    if (it2 != function_key_2op_.end())
+        return true;
+    return false;
+}
+
 std::vector<std::string> Rpn::Backend::GetFunctions() const {
     std::vector <std::string> ret;
     // Access the private unordered map and print its keys

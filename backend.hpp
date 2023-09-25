@@ -170,6 +170,8 @@ public:
     double CalculateFromString(std::string rpnExpression) override;
     /* Get the functions (e.g. log) implemented in a vector of strings */
     std::vector<std::string> GetFunctions() const;
+    /* Whether the input string is in backend's implemented functions */
+    bool IsInFunctions(const std::string& string) const;
     /* Overrides the << operator for the class, e.g.std::cout << <Instance>; */
     friend std::ostream& operator<<(std::ostream& os, const Backend& backend);
 
