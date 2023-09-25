@@ -4,11 +4,12 @@
 #include "observer.hpp"
 #include <memory> // unique_ptr
 
-Hip35::Hip35(std::unique_ptr<Gui::Frontend> frontend,
-             std::unique_ptr<Rpn::Backend> backend,
-             std::unique_ptr<Observer> observer) {
+Hip35::Hip35() {
+    backend_ = std::make_unique<Rpn::Backend>();
+    frontend_ = std::make_unique<Gui::Frontend>();
+    *observer_ = Observer();
     // convert unique pointer to regular pointer
-    backend->Attach(observer.get());
+    backend_->Attach(observer_.get());
 }
 
 static bool IsDecimal(const std::string& str) {

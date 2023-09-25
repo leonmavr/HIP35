@@ -9,9 +9,8 @@
 class Hip35
 {
 public:
-    Hip35(std::unique_ptr<Gui::Frontend> frontend,
-          std::unique_ptr<Rpn::Backend> backend,
-          std::unique_ptr<Observer> observer);
+    Hip35();
+    ~Hip35() = default;
     void RunUI();
 
 private:
