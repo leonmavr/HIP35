@@ -7,6 +7,8 @@
 #include <utility> // pair
 #include <ncurses.h> // WINDOW 
 #include <termios.h> // termios 
+#include <stdexcept> // invalid_argument
+
 
 namespace Gui {
 
@@ -24,6 +26,15 @@ public:
     ~Frontend () { EndTerminal(); }
     bool DrawKey(const std::string& key, bool highlight = false);
     bool PrintRegisters(double regx, double regy);
+    // this operator is used to return data (long function names)
+    // from key_mappings_
+    std::string operator[](const std::string& key) const {
+        auto it = key_mappings_.find(key);
+        if (it == key_mappings_.end())
+            return "";
+        return key_mappings_.at(key).first;
+    }
+
 
 private:
 	void InitKeypadGrid();
@@ -35,7 +46,7 @@ private:
                  bool highlight = false);
     void SetUiDimensions();
     // keypad short text -> (keypad long text, keypad location x,y) e.g.
-    // (log -> (l, (4, 2))
+    // (l -> (long, (4, 2))
 	std::unordered_map<std::string,
                        std::pair<std::string, Point>> key_mappings_;
 	std::string active_key_;

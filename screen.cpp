@@ -74,7 +74,7 @@ void Frontend::SetUiDimensions() {
  *        ...
  */
 void Frontend::InitKeypadGrid() {
-    //       text on key          text on key in ()      grid coords 
+    //   text on key in ()     long text on key    grid coords 
 	key_mappings_["+"] = std::make_pair("+",     Point{0, 2});
 	key_mappings_["-"] = std::make_pair("-",     Point{1, 2});
 	key_mappings_["*"] = std::make_pair("*",     Point{2, 2});
@@ -181,6 +181,7 @@ void Frontend::InitTerminal() {
     new_tio_.c_lflag &=(~ICANON & ~ECHO);
     tcsetattr(STDIN_FILENO, TCSANOW, &new_tio_);
 
+#if 1
     //// ncurses preparation
     // start curses mode
     initscr();
@@ -203,6 +204,7 @@ void Frontend::InitTerminal() {
     win_ = newwin(max_height_pixels_, max_width_pixels_, startx, starty);
     //            l    r    t    d   tl   tr   bl   br
     wborder(win_, '.', '.', '.', '.', '.', '.', '.', '.');
+#endif
 }
 
 void Frontend::EndTerminal() {
