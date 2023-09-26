@@ -3,7 +3,9 @@
 #include <string> // to_string
 #include <iostream> // cout 
 #include <iomanip> // setprecision
-#include <ncurses.h>
+#include <ncurses.h> // wrefresh, wprintw, etc.
+#include <termios.h> // tcgetattr, tcsetattr
+#include <unistd.h> // STDIN_FILENO
 
 namespace Gui {
 
@@ -170,6 +172,16 @@ void Frontend::DrawBox(const std::string& text,
 }
 
 void Frontend::InitTerminal() {
+    //// getchar modifications
+    // modify terminal so that getchar reads character by character
+    // without waiting to hit enter
+    tcgetattr(STDIN_FILENO, &old_tio_);
+    new_tio_ = old_tio_;
+    // disable buffering for stdin (key press buffered automatically)
+    new_tio_.c_lflag &=(~ICANON & ~ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &new_tio_);
+
+    //// ncurses preparation
     // start curses mode
     initscr();
     // disable line buffering
@@ -178,6 +190,10 @@ void Frontend::InitTerminal() {
     noecho();
     // hide cursor
     curs_set(0);
+    // don't wait for Enter key press
+    raw();
+    // enable F keys
+    keypad(stdscr, TRUE);
     // clear the screen
     clear();
 
@@ -194,6 +210,8 @@ void Frontend::EndTerminal() {
     delwin(win_);
     // end ncurses
     endwin();
+    // Restore terminal settings
+    tcsetattr(STDIN_FILENO, TCSANOW, &old_tio_);
 }
 
 bool Frontend::DrawKeypad() {

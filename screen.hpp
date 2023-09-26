@@ -6,6 +6,7 @@
 #include <vector> // vector
 #include <utility> // pair
 #include <ncurses.h> // WINDOW 
+#include <termios.h> // termios 
 
 namespace Gui {
 
@@ -46,6 +47,9 @@ private:
     bool dimensions_set_;
     // ncurses window (on the terminal) where to draw the keypad
     WINDOW* win_;
+    // terminal property settings
+    struct termios old_tio_;
+    struct termios new_tio_;
 };
 
 } // namespace Gui
