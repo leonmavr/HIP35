@@ -30,19 +30,7 @@ void Hip35::RunUI() {
     while (1) {
         char input_char = getchar();
         const std::string input_char_str = std::string(1, input_char);
-        if (backend_->IsInStackOperations((*frontend_)[input_char_str])) {
-#if 1
-            // write currently typed number in the stack first
-            if (IsDecimal(token))
-                backend_->Insert(std::stod(token));
-            // discard current numerical token, then update it with the operation
-            token = std::string(1, input_char);
-            backend_->DoStackOperation(token);
-            const double regx = observer_->GetState().second.first; 
-            const double regy = observer_->GetState().second.second; 
-            frontend_->PrintRegisters(regx, regy);
-#endif
-        } else if (backend_->IsInFunctions((*frontend_)[input_char_str])) {
+        if (backend_->IsInFunctions((*frontend_)[input_char_str])) {
             // if the user was typing a number, write it in the stack
             // before doing any calculations with it 
             if (IsDecimal(token))
@@ -64,6 +52,18 @@ void Hip35::RunUI() {
             const double regy = observer_->GetState().second.second; 
             frontend_->PrintRegisters(regx, regy);
             token = "";
+        } else if (backend_->IsInStackOperations((*frontend_)[input_char_str])) {
+#if 1
+            // write currently typed number in the stack first
+            if (IsDecimal(token))
+                backend_->Insert(std::stod(token));
+            // discard current numerical token, then update it with the operation
+            token = std::string(1, input_char);
+            backend_->DoStackOperation(token);
+            const double regx = observer_->GetState().second.first; 
+            const double regy = observer_->GetState().second.second; 
+            frontend_->PrintRegisters(regx, regy);
+#endif
         } else if (input_char == 'q') {
             return;
         } else {
