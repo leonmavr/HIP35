@@ -53,17 +53,18 @@ void Hip35::RunUI() {
             frontend_->PrintRegisters(regx, regy);
             token = "";
         } else if (backend_->IsInStackOperations((*frontend_)[input_char_str])) {
-#if 1
+            // TODO: RDN not working
             // write currently typed number in the stack first
             if (IsDecimal(token))
                 backend_->Insert(std::stod(token));
             // discard current numerical token, then update it with the operation
             token = std::string(1, input_char);
-            backend_->DoStackOperation(token);
+            backend_->DoStackOperation((*frontend_)[input_char_str]);
             const double regx = observer_->GetState().second.first; 
             const double regy = observer_->GetState().second.second; 
+            //std::cout << "================ " << observer_->GetState().first << "===== \n";
             frontend_->PrintRegisters(regx, regy);
-#endif
+            token = "";
         } else if (input_char == 'q') {
             return;
         } else {

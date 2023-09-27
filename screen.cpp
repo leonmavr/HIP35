@@ -90,9 +90,10 @@ void Frontend::InitKeypadGrid() {
 	key_mappings_["C"] = std::make_pair("chs",   Point{0, 4});
 	key_mappings_["i"] = std::make_pair("inv",   Point{1, 4});
    
+	// [O
 	// HP35 stack operations
 	key_mappings_["v"] = std::make_pair("rdn",   Point{0, 5});
-	key_mappings_["<"] = std::make_pair("swaP",  Point{1, 5});
+	key_mappings_["<"] = std::make_pair("swap",  Point{1, 5});
 	key_mappings_["x"] = std::make_pair("lastx", Point{2, 5});
 	key_mappings_[" "] = std::make_pair("enter", Point{3, 5});
 
