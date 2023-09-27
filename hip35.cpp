@@ -70,10 +70,16 @@ void Hip35::RunUI() {
             else
                 token += input_char;
             if (IsDecimal(token)) {
-                // we're about to write to register X so display the current token
-                // at register X and the existing register X at register Y
+                // we're about to write to register X so display current token
+                // at register X and the current register X at register Y
                 const double regx = observer_->GetState().second.first; 
                 frontend_->PrintRegisters(std::stod(token), regx);
+            } else {
+                // invalid input so clear the stack (all 4 registers)
+                backend_->Insert(0);
+                backend_->Insert(0);
+                backend_->Insert(0);
+                backend_->Insert(0);
             }
             // else invalid input - clear all regs
         }
