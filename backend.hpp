@@ -107,8 +107,16 @@ public:
                               (*stack_)[IDX_REG_Y]);
     }
     /**
-     * @brief Insert a number in the stack. Shifts the stack up if a
-     *        number is previously inserted.
+     * @brief Insert a number in the stack by writing to register
+     *        X. Shifts the stack up before writing if a
+     *        calculation previously took place. Example:
+     *        Initially: X = 6, Y = 6
+     *        Type: 9 + 13
+     *
+     *        |     |     |     |     |     |      |     |
+     *        |  6  |  9  |  6  |  +  |     |  13  |  15 | 
+     *        |  6  |     |  9  |     |  15 |      |  13 |
+     *        +-----+     +-----+     +-----+      +-----+
      *
      * @param num Decimal number to insert.
      */
