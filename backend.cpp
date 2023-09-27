@@ -80,6 +80,8 @@ void Rpn::Backend::Enter() {
     stack_->ShiftUp();
     (*stack_)[IDX_REG_X] = (*stack_)[IDX_REG_Y];
     do_shift_up_ = false;
+    // notify class observer since enter manipulates the stack
+    NotifyValue(Peek());
     // don't forget to notify the observer so we can use the event later
     NotifyOperation("enter");
 }

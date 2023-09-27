@@ -1,2 +1,2 @@
 all:
-	g++ stack.cpp observer.cpp backend.cpp screen.cpp main.cpp -lncurses
+	g++ stack.cpp observer.cpp backend.cpp screen.cpp hip35.cpp main.cpp -lncurses
