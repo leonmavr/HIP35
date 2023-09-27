@@ -33,46 +33,40 @@ void Hip35::RunUI() {
     while (1) {
         //std::cin.get(input_char);
         char input_char = getchar();
-        //std::cout << "-> " << input_char << std::endl;
-        //std::cout << input_char << std::endl;
         // look at the token and decide if it's a number or function
 #if 1
         // TODO: input_char frontend -> backend fn -> is in them?
         //
         const std::string input_char_str = std::string(1, input_char);
         if (backend_->IsInFunctions((*frontend_)[input_char_str])) {
-            backend_->Insert(std::stod(token));
             // clear the number from the token
-            token = std::string(1, input_char);
+            //token = std::string(1, input_char);
             // process calculation stuff
-            backend_->Calculate((*frontend_)[input_char_str]);
-            const auto regx = observer_->GetState().second.first; 
-            const auto regy = observer_->GetState().second.second; 
-            //std::cout << "calc: x = " << regx << ", y = " << regy << std::endl;
-            // TODO: highlight button
-            frontend_->PrintRegisters(regx, regy);
-            // clear it before the next token
-            token = "";
-        } else if (input_char == '\n'){
-            // enter pressed
-            //backend_->Insert(std::stod(token));
+            //backend_->Calculate((*frontend_)[input_char_str]);
+            //const auto regx = observer_->GetState().second.first; 
+            //const auto regy = observer_->GetState().second.second; 
+            //frontend_->PrintRegisters(regx, regy);
+        } else if (input_char == ' '){
+            // if the user was typing a number, write it in the stack
+            // before pressing enter
+            if (IsDecimal(token))
+                backend_->Insert(std::stod(token));
             backend_->Enter();
-            //frontend_->PrintRegisters(4, 20);
-            const auto regx = observer_->GetState().second.first; 
-            const auto regy = observer_->GetState().second.second; 
+            const double regx = observer_->GetState().second.first; 
+            const double regy = observer_->GetState().second.second; 
             frontend_->PrintRegisters(regx, regy);
             token = "";
         } else if (input_char == 'q') {
             return;
         } else {
+            // TODO: for negative numbers, use ~ as unary minus, since - is a function
+            // so replace ~ with - here
             token += input_char;
             if (IsDecimal(token)) {
-                backend_->Insert(std::stod(token));
+                // we're about to write to register X so display the current token
+                // at register X and the existing register X at register Y
                 const double regx = observer_->GetState().second.first; 
-                const double regy = observer_->GetState().second.second; 
-                // update the screen with the currently entered number at reg. X
-                //std::cout << "typing: x = " << token << ", y = " << regy << std::endl;
-                frontend_->PrintRegisters(regx, regy);
+                frontend_->PrintRegisters(std::stod(token), regx);
             }
             // else throw exception and terminate
         }
