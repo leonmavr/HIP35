@@ -48,7 +48,7 @@ Rpn::Backend::Backend():
     function_key_2op_["/"] =    [](double x, double y) -> double
     {
         if (std::fabs(x) < 1e-10)
-            throw std::runtime_error("[FATAL]: Division by zero.\n");
+            throw std::runtime_error("[FATAL]: Backend: Division by zero.\n");
         return y/x;
     };
     function_key_2op_["^"] =    [](double x, double y) -> double
@@ -60,10 +60,16 @@ void Rpn::Backend::Rdn() {
     for (int i = 0; i < stackPtr.size() - 1; ++i)
         stackPtr[i] = stackPtr[i+1];
     stackPtr[stackPtr.size() - 1] = old_first;
+    // inform the observer
+    NotifyValue(Peek());
+    NotifyOperation("rdn");
 }
 
 void Rpn::Backend::SwapXY() {
     std::swap((*stack_)[IDX_REG_X], (*stack_)[IDX_REG_Y]);
+    // inform the observer
+    NotifyValue(Peek());
+    NotifyOperation("swap");
 }
 
 void Rpn::Backend::Insert(double num) {
@@ -84,6 +90,13 @@ void Rpn::Backend::Enter() {
     NotifyValue(Peek());
     // don't forget to notify the observer so we can use the event later
     NotifyOperation("enter");
+}
+
+void Rpn::Backend::LastX() {
+    (*stack_)[IDX_REG_X] = lastx_;
+    // inform the observer
+    NotifyValue(Peek());
+    NotifyOperation("lastx");
 }
 
 static std::string ToLowercase(const std::string& input) {

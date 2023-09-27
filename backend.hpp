@@ -141,6 +141,10 @@ public:
      */
     void Enter() override;
     /**
+    * @brief TODO
+    */
+    void LastX() override;
+    /**
      * @brief Emulate pressing a function key. Function keys operate
      *        either on the X register (1-operand key, e.g. LOG) or
      *        on the X and Y registers (2-operand keys, e.g. +).
