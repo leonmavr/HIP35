@@ -3,7 +3,6 @@
 #include "screen.hpp"
 #include "observer.hpp"
 #include <memory> // unique_ptr
-#include <iostream> // endl
 
 Hip35::Hip35() {
     backend_ = std::make_unique<Rpn::Backend>();
@@ -28,17 +27,24 @@ static bool IsDecimal(const std::string& str) {
 
 void Hip35::RunUI() {
     std::string token = "";
-    std::vector<std::string> functions = backend_->GetFunctions();
+    //std::vector<std::string> functions = backend_->GetFunctions();
     bool previous_token_is_digit = false;
     while (1) {
-        //std::cin.get(input_char);
         char input_char = getchar();
-        // look at the token and decide if it's a number or function
-#if 1
-        // TODO: input_char frontend -> backend fn -> is in them?
-        //
         const std::string input_char_str = std::string(1, input_char);
-        if (backend_->IsInFunctions((*frontend_)[input_char_str])) {
+        if (backend_->IsInStackOperations((*frontend_)[input_char_str])) {
+#if 0
+            // write currently typed number in the stack first
+            if (IsDecimal(token))
+                backend_->Insert(std::stod(token));
+            // discard current numerical token, then update it with the operation
+            token = std::string(1, input_char);
+            backend_->DoStackOperation(token);
+            const double regx = observer_->GetState().second.first; 
+            const double regy = observer_->GetState().second.second; 
+            frontend_->PrintRegisters(regx, regy);
+#endif
+        } else if (backend_->IsInFunctions((*frontend_)[input_char_str])) {
             // if the user was typing a number, write it in the stack
             // before doing any calculations with it 
             if (IsDecimal(token))
@@ -47,9 +53,10 @@ void Hip35::RunUI() {
             token = std::string(1, input_char);
             // process calculation stuff
             backend_->Calculate((*frontend_)[input_char_str]);
-            const auto regx = observer_->GetState().second.first; 
-            const auto regy = observer_->GetState().second.second; 
+            const double regx = observer_->GetState().second.first; 
+            const double regy = observer_->GetState().second.second; 
             frontend_->PrintRegisters(regx, regy);
+            token = "";
         } else if (input_char == ' '){
             // if the user was typing a number, write it in the stack
             // before pressing enter
@@ -77,13 +84,15 @@ void Hip35::RunUI() {
             } else {
                 // invalid input so clear the stack (all 4 registers)
                 backend_->Insert(0);
-                backend_->Insert(0);
-                backend_->Insert(0);
-                backend_->Insert(0);
+                backend_->Enter();
+                backend_->Enter();
+                backend_->Enter();
+                const double regx = observer_->GetState().second.first; 
+                const double regy = observer_->GetState().second.second; 
+                frontend_->PrintRegisters(regx, regy);
+                token = "";
             }
             // else invalid input - clear all regs
         }
-        //std::cout << token << std::endl;
-#endif
     }
 }

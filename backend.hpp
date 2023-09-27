@@ -67,7 +67,9 @@ namespace Rpn {
 *        RPN notation heavily relies on the stack. Operands are pushed
 *        on a stack. An operation (e.g. +, SIN, etc.) always follows
 *        its operand(s) and when it's complete the top of the stack
-*        gets overwritten with its result. Example:
+*        gets overwritten with its result.
+*        Below is an example to give you some intuition:
+*
 *        4 3 2 + -
 *          |     |    |     |    |  4  |   |     |   |     |
 *        4 |     | 3  |  4  | 2  |  3  | + |  4  | - |     | <- Y
@@ -85,7 +87,7 @@ namespace Rpn {
 *        [1] "Enter: Reverse Polish Notation Made Easy" by J. Dodin
 *            https://literature.hpcalc.org/community/enter-en.pdf
 */
-class Backend: IBackend, public Subject {
+class Backend: public IBackend, public Subject {
 public:
     Backend();
     Backend(const Backend& other) :
@@ -179,11 +181,13 @@ public:
      *
      * @return The numberic results of the RPN. 
      */
+    void DoStackOperation(const std::string& operation);
     double CalculateFromString(std::string rpnExpression) override;
     /* Get the functions (e.g. log) implemented in a vector of strings */
-    std::vector<std::string> GetFunctions() const;
+    //std::vector<std::string> GetFunctions() const;
     /* Whether the input string is in backend's implemented functions */
     bool IsInFunctions(const std::string& string) const;
+    bool IsInStackOperations(const std::string& string) const;
     /* Overrides the << operator for the class, e.g.std::cout << <Instance>; */
     friend std::ostream& operator<<(std::ostream& os, const Backend& backend);
 

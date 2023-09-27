@@ -30,28 +30,32 @@ Rpn::Backend::Backend():
     stack_(std::make_unique<Stack>()),
     do_shift_up_(true)
 {
-    // 1-operand operations supported by the calculator
-    function_key_1op_["chs"] =  [](double x) -> double { return -x; };
-    function_key_1op_["inv"] =  [](double x) -> double { return 1/x; };
-    function_key_1op_["sin"] =  [](double x) -> double { return sin(x); };
-    function_key_1op_["cos"] =  [](double x) -> double { return cos(x); };
-    function_key_1op_["tan"] =  [](double x) -> double { return tan(x); };
-    function_key_1op_["log"] =  [](double x) -> double { return log10(x); };
-    function_key_1op_["sqrt"] = [](double x) -> double { return sqrt(x); };
+    // stack-altering operations supported by the calculator
+    function_key_0op_["rdn"] =   [this](void) -> void { Rdn(); };
+    function_key_0op_["lastx"] = [this](void) -> void { LastX(); };
+    function_key_0op_["enter"] = [this](void) -> void { Enter(); };
+    // 1-operand numerical operations supported by the calculator
+    function_key_1op_["chs"] =   [](double x) -> double { return -x; };
+    function_key_1op_["inv"] =   [](double x) -> double { return 1/x; };
+    function_key_1op_["sin"] =   [](double x) -> double { return sin(x); };
+    function_key_1op_["cos"] =   [](double x) -> double { return cos(x); };
+    function_key_1op_["tan"] =   [](double x) -> double { return tan(x); };
+    function_key_1op_["log"] =   [](double x) -> double { return log10(x); };
+    function_key_1op_["sqrt"] =  [](double x) -> double { return sqrt(x); };
     // 2-operand operations supported by the calculator
-    function_key_2op_["+"] =    [](double x, double y) -> double
-                                { return x + y; };
-    function_key_2op_["-"] =    [](double x, double y) -> double
-                                { return y - x; };
-    function_key_2op_["*"] =    [](double x, double y) -> double
-                                { return x * y; };
-    function_key_2op_["/"] =    [](double x, double y) -> double
+    function_key_2op_["+"] =     [](double x, double y) -> double
+                                 { return x + y; };
+    function_key_2op_["-"] =     [](double x, double y) -> double
+                                 { return y - x; };
+    function_key_2op_["*"] =     [](double x, double y) -> double
+                                 { return x * y; };
+    function_key_2op_["/"] =     [](double x, double y) -> double
     {
         if (std::fabs(x) < 1e-10)
             throw std::runtime_error("[FATAL]: Backend: Division by zero.\n");
         return y/x;
     };
-    function_key_2op_["^"] =    [](double x, double y) -> double
+    function_key_2op_["^"] =     [](double x, double y) -> double
         { return pow(y, x); };
 }
 void Rpn::Backend::Rdn() {
@@ -182,6 +186,19 @@ double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
     return (*stack_)[IDX_REG_X];
 }
 
+void Rpn::Backend::DoStackOperation(const std::string& operation) {
+    auto it = function_key_0op_.find(ToLowercase(operation));
+    if (it != function_key_0op_.end())
+        function_key_0op_[ToLowercase(operation)]();
+}
+
+bool Rpn::Backend::IsInStackOperations(const std::string& string) const {
+    auto it = function_key_0op_.find(ToLowercase(string));
+    if (it != function_key_0op_.end())
+        return true;
+    return false;
+}
+
 bool Rpn::Backend::IsInFunctions(const std::string& string) const {
     auto it1 = function_key_1op_.find(ToLowercase(string));
     if (it1 != function_key_1op_.end())
@@ -192,15 +209,6 @@ bool Rpn::Backend::IsInFunctions(const std::string& string) const {
     return false;
 }
 
-std::vector<std::string> Rpn::Backend::GetFunctions() const {
-    std::vector <std::string> ret;
-    // Access the private unordered map and print its keys
-    for (const auto& pair : function_key_1op_) 
-        ret.push_back(pair.first);
-    for (const auto& pair : function_key_2op_) 
-        ret.push_back(pair.first);
-    return ret;
-}
 
 namespace Rpn {
     std::ostream& operator<<(std::ostream& os, const Backend& backend) {

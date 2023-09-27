@@ -24,6 +24,13 @@ class IBackend {
         virtual double CalculateFromString(std::string rpnExpression) = 0;
     protected:
         /**
+        * Maps a string that indicates a stack-altering operation into
+        * its corresponding method. The method is defined in this class
+        * and can be Rdn (rotate down), enter, etc.
+        */
+        std::unordered_map<std::string, std::function<void(void)>>
+            function_key_0op_;
+        /**
         * Maps a string that indicates the calculator's operation to
         * a function. A function is what the calculator shall perform
         * after the corresponding operation (string) is pressed. The 
