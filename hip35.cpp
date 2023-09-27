@@ -39,13 +39,17 @@ void Hip35::RunUI() {
         //
         const std::string input_char_str = std::string(1, input_char);
         if (backend_->IsInFunctions((*frontend_)[input_char_str])) {
+            // if the user was typing a number, write it in the stack
+            // before doing any calculations with it 
+            if (IsDecimal(token))
+                backend_->Insert(std::stod(token));
             // clear the number from the token
-            //token = std::string(1, input_char);
+            token = std::string(1, input_char);
             // process calculation stuff
-            //backend_->Calculate((*frontend_)[input_char_str]);
-            //const auto regx = observer_->GetState().second.first; 
-            //const auto regy = observer_->GetState().second.second; 
-            //frontend_->PrintRegisters(regx, regy);
+            backend_->Calculate((*frontend_)[input_char_str]);
+            const auto regx = observer_->GetState().second.first; 
+            const auto regy = observer_->GetState().second.second; 
+            frontend_->PrintRegisters(regx, regy);
         } else if (input_char == ' '){
             // if the user was typing a number, write it in the stack
             // before pressing enter
@@ -59,16 +63,19 @@ void Hip35::RunUI() {
         } else if (input_char == 'q') {
             return;
         } else {
-            // TODO: for negative numbers, use ~ as unary minus, since - is a function
-            // so replace ~ with - here
-            token += input_char;
+            // The symbol - is reserved for functions so use ~ as unary
+            // minus. Then replace ~ with - for negative numbers.
+            if (input_char == '~')
+                token += "-0"; // -0 so IsDecimal returns true
+            else
+                token += input_char;
             if (IsDecimal(token)) {
                 // we're about to write to register X so display the current token
                 // at register X and the existing register X at register Y
                 const double regx = observer_->GetState().second.first; 
                 frontend_->PrintRegisters(std::stod(token), regx);
             }
-            // else throw exception and terminate
+            // else invalid input - clear all regs
         }
         //std::cout << token << std::endl;
 #endif
