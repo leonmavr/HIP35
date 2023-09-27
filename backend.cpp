@@ -33,6 +33,7 @@ Rpn::Backend::Backend():
     // stack-altering operations supported by the calculator
     function_key_0op_["rdn"] =   [this](void) -> void { Rdn(); };
     function_key_0op_["lastx"] = [this](void) -> void { LastX(); };
+    function_key_0op_["swap"] =  [this](void) -> void { SwapXY(); };
     function_key_0op_["enter"] = [this](void) -> void { Enter(); };
     // 1-operand numerical operations supported by the calculator
     function_key_1op_["chs"] =   [](double x) -> double { return -x; };
@@ -82,7 +83,6 @@ void Rpn::Backend::Insert(double num) {
     stack_->writeX(num);
     // notify class observers about new value
     NotifyValue(Peek());
-
 }
 
 
