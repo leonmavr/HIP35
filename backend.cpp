@@ -60,11 +60,10 @@ Rpn::Backend::Backend():
         { return pow(y, x); };
 }
 void Rpn::Backend::Rdn() {
-    auto stackPtr = *stack_;
-    auto old_first = stackPtr[0];
-    for (std::size_t i = 0; i < stackPtr.size() - 1; ++i)
-        stackPtr[i] = stackPtr[i+1];
-    stackPtr[stackPtr.size() - 1] = old_first;
+    auto old_first = (*stack_)[0];
+    for (std::size_t i = 0; i < (*stack_).size() - 1; ++i)
+        (*stack_)[i] = (*stack_)[i+1];
+    (*stack_)[(*stack_).size() - 1] = old_first;
     // inform the observer
     NotifyValue(Peek());
     NotifyOperation("rdn");
