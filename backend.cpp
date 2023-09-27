@@ -61,7 +61,7 @@ Rpn::Backend::Backend():
 void Rpn::Backend::Rdn() {
     auto stackPtr = *stack_;
     auto old_first = stackPtr[0];
-    for (int i = 0; i < stackPtr.size() - 1; ++i)
+    for (std::size_t i = 0; i < stackPtr.size() - 1; ++i)
         stackPtr[i] = stackPtr[i+1];
     stackPtr[stackPtr.size() - 1] = old_first;
     // inform the observer

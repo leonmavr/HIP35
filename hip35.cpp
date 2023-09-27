@@ -27,13 +27,11 @@ static bool IsDecimal(const std::string& str) {
 
 void Hip35::RunUI() {
     std::string token = "";
-    //std::vector<std::string> functions = backend_->GetFunctions();
-    bool previous_token_is_digit = false;
     while (1) {
         char input_char = getchar();
         const std::string input_char_str = std::string(1, input_char);
         if (backend_->IsInStackOperations((*frontend_)[input_char_str])) {
-#if 0
+#if 1
             // write currently typed number in the stack first
             if (IsDecimal(token))
                 backend_->Insert(std::stod(token));
@@ -56,7 +54,6 @@ void Hip35::RunUI() {
             const double regx = observer_->GetState().second.first; 
             const double regy = observer_->GetState().second.second; 
             frontend_->PrintRegisters(regx, regy);
-            token = "";
         } else if (input_char == ' '){
             // if the user was typing a number, write it in the stack
             // before pressing enter
@@ -84,9 +81,9 @@ void Hip35::RunUI() {
             } else {
                 // invalid input so clear the stack (all 4 registers)
                 backend_->Insert(0);
-                backend_->Enter();
-                backend_->Enter();
-                backend_->Enter();
+                backend_->Calculate("*");
+                backend_->Calculate("*");
+                backend_->Calculate("*");
                 const double regx = observer_->GetState().second.first; 
                 const double regy = observer_->GetState().second.second; 
                 frontend_->PrintRegisters(regx, regy);
