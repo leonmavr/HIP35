@@ -60,6 +60,7 @@ Rpn::Backend::Backend():
         { return pow(y, x); };
 }
 void Rpn::Backend::Rdn() {
+    // we always use the stack pointer because Stack class implements a [] operator
     auto old_first = (*stack_)[0];
     for (std::size_t i = 0; i < (*stack_).size() - 1; ++i)
         (*stack_)[i] = (*stack_)[i+1];

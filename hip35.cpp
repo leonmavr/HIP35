@@ -3,8 +3,11 @@
 #include "screen.hpp"
 #include "observer.hpp"
 #include <memory> // unique_ptr
+#include <chrono> // sleep_for
+#include <thread> // thread
 
-Hip35::Hip35() {
+Hip35::Hip35():
+        delay_ms_(std::chrono::milliseconds(50)) {
     backend_ = std::make_unique<Rpn::Backend>();
     frontend_ = std::make_unique<Gui::Frontend>();
     observer_ = new Observer;
@@ -25,6 +28,7 @@ static bool IsDecimal(const std::string& str) {
     }
 }
 
+
 void Hip35::RunUI() {
     std::string token = "";
     while (1) {
@@ -39,18 +43,28 @@ void Hip35::RunUI() {
             token = std::string(1, input_char);
             // process calculation stuff
             backend_->Calculate((*frontend_)[input_char_str]);
+            const std::string operation = observer_->GetState().first;
             const double regx = observer_->GetState().second.first; 
             const double regy = observer_->GetState().second.second; 
             frontend_->PrintRegisters(regx, regy);
+            const bool highlight = true;
+            frontend_->DrawKey(input_char_str, highlight);
+            std::this_thread::sleep_for(delay_ms_);
+            frontend_->DrawKey(input_char_str);
         } else if (input_char == ' '){
             // if the user was typing a number, write it in the stack
             // before pressing enter
             if (IsDecimal(token))
                 backend_->Insert(std::stod(token));
             backend_->Enter();
+            const std::string operation = observer_->GetState().first;
             const double regx = observer_->GetState().second.first; 
             const double regy = observer_->GetState().second.second; 
             frontend_->PrintRegisters(regx, regy);
+            const bool highlight = true;
+            frontend_->DrawKey(input_char_str, highlight);
+            std::this_thread::sleep_for(delay_ms_);
+            frontend_->DrawKey(input_char_str);
             token = "";
         } else if (backend_->IsInStackOperations((*frontend_)[input_char_str])) {
             // TODO: RDN not working
@@ -60,10 +74,15 @@ void Hip35::RunUI() {
             // discard current numerical token, then update it with the operation
             token = std::string(1, input_char);
             backend_->DoStackOperation((*frontend_)[input_char_str]);
+            const std::string operation = observer_->GetState().first;
             const double regx = observer_->GetState().second.first; 
             const double regy = observer_->GetState().second.second; 
             //std::cout << "================ " << observer_->GetState().first << "===== \n";
             frontend_->PrintRegisters(regx, regy);
+            const bool highlight = true;
+            frontend_->DrawKey(input_char_str, highlight);
+            std::this_thread::sleep_for(delay_ms_);
+            frontend_->DrawKey(input_char_str);
             token = "";
         } else if (input_char == 'q') {
             return;

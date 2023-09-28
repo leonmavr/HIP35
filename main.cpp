@@ -3,12 +3,6 @@
 #include "observer.hpp"
 #include "screen.hpp"
 #include "hip35.hpp"
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <algorithm> // find
-#include <termios.h>
-
 
 
 int main() {
