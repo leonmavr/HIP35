@@ -100,10 +100,14 @@ void Hip35::RunUI() {
                 frontend_->PrintRegisters(std::stod(token), regx);
             } else {
                 // invalid input so clear the stack (all 4 registers)
+                backend_->Rdn();
                 backend_->Insert(0);
-                backend_->Calculate("*");
-                backend_->Calculate("*");
-                backend_->Calculate("*");
+                backend_->Rdn();
+                backend_->Insert(0);
+                backend_->Rdn();
+                backend_->Insert(0);
+                backend_->Rdn();
+                backend_->Insert(0);
                 const double regx = observer_->GetState().second.first; 
                 const double regy = observer_->GetState().second.second; 
                 frontend_->PrintRegisters(regx, regy);
