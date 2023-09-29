@@ -7,6 +7,7 @@
 #include <sstream> // istringstream
 #include <stdexcept> // runtime_error 
 #include <algorithm> // erase, remove
+#include <cmath> // M_PI
 
 
 void Subject::Detach(Observer* observer) {
@@ -35,7 +36,9 @@ Rpn::Backend::Backend():
     function_key_0op_["lastx"] = [this](void) -> void { LastX(); };
     function_key_0op_["swap"] =  [this](void) -> void { SwapXY(); };
     function_key_0op_["enter"] = [this](void) -> void { Enter(); };
-    // 1-operand numerical operations supported by the calculator
+    function_key_0op_["pi"] =    [this](void) -> void { Pi(); };
+    function_key_0op_["clr"] =   [this](void) -> void { Clr(); };
+    // 1-operand numerical operations
     function_key_1op_["chs"] =   [](double x) -> double { return -x; };
     function_key_1op_["inv"] =   [](double x) -> double { return 1/x; };
     function_key_1op_["sin"] =   [](double x) -> double { return sin(x); };
@@ -45,7 +48,7 @@ Rpn::Backend::Backend():
     function_key_1op_["ln"] =    [](double x) -> double { return log(x); };
     function_key_1op_["log"] =   [](double x) -> double { return log10(x); };
     function_key_1op_["sqrt"] =  [](double x) -> double { return sqrt(x); };
-    // 2-operand operations supported by the calculator
+    // 2-operand operations
     function_key_2op_["+"] =     [](double x, double y) -> double
                                  { return x + y; };
     function_key_2op_["-"] =     [](double x, double y) -> double
@@ -148,6 +151,27 @@ double Rpn::Backend::Calculate(std::string operation) {
         throw std::runtime_error(std::string("[FATAL]: Invalid operation ") +
                                             operation + std::string("\n"));
     }
+}
+
+void Rpn::Backend::Clr() {
+    Rdn(); // first rotate down in case an operate was just made
+    Insert(0);
+    Rdn();
+    Insert(0);
+    Rdn();
+    Insert(0);
+    Rdn();
+    Insert(0);
+    // inform the observer 
+    NotifyOperation("clr"); 
+    NotifyValue(Peek()); 
+}
+
+void Rpn::Backend::Pi() {
+    (*stack_)[IDX_REG_X] = M_PI;
+    // inform the observer 
+    NotifyOperation("pi"); 
+    NotifyValue(Peek()); 
 }
 
 double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
