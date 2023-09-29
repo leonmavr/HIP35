@@ -74,32 +74,36 @@ void Frontend::SetUiDimensions() {
  *        ...
  */
 void Frontend::InitKeypadGrid() {
-    //   text on key in ()     long text on key    grid coords 
-	key_mappings_["+"] = std::make_pair("+",     Point{0, 2});
-	key_mappings_["-"] = std::make_pair("-",     Point{1, 2});
-	key_mappings_["*"] = std::make_pair("*",     Point{2, 2});
-	key_mappings_["/"] = std::make_pair("/",     Point{3, 2});
-	key_mappings_["^"] = std::make_pair("^",     Point{4, 2});
+    // for the original positioning of the keys see:
+    // https://upload.wikimedia.org/wikipedia/commons/3/34/HP-35_Red_Dot.jpg
+    // Start from row 1 (y=1) since row 0 is reserved for the display 
+    //     key to press    backend function to call    grid (x, y)
+	key_mappings_["L"] = std::make_pair("log",   Point{0, 1});
+	key_mappings_["l"] = std::make_pair("ln",    Point{1, 1});
+	key_mappings_["e"] = std::make_pair("exp",   Point{2, 1});
 
-	key_mappings_["s"] = std::make_pair("sin",   Point{0, 3});
-	key_mappings_["c"] = std::make_pair("cos",   Point{1, 3});
-	key_mappings_["t"] = std::make_pair("tan",   Point{2, 3});
-	key_mappings_["S"] = std::make_pair("sqrt",  Point{3, 3});
-	key_mappings_["l"] = std::make_pair("log",   Point{4, 3});
+	key_mappings_["S"] = std::make_pair("sqrt",  Point{0, 2});
+	key_mappings_["s"] = std::make_pair("sin",   Point{1, 2});
+	key_mappings_["c"] = std::make_pair("cos",   Point{2, 2});
+	key_mappings_["t"] = std::make_pair("tan",   Point{3, 2});
 
-	key_mappings_["C"] = std::make_pair("chs",   Point{0, 4});
-	key_mappings_["i"] = std::make_pair("inv",   Point{1, 4});
+	key_mappings_["i"] = std::make_pair("inv",   Point{0, 3});
+	key_mappings_["<"] = std::make_pair("swap",  Point{1, 3});
+	key_mappings_["v"] = std::make_pair("rdn",   Point{2, 3});
+	key_mappings_["x"] = std::make_pair("lastx", Point{3, 3});
+
+	key_mappings_["+"] = std::make_pair("+",     Point{0, 4});
+	key_mappings_["-"] = std::make_pair("-",     Point{1, 4});
+	key_mappings_["*"] = std::make_pair("*",     Point{2, 4});
+	key_mappings_["/"] = std::make_pair("/",     Point{3, 4});
+	key_mappings_["^"] = std::make_pair("^",     Point{4, 4});
+
+	key_mappings_[" "] = std::make_pair("enter", Point{0, 5});
+	key_mappings_["C"] = std::make_pair("chs",   Point{1, 5});
    
-	// [O
-	// HP35 stack operations
-	key_mappings_["v"] = std::make_pair("rdn",   Point{0, 5});
-	key_mappings_["<"] = std::make_pair("swap",  Point{1, 5});
-	key_mappings_["x"] = std::make_pair("lastx", Point{2, 5});
-	key_mappings_[" "] = std::make_pair("enter", Point{3, 5});
-
     // records the dimensions of the UI in pixels
     SetUiDimensions();
-    // so that ncurses knows it's not dealing with garbage values
+    // so that ncurses knows it's not dealing with garbage dimension values
     dimensions_set_ = true;
 }
 
@@ -182,7 +186,6 @@ void Frontend::InitTerminal() {
     new_tio_.c_lflag &=(~ICANON & ~ECHO);
     tcsetattr(STDIN_FILENO, TCSANOW, &new_tio_);
 
-#if 1
     //// ncurses preparation
     // start curses mode
     initscr();
@@ -205,7 +208,6 @@ void Frontend::InitTerminal() {
     win_ = newwin(max_height_pixels_, max_width_pixels_, startx, starty);
     //            l    r    t    d   tl   tr   bl   br
     wborder(win_, '.', '.', '.', '.', '.', '.', '.', '.');
-#endif
 }
 
 void Frontend::EndTerminal() {
@@ -271,8 +273,8 @@ bool Frontend::PrintRegisters(double regx, double regy) {
     const unsigned screen_width = max_width_pixels_ - 4;
     std::string regx_string = std::to_string(regx);
     std::string regy_string = std::to_string(regy);
-    regx_string = padString(regx_string, screen_width-3);
-    regy_string = padString(regy_string, screen_width-3);
+    regx_string = padString(regx_string, screen_width-2);
+    regy_string = padString(regy_string, screen_width-2);
     // top screen row
     wmove(win_, 3, 3);
     wprintw(win_, regy_string.c_str());

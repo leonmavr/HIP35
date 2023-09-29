@@ -70,6 +70,7 @@ namespace Rpn {
 *        gets overwritten with its result.
 *        Below is an example to give you some intuition:
 *
+*        4 - (3 + 2) or in RPN:
 *        4 3 2 + -
 *          |     |    |     |    |  4  |   |     |   |     |
 *        4 |     | 3  |  4  | 2  |  3  | + |  4  | - |     | <- Y
@@ -110,8 +111,10 @@ public:
     }
     /**
      * @brief Insert a number in the stack by writing to register
-     *        X. Shifts the stack up before writing if a
-     *        calculation previously took place. Example:
+     *        X. Remember that each RPN ends with a(n) operation(s).
+     *        Therefore this method shifts the stack up before
+     *        writing in it if a calculation previously took place.
+     *        Example:
      *        Initially: X = 6, Y = 6
      *        Type: 9 + 13
      *
@@ -160,9 +163,9 @@ public:
      *        Y->   2             1     |     2                3
      *        X->   1             0     |    0.1               20
      *
-     * @param operation What operation to perform. This can be one
-     *                  of the keys of function_key_1op_ or 
-     *                  function_key_2op_ - see `IBackend` class
+     * @param operation What numerical operation to perform. This
+     *                  can be one of the keys of function_key_1op_ 
+     *                  or function_key_2op_ - see `IBackend` class
      *
      * @return The calculation's result 
      */

@@ -7,7 +7,7 @@
 #include <thread> // thread
 
 Hip35::Hip35():
-        delay_ms_(std::chrono::milliseconds(50)) {
+        delay_ms_(std::chrono::milliseconds(100)) {
     backend_ = std::make_unique<Rpn::Backend>();
     frontend_ = std::make_unique<Gui::Frontend>();
     observer_ = new Observer;

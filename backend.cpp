@@ -41,6 +41,8 @@ Rpn::Backend::Backend():
     function_key_1op_["sin"] =   [](double x) -> double { return sin(x); };
     function_key_1op_["cos"] =   [](double x) -> double { return cos(x); };
     function_key_1op_["tan"] =   [](double x) -> double { return tan(x); };
+    function_key_1op_["exp"] =   [](double x) -> double { return exp(x); };
+    function_key_1op_["ln"] =    [](double x) -> double { return log(x); };
     function_key_1op_["log"] =   [](double x) -> double { return log10(x); };
     function_key_1op_["sqrt"] =  [](double x) -> double { return sqrt(x); };
     // 2-operand operations supported by the calculator
@@ -59,6 +61,7 @@ Rpn::Backend::Backend():
     function_key_2op_["^"] =     [](double x, double y) -> double
         { return pow(y, x); };
 }
+
 void Rpn::Backend::Rdn() {
     // we always use the stack pointer because Stack class implements a [] operator
     auto old_first = (*stack_)[0];
