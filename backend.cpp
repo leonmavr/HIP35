@@ -154,7 +154,9 @@ double Rpn::Backend::Calculate(std::string operation) {
 }
 
 void Rpn::Backend::Clr() {
-    Rdn(); // first rotate down in case an operate was just made
+    // If an operation was just made, shift down first to erase register Y
+    if (do_shift_up_)
+        Rdn();
     Insert(0);
     Rdn();
     Insert(0);
