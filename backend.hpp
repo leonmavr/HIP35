@@ -128,21 +128,22 @@ public:
     void Insert(double num) override;
     /**
      * @brief Circularly rotates the stack down, e.g.:
-     *           before:     after:
-     *        T->   4          1
-     *        Z->   3          4
-     *        Y->   2          3
-     *        X->   1          2
-     */
+     *           before:     after:    |
+     *        T->   4          1       |   t ----------+  T <-+
+     *        Z->   3          4       |   z -------+  +> Z   |
+     *        Y->   2          3       |   y ----+  +---> Y   |
+     *        X->   1          2       |   x     +------> X   |
+     *                                 |   -------------------+
+     */                                
     void Rdn() override;
     /**
      * @brief Emulate enter key; shift the stack up, discarding T
      *        register and then clone Y into X, e.g.:
-     *           before:     after:
-     *        T->   4          3
-     *        Z->   3          2
-     *        Y->   2          1
-     *        X->   1          1
+     *           before:     after:    |
+     *        T->   4          3       |   t   +----------> T
+     *        Z->   3          2       |   z --+  +-------> Z
+     *        Y->   2          1       |   y -----+  +----> Y
+     *        X->   1          1       |   x --------+----> X
      */
     void Enter() override;
     /**
@@ -163,6 +164,11 @@ public:
      *        Y->   2             1     |     2                3
      *        X->   1             0     |    0.1               20
      *
+     *        t->   ------------> T     |  t->   ----------+   T
+     *        z->   ------------> Z     |  z->   ------+   +-> Z
+     *        y->   ------------> Y     |  y->   ---+  +-----> Y
+     *        x->   -----f(x)---> X     |  x->   ---+-f(x,y)-> X
+     *         
      * @param operation What numerical operation to perform. This
      *                  can be one of the keys of function_key_1op_ 
      *                  or function_key_2op_ - see `IBackend` class
@@ -184,12 +190,15 @@ public:
      *
      * @return The numberic results of the RPN. 
      */
-    void DoStackOperation(const std::string& operation);
     double CalculateFromString(std::string rpnExpression) override;
-    /* Get the functions (e.g. log) implemented in a vector of strings */
-    //std::vector<std::string> GetFunctions() const;
+    /* Set all registers to zero */
+    void Clr() override;
+    /* Write the value of PI to register X */
+    void Pi() override;
+    void DoStackOperation(const std::string& operation);
     /* Whether the input string is in backend's implemented functions */
     bool IsInFunctions(const std::string& string) const;
+    /* Whether the input string is in backend's implemented stack operations (RDN etc.) */
     bool IsInStackOperations(const std::string& string) const;
     /* Overrides the << operator for the class, e.g.std::cout << <Instance>; */
     friend std::ostream& operator<<(std::ostream& os, const Backend& backend);

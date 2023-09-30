@@ -20,6 +20,8 @@ class IBackend {
         virtual void Rdn() = 0;
         virtual void Enter() = 0;
         virtual void LastX() = 0;
+        virtual void Clr() = 0;
+        virtual void Pi() = 0;
         virtual double Calculate(std::string operation) = 0;
         virtual double CalculateFromString(std::string rpnExpression) = 0;
     protected:

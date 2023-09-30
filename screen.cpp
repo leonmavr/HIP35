@@ -91,6 +91,7 @@ void Frontend::InitKeypadGrid() {
 	key_mappings_["<"] = std::make_pair("swap",  Point{1, 3});
 	key_mappings_["v"] = std::make_pair("rdn",   Point{2, 3});
 	key_mappings_["x"] = std::make_pair("lastx", Point{3, 3});
+	key_mappings_["p"] = std::make_pair("pi",    Point{4, 3});
 
 	key_mappings_["+"] = std::make_pair("+",     Point{0, 4});
 	key_mappings_["-"] = std::make_pair("-",     Point{1, 4});
@@ -99,7 +100,8 @@ void Frontend::InitKeypadGrid() {
 	key_mappings_["^"] = std::make_pair("^",     Point{4, 4});
 
 	key_mappings_[" "] = std::make_pair("enter", Point{0, 5});
-	key_mappings_["C"] = std::make_pair("chs",   Point{1, 5});
+	key_mappings_["@"] = std::make_pair("clr",  Point{1, 5});
+	key_mappings_["C"] = std::make_pair("chs",   Point{2, 5});
    
     // records the dimensions of the UI in pixels
     SetUiDimensions();
