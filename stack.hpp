@@ -52,21 +52,30 @@ class Stack {
          *         discarding the T register. In the example below,
          *         empty cell means "don't care", however it is set
          *         to 0 in this implementation.
-         *           before:     after:
-         *        T->   4          3
-         *        Z->   3          2
-         *        Y->   2          1
-         *        X->   1          
+         *           before:     after: | before:           after:
+         *        T->   4          3    |    t   +----------> T
+         *        Z->   3          2    |    z --+  +-------> Z
+         *        Y->   2          1    |    y -----+  +----> Y
+         *        X->   1               |    x --------+      X = 0
          */
         void ShiftUp();
         /**
-         * @brief  Similar to `ShiftUp`, however shifts down the stack
-         *         to discard the data in the X register.
-         *             before:     after:
-         *          T->   4          
-         *          Z->   3          4
-         *          Y->   2          3
-         *          X->   1          2 
+         * @brief  Shifts down ("drops" stack) all elements of the
+         *         stack by one, discarding the value of X. The new
+         *         black entry in T register is filled with its
+         *         previous data [2], replicating T into Z and T.
+         *             before:     after:  | before:     after:
+         *          T->   4          4     |   t ------+-----> T
+         *          Z->   3          4     |   z       +-----> Z
+         *          Y->   2          3     |   y ------------> Y
+         *          X->   1          2     |   x ------------> X
+         *
+         *          References:
+         *          -----------
+         *          [2] HP 35s scientific calculator user's guide 1st
+         *              ed., RPN: The Automatic Memory Stack 2-7,
+         *              p.53,
+         *              http://h10032.www1.hp.com/ctg/Manual/c01579350
          */
         void ShiftDown();
         void Clear() { stack_ = { 0., 0., 0., 0. }; }
