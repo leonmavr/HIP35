@@ -147,7 +147,18 @@ public:
      */
     void Enter() override;
     /**
-    * @brief TODO
+    * @brief The LAST X register is a companion to the stack: it
+    *        holds the number that was in the X–register before
+    *        the last numeric function (e.g. SQRT or +) was executed.
+    *        Pressing the LASTX key writes the value of LASTX 
+    *        1. Correcting errors.
+    *           Suppose we want to compute sin(6.24) * tan(6.24/2)
+    *           by pressing 6.24 SIN 6.24 2 / TAN *
+    *           6.24 was written to LASTX when pressing SIN so it
+    *           can be reused in the following way:
+    *           6.24 SIN LASTX 2 / TAN *
+    *        2. Reusing a number in a calculation
+    *
     */
     void LastX() override;
     /**
@@ -164,7 +175,7 @@ public:
      *        Y->   2             1     |     2                3
      *        X->   1             0     |    0.1               20
      *
-     *        t->   ------------> T     |  t->   ----------+   T
+     *        t->   ------------> T     |  t->   ----------+-> T
      *        z->   ------------> Z     |  z->   ------+   +-> Z
      *        y->   ------------> Y     |  y->   ---+  +-----> Y
      *        x->   -----f(x)---> X     |  x->   ---+-f(x,y)-> X

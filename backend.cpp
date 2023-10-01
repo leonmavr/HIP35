@@ -103,6 +103,8 @@ void Rpn::Backend::Enter() {
 }
 
 void Rpn::Backend::LastX() {
+    // Make space to insert regisrer LASTX
+    stack_->ShiftUp();
     (*stack_)[IDX_REG_X] = lastx_;
     // inform the observer
     NotifyValue(Peek());
@@ -120,11 +122,11 @@ static std::string ToLowercase(const std::string& input) {
 double Rpn::Backend::Calculate(std::string operation) {
     // Shift up the stack next time a number is inserted
     do_shift_up_ = true;
-    // We did an operation so calculator needs to store register X
-    // before the operation in register LASTX
-    lastx_ = (*stack_)[IDX_REG_X];
     auto& registerX = (*stack_)[IDX_REG_X];
     auto& registerY = (*stack_)[IDX_REG_Y];
+    // We did an operation so calculator needs to store register X
+    // before the operation in register LASTX
+    lastx_ = registerX;
     bool valid_operation = false;
     // because maps always take lowercase keys
     operation = ToLowercase(operation);
