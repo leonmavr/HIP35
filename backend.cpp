@@ -84,7 +84,6 @@ void Rpn::Backend::SwapXY() {
 }
 
 void Rpn::Backend::Insert(double num) {
-    //std::cout << "----------" << do_shift_up_ << std::endl;
     if (do_shift_up_)
         stack_->ShiftUp();
     stack_->writeX(num);
