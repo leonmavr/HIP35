@@ -70,7 +70,7 @@ namespace Rpn {
 *        gets overwritten with its result.
 *        Below is an example to give you some intuition:
 *
-*        4 - (3 + 2) or in RPN:
+*        4 - (3 + 2) or in RPN; we do 3+2 first, then 4 - 5:
 *        4 3 2 + -
 *          |     |    |     |    |  4  |   |     |   |     |
 *        4 |     | 3  |  4  | 2  |  3  | + |  4  | - |     | <- Y
@@ -112,17 +112,17 @@ public:
     /**
      * @brief Insert a number in the stack by writing to register
      *        X. Remember that each RPN ends with a(n) operation(s).
-     *        Therefore this method shifts the stack up before
+     *        Therefore this method lifts the stack up before
      *        writing in it if a calculation previously took place.
      *        Example:
      *        Initially: X = 6, Y = 6
      *        Type: 9 + 13
-     *
+     *        (L means lift the stack, aka shift up)
      *        |     |     |     |     |     |      |     |
      *        |  6  |  9  |  6  |  +  |     |  13  |  15 | 
      *        |  6  |     |  9  |     |  15 |      |  13 |
      *        +-----+     +-----+     +-----+      +-----+
-     *
+     *           L = false      L = true     L = false
      * @param num Decimal number to insert.
      */
     void Insert(double num) override;
@@ -147,10 +147,10 @@ public:
      */
     void Enter() override;
     /**
-    * @brief The LAST X register is a companion to the stack: it
-    *        holds the number that was in the X–register before
-    *        the last numeric function (e.g. SQRT or +) was executed.
-    *        Pressing the LASTX key writes the value of LASTX 
+    * @brief The LASTX register is a companion to the stack: it holds
+    *        holds the number that was in the X–register before the
+    *        last numeric function (e.g. SQRT or +) was executed.
+    *        Pressing LASTX inserts the value of LASTX in the stack.
     *        1. Reusing a number in a calculation
     *           Suppose we want to compute sin(6.24) * tan(6.24/2)
     *           by pressing 6.24 SIN 6.24 2 / TAN *
@@ -159,13 +159,46 @@ public:
     *           6.24 SIN LASTX 2 / TAN *
     *        2. Correcting errors.
     *           2a) Single-argument functions
-    *               Suppose we typed 6.24 SIN 6.24 2 / COS * instead 
-    *               of 6.24 SIN 6.24 2 / TAN *. Before pressing COS,
+    *               Suppose we typed 6.24 SIN 6.24 2 / COS instead 
+    *               of 6.24 SIN 6.24 2 / TAN. We can correct it w/o
+    *               erasing the whole thing. Before pressing COS,
     *               LASTX will store 6.24/2 so to correct it use:
+    *               RDN   (get rid of cos(6.24/2)) X -> g sin(6.24))
+    *               LASTX (insert LASTX g 6.24/2   X -> 6.24/2 
+    *                                              Y -> sin(6.24)
+    *               TAN                            X -> tan(6.24/2)  
+    *                                              Y -> sin(6.24) 
+    *               *       X -> g sin(6.24) * tan(6.24/2) = 0.00093 
+    *           2b) 2-argument function and wrong function
+    *               Suppose we want to calculate 20*23  (20 ENT 23 *)
+    *               but typed 20 ENT 23 -. Correct it as follows:
+    *               20 ENT 23 -                   X -> 20 - 23
+    *               LASTX                         X -> 23
+    *                                             Y -> 20 - 23
+    *               +     (undo last operation)   X -> 20
+    *               23                            X -> 23
+    *                                             Y -> 20
+    *               *                             X -> g 460
+    *           2c) Wrong first number (Y register)
+    *               19 ENT 23 * . . . . . . . . . X -> 440 
+    *               20 . . . . . . . . . . . . . .X -> 20
+    *                                             Y -> 440 
+    *               LASTX. . . . . . . . . . . .  X -> 23
+    *                                             Y -> 20
+    *                                             Z -> 440 
+    *               * . . . . . . . . . . . . . . X -> 460
+    *                                             Y -> 440 
+    *               Before starting, we can optionally RND to discard 440.
+    *           2d) Wrong second number (X register)
+    *               20 ENT 22 * . . . . . . . . . X -> 22
+    *                                             Y -> 20
+    *               LASTX
+    *               /
+    *               19
+    *               *
+    *                
     *
-    *               
-    *               
-    *
+    *                
     */
     void LastX() override;
     /**
@@ -177,7 +210,7 @@ public:
      *        reg. X, Y as inputs, write output to Y and shift down
      *        the stack. Example:
      *           before: (LOG)  after:  |  before:    (/)    after:
-     *        T->   4             3     |     4
+     *        T->   4             3     |     4                4
      *        Z->   3             2     |     3                4
      *        Y->   2             1     |     2                3
      *        X->   1             0     |    0.1               20
