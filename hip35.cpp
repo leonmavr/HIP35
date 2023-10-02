@@ -16,6 +16,8 @@ Hip35::Hip35():
 }
 
 static bool IsDecimal(const std::string& str) {
+    if (str.empty())
+        return true;
     try {
         size_t pos;
         std::stod(str, &pos);
@@ -51,6 +53,7 @@ void Hip35::RunUI() {
             frontend_->DrawKey(input_char_str, highlight);
             std::this_thread::sleep_for(delay_ms_);
             frontend_->DrawKey(input_char_str);
+            token = "";
         } else if (input_char == ' '){
             // if the user was typing a number, write it in the stack
             // before pressing enter
@@ -77,7 +80,6 @@ void Hip35::RunUI() {
             const std::string operation = observer_->GetState().first;
             const double regx = observer_->GetState().second.first; 
             const double regy = observer_->GetState().second.second; 
-            //std::cout << "================ " << observer_->GetState().first << "===== \n";
             frontend_->PrintRegisters(regx, regy);
             const bool highlight = true;
             frontend_->DrawKey(input_char_str, highlight);

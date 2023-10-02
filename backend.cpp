@@ -84,6 +84,7 @@ void Rpn::Backend::SwapXY() {
 }
 
 void Rpn::Backend::Insert(double num) {
+    //std::cout << "----------" << do_shift_up_ << std::endl;
     if (do_shift_up_)
         stack_->ShiftUp();
     stack_->writeX(num);
@@ -172,7 +173,7 @@ void Rpn::Backend::Clr() {
 }
 
 void Rpn::Backend::Pi() {
-    (*stack_)[IDX_REG_X] = M_PI;
+    Insert(M_PI);
     // inform the observer 
     NotifyOperation("pi"); 
     NotifyValue(Peek()); 

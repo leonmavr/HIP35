@@ -151,13 +151,20 @@ public:
     *        holds the number that was in the X–register before
     *        the last numeric function (e.g. SQRT or +) was executed.
     *        Pressing the LASTX key writes the value of LASTX 
-    *        1. Correcting errors.
+    *        1. Reusing a number in a calculation
     *           Suppose we want to compute sin(6.24) * tan(6.24/2)
     *           by pressing 6.24 SIN 6.24 2 / TAN *
     *           6.24 was written to LASTX when pressing SIN so it
     *           can be reused in the following way:
     *           6.24 SIN LASTX 2 / TAN *
-    *        2. Reusing a number in a calculation
+    *        2. Correcting errors.
+    *           2a) Single-argument functions
+    *               Suppose we typed 6.24 SIN 6.24 2 / COS * instead 
+    *               of 6.24 SIN 6.24 2 / TAN *. Before pressing COS,
+    *               LASTX will store 6.24/2 so to correct it use:
+    *
+    *               
+    *               
     *
     */
     void LastX() override;
@@ -217,9 +224,9 @@ public:
 private:
     // owns the object - unique_ptr manages its lifetime and deallocation
     std::unique_ptr<Stack> stack_;
-    /* LASTX register - stores the value of X before a function is executed */
+    // LASTX register; stores the value of X before a function is executed
     double lastx_;
-    // shift up stack after an operation is executed (e.g. +, -, etc.)  
+    // shift up (lift) stack after an operation is executed (e.g. +, -, etc.)  
     bool do_shift_up_;
 };
 
