@@ -56,6 +56,8 @@ void Hip35::RunUI() {
             token = "";
         } else if (input_char == ' '){
             // if the user was typing a number, write it in the stack
+            if (token.empty())
+                token = "0";
             // before pressing enter
             if (IsDecimal(token))
                 backend_->Insert(std::stod(token));
@@ -70,7 +72,8 @@ void Hip35::RunUI() {
             frontend_->DrawKey(input_char_str);
             token = "";
         } else if (backend_->IsInStackOperations((*frontend_)[input_char_str])) {
-            // TODO: RDN not working
+            if (token.empty())
+                token = "0";
             // write currently typed number in the stack first
             if (IsDecimal(token))
                 backend_->Insert(std::stod(token));
