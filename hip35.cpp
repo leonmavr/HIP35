@@ -39,7 +39,7 @@ void Hip35::RunUI() {
         if (backend_->IsInFunctions((*frontend_)[input_char_str])) {
             // if the user was typing a number, write it in the stack
             // before doing any calculations with it 
-            if (IsDecimal(token))
+            if (IsDecimal(token) && !token.empty())
                 backend_->Insert(std::stod(token));
             // clear the number from the token
             token = std::string(1, input_char);
@@ -56,10 +56,8 @@ void Hip35::RunUI() {
             token = "";
         } else if (input_char == ' '){
             // if the user was typing a number, write it in the stack
-            if (token.empty())
-                token = "0";
             // before pressing enter
-            if (IsDecimal(token))
+            if (IsDecimal(token) && !token.empty())
                 backend_->Insert(std::stod(token));
             backend_->Enter();
             const std::string operation = observer_->GetState().first;
@@ -72,10 +70,8 @@ void Hip35::RunUI() {
             frontend_->DrawKey(input_char_str);
             token = "";
         } else if (backend_->IsInStackOperations((*frontend_)[input_char_str])) {
-            if (token.empty())
-                token = "0";
             // write currently typed number in the stack first
-            if (IsDecimal(token))
+            if (IsDecimal(token) && !token.empty())
                 backend_->Insert(std::stod(token));
             // discard current numerical token, then update it with the operation
             token = std::string(1, input_char);
@@ -92,10 +88,12 @@ void Hip35::RunUI() {
         } else if (input_char == 'q') {
             return;
         } else {
+            if (token.empty())
+                token = "0";
             // The symbol - is reserved for functions so use ~ as unary
             // minus. Then replace ~ with - for negative numbers.
             if (input_char == '~')
-                token += "-0"; // -0 so IsDecimal returns true
+                token = "-0";
             else
                 token += input_char;
             if (IsDecimal(token)) {
@@ -105,7 +103,7 @@ void Hip35::RunUI() {
                 frontend_->PrintRegisters(std::stod(token), regx);
             } else {
                 // invalid input so clear the stack (all 4 registers)
-                backend_->Clr();
+                backend_->Cls();
                 const double regx = observer_->GetState().second.first; 
                 const double regy = observer_->GetState().second.second; 
                 frontend_->PrintRegisters(regx, regy);

@@ -9,6 +9,12 @@
 
 namespace Rpn {
 
+/**
+ * @brief Blueprint of the functions an HP35-based RPN calculator
+ *        must implement. Originally, the are found at the keypad
+ *        of HP35:
+ *        https://en.wikipedia.org/wiki/HP-35#/media/File:HP-35_Red_Dot.jpg
+ */
 class IBackend {
     public:
         IBackend() {}
@@ -20,7 +26,8 @@ class IBackend {
         virtual void Rdn() = 0;
         virtual void Enter() = 0;
         virtual void LastX() = 0;
-        virtual void Clr() = 0;
+        virtual void Clx() = 0;
+        virtual void Cls() = 0;
         virtual void Pi() = 0;
         virtual double Calculate(std::string operation) = 0;
         virtual double CalculateFromString(std::string rpnExpression) = 0;

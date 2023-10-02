@@ -37,7 +37,8 @@ Rpn::Backend::Backend():
     function_key_0op_["swap"] =  [this](void) -> void { SwapXY(); };
     function_key_0op_["enter"] = [this](void) -> void { Enter(); };
     function_key_0op_["pi"] =    [this](void) -> void { Pi(); };
-    function_key_0op_["clr"] =   [this](void) -> void { Clr(); };
+    function_key_0op_["clx"] =   [this](void) -> void { Clx(); };
+    function_key_0op_["cls"] =   [this](void) -> void { Cls(); };
     // 1-operand numerical operations
     function_key_1op_["chs"] =   [](double x) -> double { return -x; };
     function_key_1op_["inv"] =   [](double x) -> double { return 1/x; };
@@ -155,19 +156,19 @@ double Rpn::Backend::Calculate(std::string operation) {
     }
 }
 
-void Rpn::Backend::Clr() {
-    // If an operation was just made, shift down first to erase register Y
-    if (do_shift_up_)
-        Rdn();
-    Insert(0);
-    Rdn();
-    Insert(0);
-    Rdn();
-    Insert(0);
-    Rdn();
-    Insert(0);
+void Rpn::Backend::Clx() {
+    stack_->writeX(0.0);
     // inform the observer 
-    NotifyOperation("clr"); 
+    NotifyOperation("clx"); 
+    NotifyValue(Peek()); 
+}
+
+void Rpn::Backend::Cls() {
+    stack_->writeX(0.0);
+    Enter();
+    Enter();
+    Enter();
+    NotifyOperation("cls"); 
     NotifyValue(Peek()); 
 }
 

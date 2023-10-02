@@ -242,9 +242,15 @@ public:
      * @return The numberic results of the RPN. 
      */
     double CalculateFromString(std::string rpnExpression) override;
-    /* Set all registers to zero */
-    void Clr() override;
-    /* Write the value of PI to register X */
+
+    /**
+     * @brief Set register X to zero. The purpose of this is to
+     *        fix typos and the last entered number.
+     */
+    void Clx() override;
+    /* Set all registers (entire stack) to zero */
+    void Cls() override;
+    /* Insert the value of PI to register X */
     void Pi() override;
     void DoStackOperation(const std::string& operation);
     /* Whether the input string is in backend's implemented functions */
