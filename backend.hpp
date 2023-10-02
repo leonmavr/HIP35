@@ -164,21 +164,21 @@ public:
     *               erasing the whole thing. Before pressing COS,
     *               LASTX will store 6.24/2 so to correct it use:
     *               RDN   (get rid of cos(6.24/2)) X -> g sin(6.24))
-    *               LASTX (insert LASTX g 6.24/2   X -> 6.24/2 
+    *               LASTX (insert LASTX 6.24/2)    X -> 6.24/2 
     *                                              Y -> sin(6.24)
     *               TAN                            X -> tan(6.24/2)  
     *                                              Y -> sin(6.24) 
-    *               *       X -> g sin(6.24) * tan(6.24/2) = 0.00093 
+    *               *       X -> sin(6.24) * tan(6.24/2) = 0.00093 
     *           2b) 2-argument function and wrong function
     *               Suppose we want to calculate 20*23  (20 ENT 23 *)
     *               but typed 20 ENT 23 -. Correct it as follows:
-    *               20 ENT 23 -                   X -> 20 - 23
-    *               LASTX                         X -> 23
+    *               20 ENT 23 - . . . . . . . . . X -> 20 - 23
+    *               LASTX . . . . . . . . . . . . X -> 23
     *                                             Y -> 20 - 23
-    *               +     (undo last operation)   X -> 20
-    *               23                            X -> 23
+    *               + (undo last operation) . . . X -> 20
+    *               23 . . . . . . . . . . . . . .X -> 23
     *                                             Y -> 20
-    *               *                             X -> g 460
+    *               * . . . . . . . . . . . . . . X -> 460
     *           2c) Wrong first number (Y register)
     *               19 ENT 23 * . . . . . . . . . X -> 440 
     *               20 . . . . . . . . . . . . . .X -> 20
@@ -190,15 +190,13 @@ public:
     *                                             Y -> 440 
     *               Before starting, we can optionally RND to discard 440.
     *           2d) Wrong second number (X register)
-    *               20 ENT 22 * . . . . . . . . . X -> 22
+    *               20 ENT 22 * . . . . . . . . . X -> 22 * 20
+    *               LASTX . . . . . . . . . . . . X -> 22
+    *                                             Y -> 22 * 20
+    *               / . . . . . . . . . . . . . . X -> 20
+    *               23 . . . . . . . . . . . . . .X -> 23
     *                                             Y -> 20
-    *               LASTX
-    *               /
-    *               19
-    *               *
-    *                
-    *
-    *                
+    *               * . . . . . . . . . . . . . . X -> 23 * 20
     */
     void LastX() override;
     /**
