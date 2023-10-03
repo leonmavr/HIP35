@@ -34,6 +34,9 @@ void Hip35::RunUI() {
     while (1) {
         char input_char = getchar();
         const std::string input_char_str = std::string(1, input_char);
+        std::string operation = "";
+        double regx = 0.0;
+        double regy = 0.0;
         if (backend_->IsInFunctions((*frontend_)[input_char_str])) {
             // if the user was typing a number, write it in the stack
             // before doing any calculations with it 
@@ -43,9 +46,9 @@ void Hip35::RunUI() {
             token = std::string(1, input_char);
             // process calculation stuff
             backend_->Calculate((*frontend_)[input_char_str]);
-            const std::string operation = observer_->GetState().first;
-            const double regx = observer_->GetState().second.first; 
-            const double regy = observer_->GetState().second.second; 
+            operation = observer_->GetState().first;
+            regx = observer_->GetState().second.first; 
+            regy = observer_->GetState().second.second; 
             frontend_->PrintRegisters(regx, regy);
             frontend_->HighlightKey(input_char_str, delay_ms_);
             token = "";
@@ -55,21 +58,22 @@ void Hip35::RunUI() {
             if (IsDecimal(token) && !token.empty())
                 backend_->Insert(std::stod(token));
             backend_->Enter();
-            const std::string operation = observer_->GetState().first;
-            const double regx = observer_->GetState().second.first; 
-            const double regy = observer_->GetState().second.second; 
+            operation = observer_->GetState().first;
+            regx = observer_->GetState().second.first; 
+            regy = observer_->GetState().second.second; 
+            frontend_->PrintRegisters(regx, regy);
             frontend_->HighlightKey(input_char_str, delay_ms_);
             token = "";
         } else if (backend_->IsInStackOperations((*frontend_)[input_char_str])) {
             // write currently typed number in the stack first
-            if (IsDecimal(token) && !token.empty())
+            if (IsDecimal(token) && !token.empty() && (input_char != '@'))
                 backend_->Insert(std::stod(token));
             // discard current numerical token, then update it with the operation
             token = std::string(1, input_char);
             backend_->DoStackOperation((*frontend_)[input_char_str]);
-            const std::string operation = observer_->GetState().first;
-            const double regx = observer_->GetState().second.first; 
-            const double regy = observer_->GetState().second.second; 
+            operation = observer_->GetState().first;
+            regx = observer_->GetState().second.first; 
+            regy = observer_->GetState().second.second; 
             frontend_->PrintRegisters(regx, regy);
             frontend_->HighlightKey(input_char_str, delay_ms_);
             token = "";
@@ -85,10 +89,20 @@ void Hip35::RunUI() {
             else
                 token += input_char;
             if (IsDecimal(token)) {
-                // we're about to write to register X so display current token
-                // at register X and the current register X at register Y
-                const double regx = observer_->GetState().second.first; 
-                frontend_->PrintRegisters(std::stod(token), regx);
+                operation = observer_->GetState().first;
+                regx = observer_->GetState().second.first; 
+                regy = observer_->GetState().second.second; 
+                if (operation != "clx") {
+                    // We're about to insert to register X so display current
+                    // token at X as if the stack was lifted already
+                    frontend_->PrintRegisters(std::stod(token), regx);
+                }
+                else {
+                    // The last operation cleared register X so we're
+                    // still writing in X. Y is left untouched
+                    frontend_->PrintRegisters(std::stod(token), regy);
+
+                }
             } else {
                 // invalid input so clear the stack (all 4 registers)
                 backend_->Cls();

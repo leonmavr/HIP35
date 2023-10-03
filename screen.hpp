@@ -35,7 +35,8 @@ public:
      */
     bool DrawKey(const std::string& key, bool highlight = false);
     /**
-     * @brief 
+     * @brief Draw a key, then highlight it for the given number of
+     *        milliseconds, then un-highlight it.
      *
      * @param key Same as in DrawKey
      * @param ms  Duration in ms to keep the key highlighted
@@ -62,6 +63,10 @@ private:
     bool DrawScreen();
     void DrawBox(const std::string& text, const Point& coords,
                  bool highlight = false);
+    /**
+     * @brief Set the dimsnsions of the UI given the keypad grid
+     *        and the key dimensions
+     */
     void SetUiDimensions();
     // keypad short text -> (keypad long text, keypad location x,y) e.g.
     // (l -> (long, (4, 2))
