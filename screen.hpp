@@ -8,7 +8,7 @@
 #include <ncurses.h> // WINDOW 
 #include <termios.h> // termios 
 #include <stdexcept> // invalid_argument
-
+#include <chrono> // milliseconds
 
 namespace Gui {
 
@@ -24,7 +24,26 @@ class Frontend
 public:
     Frontend ();
     ~Frontend () { EndTerminal(); }
+    /**
+     * @brief Draw a calculator's key on the screen. When given a
+     *        (valid) key, the frontend knows where to draw it.
+     *
+     * @param key       Single-length string
+     * @param highlight Whether to highlight it (bold, outline, etc.)
+     *
+     * @return True if the key was valid
+     */
     bool DrawKey(const std::string& key, bool highlight = false);
+    /**
+     * @brief 
+     *
+     * @param key Same as in DrawKey
+     * @param ms  Duration in ms to keep the key highlighted
+     *
+     * @return Same as DrawKey
+     */
+    bool HighlightKey(const std::string& key,
+                      std::chrono::milliseconds ms = std::chrono::milliseconds(100));
     bool PrintRegisters(double regx, double regy);
     // this operator is used to return data (long function names)
     // from key_mappings_
@@ -34,7 +53,6 @@ public:
             return "";
         return key_mappings_.at(key).first;
     }
-
 
 private:
 	void InitKeypadGrid();
@@ -50,11 +68,14 @@ private:
 	std::unordered_map<std::string,
                        std::pair<std::string, Point>> key_mappings_;
 	std::string active_key_;
+    // width, height in characters
     unsigned key_width_;
     unsigned key_height_;
     unsigned screen_height_;
+    // also in characters
     unsigned max_width_pixels_;
     unsigned max_height_pixels_;
+    // whether max_width_pixels_, max_height_pixels_ were set
     bool dimensions_set_;
     // ncurses window (on the terminal) where to draw the keypad
     WINDOW* win_;

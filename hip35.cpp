@@ -3,8 +3,6 @@
 #include "screen.hpp"
 #include "observer.hpp"
 #include <memory> // unique_ptr
-#include <chrono> // sleep_for
-#include <thread> // thread
 
 Hip35::Hip35():
         delay_ms_(std::chrono::milliseconds(100)) {
@@ -49,10 +47,7 @@ void Hip35::RunUI() {
             const double regx = observer_->GetState().second.first; 
             const double regy = observer_->GetState().second.second; 
             frontend_->PrintRegisters(regx, regy);
-            const bool highlight = true;
-            frontend_->DrawKey(input_char_str, highlight);
-            std::this_thread::sleep_for(delay_ms_);
-            frontend_->DrawKey(input_char_str);
+            frontend_->HighlightKey(input_char_str, delay_ms_);
             token = "";
         } else if (input_char == ' '){
             // if the user was typing a number, write it in the stack
@@ -63,11 +58,7 @@ void Hip35::RunUI() {
             const std::string operation = observer_->GetState().first;
             const double regx = observer_->GetState().second.first; 
             const double regy = observer_->GetState().second.second; 
-            frontend_->PrintRegisters(regx, regy);
-            const bool highlight = true;
-            frontend_->DrawKey(input_char_str, highlight);
-            std::this_thread::sleep_for(delay_ms_);
-            frontend_->DrawKey(input_char_str);
+            frontend_->HighlightKey(input_char_str, delay_ms_);
             token = "";
         } else if (backend_->IsInStackOperations((*frontend_)[input_char_str])) {
             // write currently typed number in the stack first
@@ -80,10 +71,7 @@ void Hip35::RunUI() {
             const double regx = observer_->GetState().second.first; 
             const double regy = observer_->GetState().second.second; 
             frontend_->PrintRegisters(regx, regy);
-            const bool highlight = true;
-            frontend_->DrawKey(input_char_str, highlight);
-            std::this_thread::sleep_for(delay_ms_);
-            frontend_->DrawKey(input_char_str);
+            frontend_->HighlightKey(input_char_str, delay_ms_);
             token = "";
         } else if (input_char == 'q') {
             return;
@@ -109,7 +97,6 @@ void Hip35::RunUI() {
                 frontend_->PrintRegisters(regx, regy);
                 token = "";
             }
-            // else invalid input - clear all regs
         }
     }
 }

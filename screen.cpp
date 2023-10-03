@@ -6,6 +6,8 @@
 #include <ncurses.h> // wrefresh, wprintw, etc.
 #include <termios.h> // tcgetattr, tcsetattr
 #include <unistd.h> // STDIN_FILENO
+#include <chrono> // sleep_for, milliseconds
+#include <thread> // this_thread
 
 namespace Gui {
 
@@ -131,6 +133,15 @@ bool Frontend::DrawKey(const std::string& key, bool highlight) {
     DrawBox(text_on_key, top_left_coords, highlight);
 
     found = true;
+    return found;
+}
+
+bool Frontend::HighlightKey(const std::string& key,
+                            std::chrono::milliseconds ms) {
+    bool found = false;
+    found = DrawKey(key, true);
+    std::this_thread::sleep_for(ms);
+    DrawKey(key);
     return found;
 }
 
