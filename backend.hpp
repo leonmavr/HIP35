@@ -4,6 +4,7 @@
 #include "base.hpp"
 #include "observer.hpp"
 #include "stack.hpp"
+#include "keypad.hpp"
 #include <string> // string
 #include <memory> // unique_ptr
 #include <cmath> // sin, cos, tan, log10, sqrt
@@ -90,11 +91,13 @@ namespace Rpn {
 */
 class Backend: public IBackend, public Subject {
 public:
-    Backend();
+    Backend() = delete;
+    Backend(const Key::Keypad& keypad);
     Backend(const Backend& other) :
         stack_(std::make_unique<Stack>(*other.stack_)),
         do_shift_up_(other.do_shift_up_),
-        lastx_(other.lastx_) {}
+        lastx_(other.lastx_),
+        keypad_(other.keypad_) {}
     ~Backend() {}
     /**
      * @brief Swaps values of registers X and Y.
@@ -265,6 +268,7 @@ private:
     double lastx_;
     // shift up (lift) stack after an operation is executed (e.g. +, -, etc.)  
     bool do_shift_up_;
+    const Key::Keypad& keypad_;
 };
 
 

@@ -27,9 +27,10 @@ void Subject::NotifyOperation(const std::string& operation) {
         observer->UpdateOperation(operation);
 }
 
-Rpn::Backend::Backend():
+Rpn::Backend::Backend(const Key::Keypad& keypad):
     stack_(std::make_unique<Stack>()),
-    do_shift_up_(true)
+    do_shift_up_(true),
+    keypad_(keypad)
 {
     // stack-altering operations supported by the calculator
     function_key_0op_["rdn"] =   [this](void) -> void { Rdn(); };
