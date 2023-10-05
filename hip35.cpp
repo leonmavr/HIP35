@@ -2,11 +2,12 @@
 #include "backend.hpp"
 #include "screen.hpp"
 #include "observer.hpp"
+#include "keypad.hpp"
 #include <memory> // unique_ptr
 
 Hip35::Hip35():
         delay_ms_(std::chrono::milliseconds(100)) {
-    backend_ = std::make_unique<Rpn::Backend>();
+    backend_ = std::make_unique<Rpn::Backend>(Key::keypad);
     frontend_ = std::make_unique<Gui::Frontend>();
     observer_ = new Observer;
     // convert unique pointer to regular pointer
@@ -45,7 +46,8 @@ void Hip35::RunUI() {
             // clear the number from the token
             token = std::string(1, input_char);
             // process calculation stuff
-            backend_->Calculate((*frontend_)[input_char_str]);
+            // TODO: sin -> s
+            backend_->Calculate(input_char_str);
             operation = observer_->GetState().first;
             regx = observer_->GetState().second.first; 
             regy = observer_->GetState().second.second; 
@@ -70,7 +72,7 @@ void Hip35::RunUI() {
                 backend_->Insert(std::stod(token));
             // discard current numerical token, then update it with the operation
             token = std::string(1, input_char);
-            backend_->DoStackOperation((*frontend_)[input_char_str]);
+            backend_->DoStackOperation(input_char_str);
             operation = observer_->GetState().first;
             regx = observer_->GetState().second.first; 
             regy = observer_->GetState().second.second; 

@@ -1,6 +1,7 @@
 #include "observer.hpp"
 #include "backend.hpp"
 #include "stack.hpp"
+#include "keypad.hpp"
 #include <iostream> // ostream
 #include <iomanip> // setprecision, fixed
 #include <vector> // vector 
@@ -122,6 +123,7 @@ static std::string ToLowercase(const std::string& input) {
 
 
 double Rpn::Backend::Calculate(std::string operation) {
+    //std::cout << "----------- " << operation << "-------\n";
     // Shift up the stack next time a number is inserted
     do_shift_up_ = true;
     auto& registerX = (*stack_)[IDX_REG_X];
@@ -133,15 +135,18 @@ double Rpn::Backend::Calculate(std::string operation) {
     // because maps always take lowercase keys
     operation = ToLowercase(operation);
 
-    if (function_key_1op_.find(operation) != function_key_1op_.end()) {
+    auto it1 = keypad_.single_arg_keys.find(operation);
+    if (it1 != keypad_.single_arg_keys.end()) {
         // query single operand op/s such as sin, log, etc.
-        registerX  = function_key_1op_[operation](registerX);
+        //registerX  = function_key_1op_[operation](registerX);
+        registerX = std::get<0>(it1->second)(registerX);
         valid_operation = true;
     }
-    if (function_key_2op_.find(operation) != function_key_2op_.end()) {
+    auto it2 = keypad_.double_arg_keys.find(operation);
+    if (it2 != keypad_.double_arg_keys.end()) {
         // query 2-operant operations such as +, /, etc.
-        registerY = function_key_2op_[operation](registerX,
-                                                registerY);
+        registerY = std::get<0>(it2->second)(registerX, registerY);
+        // drop old register X
         stack_->ShiftDown();
         valid_operation = true;
     }
@@ -220,6 +225,7 @@ double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
 }
 
 void Rpn::Backend::DoStackOperation(const std::string& operation) {
+    // TODO: find in keypad
     auto it = function_key_0op_.find(ToLowercase(operation));
     if (it != function_key_0op_.end())
         function_key_0op_[ToLowercase(operation)]();

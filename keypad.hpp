@@ -1,7 +1,6 @@
 #ifndef KEYPAD_HPP
 #define KEYPAD_HPP 
 
-#include "backend.hpp" 
 #include <tuple> // tuple
 #include <utility> // make_tuple
 #include <memory> // unique_ptr
@@ -9,6 +8,7 @@
 #include <string> // string
 #include <functional> // function
 #include <stdexcept> // invalid_argument
+#include <cmath> // invalid_argument
 
 // define key presses to call calculator functions
 // for their implementation see the mapping in this file
@@ -40,6 +40,10 @@
 #define KEY_DIV   "/"
 #define KEY_POWER "^"
 
+namespace Rpn {
+    class Backend;
+}
+
 /**
  * @brief Namespace that encompasses the calculator's keypad.
  *        Keypad is used by the backend to map a function
@@ -56,6 +60,7 @@
  *        two adjacent keys will be (x, y), (x+1, y).
  */
 namespace Key {
+
 /**
 * @brief Point in the keypad grid with top left as origin (0, 0) 
 */
@@ -100,7 +105,7 @@ typedef struct {
  *                 `keypad`. Empty string if not found.
  */
 template <typename T>
-std::string AnnotateKey(T& keypad, const std::string keypress) {
+static std::string AnnotateKey(T& keypad, const std::string keypress) {
     std::string ret = "";
     auto it = keypad.find(keypress);
     if (it == keypad.end())
@@ -118,123 +123,11 @@ std::string AnnotateKey(T& keypad, const std::string keypress) {
 //----------------------------------------------------------------
 // stack-altering functions
 //----------------------------------------------------------------
-StackKeys stack_keys = {
-    {KEY_RDN, std::make_tuple(
-        [](Rpn::Backend& b) -> void { b.Rdn(); },
-        "RDN",
-        Point{2, 3})},
-    {KEY_LASTX, std::make_tuple(
-        [](Rpn::Backend& b) -> void { b.LastX(); },
-        "LASTX",
-        Point{3, 3})},
-    {KEY_SWAP, std::make_tuple(
-        [](Rpn::Backend& b) -> void { b.SwapXY(); },
-        "x<->y",
-        Point{1, 3})},
-    {KEY_ENTER, std::make_tuple(
-        [](Rpn::Backend& b) -> void { b.Enter(); },
-        "ENTER",
-        Point{0, 4})},
-    {KEY_PI, std::make_tuple(
-        [](Rpn::Backend& b) -> void { b.Pi(); },
-        "pi",
-        Point{4, 4})},
-    {KEY_CLX, std::make_tuple(
-        [](Rpn::Backend& b) -> void { b.Clx(); },
-        "CLX",
-        Point{3, 4})},
-    {KEY_CLS, std::make_tuple(
-        [](Rpn::Backend& b) -> void { b.Cls(); },
-        "CLS",
-        Point{4, 0})},
-};
+extern StackKeys stack_keys;
+extern SingleArgKeys single_arg_keys;
+extern DoubleArgKeys double_arg_keys;
 
-//----------------------------------------------------------------
-// Single-argument numeric functions
-//----------------------------------------------------------------
-SingleArgKeys single_arg_keys = {
-    {KEY_CHS, std::make_tuple(
-        [](double x) -> double { return -x; },
-        "chs",
-        Point{1, 4})},
-    {KEY_INV, std::make_tuple(
-        [](double x) -> double { return 1/x; },
-        "1/x",
-        Point{0, 3})},
-    {KEY_SIN, std::make_tuple(
-        [](double x) -> double { return sin(x); },
-        "sin",
-        Point{1, 1})},
-    {KEY_COS, std::make_tuple(
-        [](double x) -> double { return cos(x); },
-        "cos",
-        Point{2, 1})},
-    {KEY_TAN, std::make_tuple(
-        [](double x) -> double { return tan(x); },
-        "tan",
-        Point{3, 1})},
-    {KEY_ASIN, std::make_tuple(
-        [](double x) -> double { return asin(x); },
-        "asin",
-        Point{1, 2})},
-    {KEY_ACOS, std::make_tuple(
-        [](double x) -> double { return acos(x); },
-        "acos",
-        Point{2, 2})},
-    {KEY_ATAN, std::make_tuple(
-        [](double x) -> double { return atan(x); },
-        "atan",
-        Point{3, 2})},
-    {KEY_EXP, std::make_tuple(
-        [](double x) -> double { return exp(x); },
-        "e^x",
-        Point{3, 0})},
-    {KEY_LN, std::make_tuple(
-        [](double x) -> double { return log(x); },
-        "ln",
-        Point{2, 0})},
-    {KEY_LOG10, std::make_tuple(
-        [](double x) -> double { return log10(x); },
-        "log10",
-        Point{1, 0})},
-    {KEY_SQRT, std::make_tuple(
-        [](double x) -> double { return sqrt(x); },
-        "sqrt",
-        Point{0, 1})},
-};
-
-//----------------------------------------------------------------
-// Double argument numeric functions
-//----------------------------------------------------------------
-DoubleArgKeys double_arg_keys = {
-    {KEY_PLUS, std::make_tuple(
-        [](double x, double y) -> double { return x + y; },
-        "+",
-        Point{0, 5})},
-    {KEY_MINUS, std::make_tuple(
-        [](double x, double y) -> double { return y - x; },
-        "y-x",
-        Point{1, 5})},
-    {KEY_MUL, std::make_tuple(
-        [](double x, double y) -> double { return x * y; },
-        "*",
-        Point{2, 5})},
-    {KEY_DIV, std::make_tuple(
-        [](double x, double y) -> double {
-            if (std::fabs(x) < 1e-10)
-                throw std::invalid_argument("[FATAL]: Backend: Division by zero.\n");
-            return y/x; },
-        "y/x",
-        Point{3, 5})},
-    {KEY_POWER, std::make_tuple(
-        [](double x, double y) -> double { return pow(x, y); },
-        "x^y",
-        Point{4, 5})}
-};
-
-Keypad keypad{stack_keys,
-              single_arg_keys,
-              double_arg_keys};
+extern const Keypad keypad;
 } // namespace Key
 
 #endif /* KEYPAD_HPP */
