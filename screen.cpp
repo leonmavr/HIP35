@@ -17,7 +17,7 @@ Frontend::Frontend(const Key::Keypad& keypad):
 	active_key_(""),
     key_width_(12),
     key_height_(3),
-    screen_height_(4),
+    screen_height_(6),
     dimensions_set_(false)
 {
     // state where each button is to be drawn
@@ -115,17 +115,33 @@ void Frontend::InitKeypadGrid() {
 }
 
 bool Frontend::DrawKey(const std::string& key, bool highlight) {
-    bool found = false;
-    const auto it = key_mappings_.find(key);
-    if (it == key_mappings_.end())
+    const auto& it1 = keypad_.stack_keys.find(key);
+    const auto& it2 = keypad_.single_arg_keys.find(key);
+    const auto& it3 = keypad_.double_arg_keys.find(key);
+    const bool found = (it1 != keypad_.stack_keys.end()) ||
+                  (it2 != keypad_.single_arg_keys.end()) ||
+                  (it3 != keypad_.double_arg_keys.end());
+    // invalid input key - return without drawing anything
+    if (!found)
         return found;
 
-    // compile the text on the key, e.g.: l -> log (l)
-    //                                    + -> +
-    std::string text_on_key = key_mappings_[key].first;
-    if (key != key_mappings_[key].first)
-        text_on_key += " (" + key + ")";
-    Point grid_pos = key_mappings_[key].second;
+    Key::Point grid_pos{0, 0};
+    std::string text_on_key = "";
+    // search which map key belongs to and get the info from there
+    if (it1 != keypad_.stack_keys.end()) {
+        grid_pos = std::get<2>(it1->second);
+        //text_on_key = Key::AnnotateKey(
+         //       keypad_.stack_keys, key);
+    } else if (it2 != keypad_.single_arg_keys.end()) {
+        grid_pos = std::get<2>(it2->second);
+        //text_on_key = Key::AnnotateKey(
+         //       keypad_.single_arg_keys, key);
+    } else if (it3 != keypad_.double_arg_keys.end()) {
+        grid_pos = std::get<2>(it3->second);
+        //text_on_key = Key::AnnotateKey(
+         //       keypad_.double_arg_keys, key);
+    }
+    //Point grid_pos = key_mappings_[key].second;
     Point top_left_coords {grid_pos.x * Frontend::key_width_ + 1,
                           screen_height_ + grid_pos.y * Frontend::key_height_};
     // to remove horizontal whitespace between keys
@@ -133,8 +149,6 @@ bool Frontend::DrawKey(const std::string& key, bool highlight) {
     // to remove vertical whitespace between keys
     if (grid_pos.y != 0) top_left_coords.y -= grid_pos.y;
     DrawBox(text_on_key, top_left_coords, highlight);
-
-    found = true;
     return found;
 }
 
