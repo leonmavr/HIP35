@@ -1,6 +1,7 @@
 #ifndef SCREEN_HPP
 #define SCREEN_HPP 
 
+#include "keypad.hpp"
 #include <unordered_map> // unordered_map
 #include <string> // string
 #include <vector> // vector
@@ -22,8 +23,8 @@ typedef struct {
 class Frontend
 {
 public:
-    Frontend ();
-    ~Frontend () { EndTerminal(); }
+    Frontend(const Key::Keypad& keypad);
+    ~Frontend() { EndTerminal(); }
     /**
      * @brief Draw a calculator's key on the screen. When given a
      *        (valid) key, the frontend knows where to draw it.
@@ -87,6 +88,8 @@ private:
     // terminal property settings
     struct termios old_tio_;
     struct termios new_tio_;
+    // reference to keypad - we draw the interface based on it
+    const Key::Keypad& keypad_;
 };
 
 } // namespace Gui

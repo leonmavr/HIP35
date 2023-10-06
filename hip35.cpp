@@ -8,7 +8,7 @@
 Hip35::Hip35():
         delay_ms_(std::chrono::milliseconds(100)) {
     backend_ = std::make_unique<Rpn::Backend>(Key::keypad);
-    frontend_ = std::make_unique<Gui::Frontend>();
+    frontend_ = std::make_unique<Gui::Frontend>(Key::keypad);
     observer_ = new Observer;
     // convert unique pointer to regular pointer
     backend_->Attach(observer_);

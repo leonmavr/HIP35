@@ -1,3 +1,4 @@
+#include "keypad.hpp"
 #include "screen.hpp"
 #include <utility> // make_pair, pair
 #include <string> // to_string
@@ -11,7 +12,8 @@
 
 namespace Gui {
 
-Frontend::Frontend():
+Frontend::Frontend(const Key::Keypad& keypad):
+    keypad_(keypad),
 	active_key_(""),
     key_width_(12),
     key_height_(3),
@@ -36,7 +38,7 @@ void Frontend::SetUiDimensions() {
             max_height_pixels_ = pair.second.second.y;
     }
     // don't forget
-    // -- increment by 1 (since grid counting starts from 0)
+    // -- increment by 1 (to avoid drawing over the left border)
     // -- scale grid positions by width and height
     // -- increment by a small number to leave out some padding
     // to find UI width and height in pixels
