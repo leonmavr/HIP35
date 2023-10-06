@@ -31,25 +31,6 @@ class IBackend {
         virtual void Pi() = 0;
         virtual double Calculate(std::string operation) = 0;
         virtual double CalculateFromString(std::string rpnExpression) = 0;
-    protected:
-        /**
-        * Maps a string that indicates a stack-altering operation into
-        * its corresponding method. The method is defined in this class
-        * and can be Rdn (rotate down), enter, etc.
-        */
-        std::unordered_map<std::string, std::function<void(void)>>
-            function_key_0op_;
-        /**
-        * Maps a string that indicates the calculator's operation to
-        * a function. A function is what the calculator shall perform
-        * after the corresponding operation (string) is pressed. The 
-        * operation takes either the register X (e.g. sin(X)) or the
-        * registers X, Y (e.g. X+Y) as operands.
-        */
-        std::unordered_map<std::string, std::function<double(double)>>
-            function_key_1op_;
-        std::unordered_map<std::string, std::function<double(double, double)>>
-            function_key_2op_;
 };
 
 } /* namespace Rpn */

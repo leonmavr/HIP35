@@ -38,7 +38,17 @@ void Hip35::RunUI() {
         std::string operation = "";
         double regx = 0.0;
         double regy = 0.0;
-        if (backend_->IsInFunctions((*frontend_)[input_char_str])) {
+        auto it1 = Key::keypad.stack_keys.find(input_char_str);
+        const bool is_stack_operation = it1 !=
+                                        Key::keypad.stack_keys.end();
+        auto it2 = Key::keypad.single_arg_keys.find(input_char_str);
+        auto it3 = Key::keypad.double_arg_keys.find(input_char_str);
+        const bool is_numeric_function = (it2 !=
+                Key::keypad.single_arg_keys.end()) ||
+                (it3 !=
+                 Key::keypad.double_arg_keys.end());
+                                        
+        if (is_numeric_function) {
             // if the user was typing a number, write it in the stack
             // before doing any calculations with it 
             if (IsDecimal(token) && !token.empty())
@@ -46,7 +56,6 @@ void Hip35::RunUI() {
             // clear the number from the token
             token = std::string(1, input_char);
             // process calculation stuff
-            // TODO: sin -> s
             backend_->Calculate(input_char_str);
             operation = observer_->GetState().first;
             regx = observer_->GetState().second.first; 
@@ -66,13 +75,19 @@ void Hip35::RunUI() {
             frontend_->PrintRegisters(regx, regy);
             frontend_->HighlightKey(input_char_str, delay_ms_);
             token = "";
-        } else if (backend_->IsInStackOperations((*frontend_)[input_char_str])) {
+        } else if (is_stack_operation) {
             // write currently typed number in the stack first
             if (IsDecimal(token) && !token.empty() && (input_char != '@'))
                 backend_->Insert(std::stod(token));
             // discard current numerical token, then update it with the operation
             token = std::string(1, input_char);
+#if 0
             backend_->DoStackOperation(input_char_str);
+#endif
+            const auto& it = Key::keypad.stack_keys.find(input_char_str);
+            std::get<0>(it->second)(*backend_);
+
+            //std::get<0>(Key::keypad.stack_keys[input_char_str])(backend_);
             operation = observer_->GetState().first;
             regx = observer_->GetState().second.first; 
             regy = observer_->GetState().second.second; 
@@ -94,7 +109,7 @@ void Hip35::RunUI() {
                 operation = observer_->GetState().first;
                 regx = observer_->GetState().second.first; 
                 regy = observer_->GetState().second.second; 
-                if (operation != "clx") {
+                if (operation != KEY_CLX) {
                     // We're about to insert to register X so display current
                     // token at X as if the stack was lifted already
                     frontend_->PrintRegisters(std::stod(token), regx);

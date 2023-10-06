@@ -32,41 +32,7 @@ Rpn::Backend::Backend(const Key::Keypad& keypad):
     stack_(std::make_unique<Stack>()),
     do_shift_up_(true),
     keypad_(keypad)
-{
-    // stack-altering operations supported by the calculator
-    function_key_0op_["rdn"] =   [this](void) -> void { Rdn(); };
-    function_key_0op_["lastx"] = [this](void) -> void { LastX(); };
-    function_key_0op_["swap"] =  [this](void) -> void { SwapXY(); };
-    function_key_0op_["enter"] = [this](void) -> void { Enter(); };
-    function_key_0op_["pi"] =    [this](void) -> void { Pi(); };
-    function_key_0op_["clx"] =   [this](void) -> void { Clx(); };
-    function_key_0op_["cls"] =   [this](void) -> void { Cls(); };
-    // 1-operand numerical operations
-    function_key_1op_["chs"] =   [](double x) -> double { return -x; };
-    function_key_1op_["inv"] =   [](double x) -> double { return 1/x; };
-    function_key_1op_["sin"] =   [](double x) -> double { return sin(x); };
-    function_key_1op_["cos"] =   [](double x) -> double { return cos(x); };
-    function_key_1op_["tan"] =   [](double x) -> double { return tan(x); };
-    function_key_1op_["exp"] =   [](double x) -> double { return exp(x); };
-    function_key_1op_["ln"] =    [](double x) -> double { return log(x); };
-    function_key_1op_["log"] =   [](double x) -> double { return log10(x); };
-    function_key_1op_["sqrt"] =  [](double x) -> double { return sqrt(x); };
-    // 2-operand operations
-    function_key_2op_["+"] =     [](double x, double y) -> double
-                                 { return x + y; };
-    function_key_2op_["-"] =     [](double x, double y) -> double
-                                 { return y - x; };
-    function_key_2op_["*"] =     [](double x, double y) -> double
-                                 { return x * y; };
-    function_key_2op_["/"] =     [](double x, double y) -> double
-    {
-        if (std::fabs(x) < 1e-10)
-            throw std::runtime_error("[FATAL]: Backend: Division by zero.\n");
-        return y/x;
-    };
-    function_key_2op_["^"] =     [](double x, double y) -> double
-        { return pow(y, x); };
-}
+{ }
 
 void Rpn::Backend::Rdn() {
     // we always use the stack pointer because Stack class implements a [] operator
@@ -114,14 +80,6 @@ void Rpn::Backend::LastX() {
     NotifyOperation("lastx");
 }
 
-static std::string ToLowercase(const std::string& input) {
-    std::string ret = input;
-    for (char& c : ret)
-        c = std::tolower(static_cast<unsigned char>(c));
-    return ret;
-}
-
-
 double Rpn::Backend::Calculate(std::string operation) {
     //std::cout << "----------- " << operation << "-------\n";
     // Shift up the stack next time a number is inserted
@@ -133,7 +91,7 @@ double Rpn::Backend::Calculate(std::string operation) {
     lastx_ = registerX;
     bool valid_operation = false;
     // because maps always take lowercase keys
-    operation = ToLowercase(operation);
+    //operation = ToLowercase(operation);
 
     auto it1 = keypad_.single_arg_keys.find(operation);
     if (it1 != keypad_.single_arg_keys.end()) {
@@ -142,6 +100,7 @@ double Rpn::Backend::Calculate(std::string operation) {
         registerX = std::get<0>(it1->second)(registerX);
         valid_operation = true;
     }
+    //std::cout << "------------- " << operation << "----------\n";
     auto it2 = keypad_.double_arg_keys.find(operation);
     if (it2 != keypad_.double_arg_keys.end()) {
         // query 2-operant operations such as +, /, etc.
@@ -200,9 +159,9 @@ double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
     for (const std::string& substring : substrings) {
         // if substring not in dictionary keys, it's a digit so enter it
         // if substring is a digit and previous substring is a digit, press enter before entering it
-        auto it1 = function_key_1op_.find(ToLowercase(substring));
-        auto it2 = function_key_2op_.find(ToLowercase(substring));
-        if (it1 != function_key_1op_.end() || it2 != function_key_2op_.end()) {
+        auto it1 = Key::keypad.single_arg_keys.find(substring);
+        auto it2 = Key::keypad.double_arg_keys.find(substring);
+        if (it1 != Key::keypad.single_arg_keys.end() || it2 != Key::keypad.double_arg_keys.end()) {
             // function key (1-op or 2-op) pressed; do the calculation
             Calculate(substring);
             previous_token_is_digit = false;
@@ -224,29 +183,7 @@ double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
     return (*stack_)[IDX_REG_X];
 }
 
-void Rpn::Backend::DoStackOperation(const std::string& operation) {
-    // TODO: find in keypad
-    auto it = function_key_0op_.find(ToLowercase(operation));
-    if (it != function_key_0op_.end())
-        function_key_0op_[ToLowercase(operation)]();
-}
 
-bool Rpn::Backend::IsInStackOperations(const std::string& string) const {
-    auto it = function_key_0op_.find(ToLowercase(string));
-    if (it != function_key_0op_.end())
-        return true;
-    return false;
-}
-
-bool Rpn::Backend::IsInFunctions(const std::string& string) const {
-    auto it1 = function_key_1op_.find(ToLowercase(string));
-    if (it1 != function_key_1op_.end())
-        return true;
-    auto it2 = function_key_2op_.find(ToLowercase(string));
-    if (it2 != function_key_2op_.end())
-        return true;
-    return false;
-}
 
 
 namespace Rpn {

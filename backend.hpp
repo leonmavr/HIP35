@@ -254,10 +254,6 @@ public:
     /* Insert the value of PI to register X */
     void Pi() override;
     void DoStackOperation(const std::string& operation);
-    /* Whether the input string is in backend's implemented functions */
-    bool IsInFunctions(const std::string& string) const;
-    /* Whether the input string is in backend's implemented stack operations (RDN etc.) */
-    bool IsInStackOperations(const std::string& string) const;
     /* Overrides the << operator for the class, e.g.std::cout << <Instance>; */
     friend std::ostream& operator<<(std::ostream& os, const Backend& backend);
 
