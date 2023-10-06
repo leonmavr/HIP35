@@ -68,6 +68,7 @@ void Rpn::Backend::Enter() {
     // notify class observer since enter manipulates the stack
     NotifyValue(Peek());
     // don't forget to notify the observer so we can use the event later
+    // TODO: address KEY_ENTER
     NotifyOperation("enter");
 }
 
@@ -77,7 +78,7 @@ void Rpn::Backend::LastX() {
     (*stack_)[IDX_REG_X] = lastx_;
     // inform the observer
     NotifyValue(Peek());
-    NotifyOperation("lastx");
+    NotifyOperation(KEY_LASTX);
 }
 
 double Rpn::Backend::Calculate(std::string operation) {
@@ -124,7 +125,7 @@ double Rpn::Backend::Calculate(std::string operation) {
 void Rpn::Backend::Clx() {
     stack_->writeX(0.0);
     // inform the observer 
-    NotifyOperation("clx"); 
+    NotifyOperation(KEY_CLX); 
     NotifyValue(Peek()); 
 }
 
@@ -133,14 +134,14 @@ void Rpn::Backend::Cls() {
     Enter();
     Enter();
     Enter();
-    NotifyOperation("cls"); 
+    NotifyOperation(KEY_CLS); 
     NotifyValue(Peek()); 
 }
 
 void Rpn::Backend::Pi() {
     Insert(M_PI);
     // inform the observer 
-    NotifyOperation("pi"); 
+    NotifyOperation(KEY_PI); 
     NotifyValue(Peek()); 
 }
 

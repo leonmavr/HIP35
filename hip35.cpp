@@ -63,7 +63,8 @@ void Hip35::RunUI() {
             frontend_->PrintRegisters(regx, regy);
             frontend_->HighlightKey(input_char_str, delay_ms_);
             token = "";
-        } else if (input_char == ' '){
+            // TODO -> KEY_ENTER
+        } else if (input_char_str == " "){
             // if the user was typing a number, write it in the stack
             // before pressing enter
             if (IsDecimal(token) && !token.empty())
@@ -81,13 +82,8 @@ void Hip35::RunUI() {
                 backend_->Insert(std::stod(token));
             // discard current numerical token, then update it with the operation
             token = std::string(1, input_char);
-#if 0
-            backend_->DoStackOperation(input_char_str);
-#endif
             const auto& it = Key::keypad.stack_keys.find(input_char_str);
             std::get<0>(it->second)(*backend_);
-
-            //std::get<0>(Key::keypad.stack_keys[input_char_str])(backend_);
             operation = observer_->GetState().first;
             regx = observer_->GetState().second.first; 
             regy = observer_->GetState().second.second; 
@@ -97,7 +93,7 @@ void Hip35::RunUI() {
         } else if (input_char == 'q') {
             return;
         } else {
-            if (token.empty())
+            if (token.empty() && (input_char_str != "@"))
                 token = "0";
             // The symbol - is reserved for functions so use ~ as unary
             // minus. Then replace ~ with - for negative numbers.
@@ -109,7 +105,8 @@ void Hip35::RunUI() {
                 operation = observer_->GetState().first;
                 regx = observer_->GetState().second.first; 
                 regy = observer_->GetState().second.second; 
-                if (operation != KEY_CLX) {
+                // TODO: KEY_CLX
+                if (operation != "@") {
                     // We're about to insert to register X so display current
                     // token at X as if the stack was lifted already
                     frontend_->PrintRegisters(std::stod(token), regx);

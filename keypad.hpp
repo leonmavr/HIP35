@@ -10,6 +10,7 @@
 #include <stdexcept> // invalid_argument
 #include <cmath> // invalid_argument
 
+// TODO: put these in Key namespace
 // define key presses to call calculator functions
 // for their implementation see the mapping in this file
 // keys that manipulate the stack
@@ -105,13 +106,10 @@ typedef struct {
  *                 `keypad`. Empty string if not found.
  */
 template <typename T>
-static std::string AnnotateKey(T& keypad, const std::string keypress) {
+static std::string AnnotateKey(T& it, const std::string keypress) {
     std::string ret = "";
-    auto it = keypad.find(keypress);
-    if (it == keypad.end())
-        return ret;
     const std::string& key_short = keypress;
-    const auto& tuple = keypad[keypress];
+    const auto& tuple = it->second;
     const std::string& key_long = std::get<1>(tuple);
     if (key_short == key_long)
         ret = key_short;

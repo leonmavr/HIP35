@@ -78,6 +78,7 @@ void Frontend::SetUiDimensions() {
  *        ...
  */
 void Frontend::InitKeypadGrid() {
+#if 1
     // for the original positioning of the keys see:
     // https://upload.wikimedia.org/wikipedia/commons/3/34/HP-35_Red_Dot.jpg
     // Start from row 1 (y=1) since row 0 is reserved for the display 
@@ -107,8 +108,9 @@ void Frontend::InitKeypadGrid() {
 	key_mappings_["@"] = std::make_pair("clx",   Point{1, 5});
 	key_mappings_["$"] = std::make_pair("cls",   Point{2, 5});
 	key_mappings_["C"] = std::make_pair("chs",   Point{3, 5});
-   
+#endif 
     // records the dimensions of the UI in pixels
+    // TODO: read from keypad to do that
     SetUiDimensions();
     // so that ncurses knows it's not dealing with garbage dimension values
     dimensions_set_ = true;
@@ -130,16 +132,16 @@ bool Frontend::DrawKey(const std::string& key, bool highlight) {
     // search which map key belongs to and get the info from there
     if (it1 != keypad_.stack_keys.end()) {
         grid_pos = std::get<2>(it1->second);
-        //text_on_key = Key::AnnotateKey(
-         //       keypad_.stack_keys, key);
+        text_on_key = Key::AnnotateKey(
+               it1, key);
     } else if (it2 != keypad_.single_arg_keys.end()) {
         grid_pos = std::get<2>(it2->second);
-        //text_on_key = Key::AnnotateKey(
-         //       keypad_.single_arg_keys, key);
+        text_on_key = Key::AnnotateKey(
+               it2, key);
     } else if (it3 != keypad_.double_arg_keys.end()) {
         grid_pos = std::get<2>(it3->second);
-        //text_on_key = Key::AnnotateKey(
-         //       keypad_.double_arg_keys, key);
+        text_on_key = Key::AnnotateKey(
+               it3, key);
     }
     //Point grid_pos = key_mappings_[key].second;
     Point top_left_coords {grid_pos.x * Frontend::key_width_ + 1,
@@ -250,7 +252,11 @@ void Frontend::EndTerminal() {
 }
 
 bool Frontend::DrawKeypad() {
-    for (const auto& pair : key_mappings_)
+    for (const auto& pair : keypad_.stack_keys)
+        DrawKey(pair.first);
+    for (const auto& pair : keypad_.single_arg_keys)
+        DrawKey(pair.first);
+    for (const auto& pair : keypad_.double_arg_keys)
         DrawKey(pair.first);
     return dimensions_set_; 
 }
