@@ -82,39 +82,7 @@ void Frontend::SetUiDimensions() {
  *        ...
  */
 void Frontend::InitKeypadGrid() {
-#if 0
-    // for the original positioning of the keys see:
-    // https://upload.wikimedia.org/wikipedia/commons/3/34/HP-35_Red_Dot.jpg
-    // Start from row 1 (y=1) since row 0 is reserved for the display 
-    //     key to press    backend function to call    grid (x, y)
-	key_mappings_["L"] = std::make_pair("log",   Point{0, 1});
-	key_mappings_["l"] = std::make_pair("ln",    Point{1, 1});
-	key_mappings_["e"] = std::make_pair("exp",   Point{2, 1});
-
-	key_mappings_["S"] = std::make_pair("sqrt",  Point{0, 2});
-	key_mappings_["s"] = std::make_pair("sin",   Point{1, 2});
-	key_mappings_["c"] = std::make_pair("cos",   Point{2, 2});
-	key_mappings_["t"] = std::make_pair("tan",   Point{3, 2});
-
-	key_mappings_["i"] = std::make_pair("inv",   Point{0, 3});
-	key_mappings_["<"] = std::make_pair("swap",  Point{1, 3});
-	key_mappings_["v"] = std::make_pair("rdn",   Point{2, 3});
-	key_mappings_["x"] = std::make_pair("lastx", Point{3, 3});
-	key_mappings_["p"] = std::make_pair("pi",    Point{4, 3});
-
-	key_mappings_["+"] = std::make_pair("+",     Point{0, 4});
-	key_mappings_["-"] = std::make_pair("-",     Point{1, 4});
-	key_mappings_["*"] = std::make_pair("*",     Point{2, 4});
-	key_mappings_["/"] = std::make_pair("/",     Point{3, 4});
-	key_mappings_["^"] = std::make_pair("^",     Point{4, 4});
-
-	key_mappings_[" "] = std::make_pair("enter", Point{0, 5});
-	key_mappings_["@"] = std::make_pair("clx",   Point{1, 5});
-	key_mappings_["$"] = std::make_pair("cls",   Point{2, 5});
-	key_mappings_["C"] = std::make_pair("chs",   Point{3, 5});
-#endif 
     // records the dimensions of the UI in pixels
-    // TODO: read from keypad to do that
     SetUiDimensions();
     // so that ncurses knows it's not dealing with garbage dimension values
     dimensions_set_ = true;
