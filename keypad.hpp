@@ -70,20 +70,26 @@ typedef struct {
 
 
 // alias the really long key types
+/**
+ * @brief 
+ */
 using StackKeys = std::unordered_map<std::string, std::tuple<
                                 std::function<void(Rpn::Backend& b)>,
                                 std::string,
-                                Point>>;
+                                Point,
+                                std::string>>;
 
 using SingleArgKeys = std::unordered_map<std::string, std::tuple<
                                 std::function<double(double)>,
                                 std::string,
-                                Point>>;
+                                Point,
+                                std::string>>;
 
 using DoubleArgKeys = std::unordered_map<std::string, std::tuple<
                                 std::function<double(double, double)>,
                                 std::string,
-                                Point>>;
+                                Point,
+                                std::string>>;
 
 typedef struct {
     StackKeys stack_keys;
