@@ -63,8 +63,7 @@ void Hip35::RunUI() {
             frontend_->PrintRegisters(regx, regy);
             frontend_->HighlightKey(input_char_str, delay_ms_);
             token = "";
-            // TODO -> KEY_ENTER
-        } else if (input_char_str == " "){
+        } else if (input_char_str == Key::kKeyEnter){
             // if the user was typing a number, write it in the stack
             // before pressing enter
             if (IsDecimal(token) && !token.empty())
@@ -105,8 +104,7 @@ void Hip35::RunUI() {
                 operation = observer_->GetState().first;
                 regx = observer_->GetState().second.first; 
                 regy = observer_->GetState().second.second; 
-                // TODO: KEY_CLX
-                if (operation != "@") {
+                if (operation != Key::kKeyClx) {
                     // We're about to insert to register X so display current
                     // token at X as if the stack was lifted already
                     frontend_->PrintRegisters(std::stod(token), regx);

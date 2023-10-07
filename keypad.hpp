@@ -10,37 +10,6 @@
 #include <stdexcept> // invalid_argument
 #include <cmath> // invalid_argument
 
-// TODO: put these in Key namespace
-// define key presses to call calculator functions
-// for their implementation see the mapping in this file
-// keys that manipulate the stack
-#define KEY_RDN   "v"
-#define KEY_LASTX "x"
-#define KEY_SWAP  "<"
-#define KEY_ENTER " "
-#define KEY_PI    "p"
-#define KEY_CLX   "@"
-#define KEY_CLS   "$"
-// numerical operations with 1 argument
-#define KEY_CHS   "!"
-#define KEY_INV   "i"
-#define KEY_SIN   "s"
-#define KEY_COS   "c"
-#define KEY_TAN   "t"
-#define KEY_ASIN  "S"
-#define KEY_ACOS  "C"
-#define KEY_ATAN  "T"
-#define KEY_EXP   "e"
-#define KEY_LN    "l"
-#define KEY_LOG10 "L"
-#define KEY_SQRT  "r"
-// numerical operations with 2 arguments
-#define KEY_PLUS  "+"
-#define KEY_MINUS "-"
-#define KEY_MUL   "*"
-#define KEY_DIV   "/"
-#define KEY_POWER "^"
-
 namespace Rpn {
     class Backend;
 }
@@ -61,6 +30,36 @@ namespace Rpn {
  *        two adjacent keys will be (x, y), (x+1, y).
  */
 namespace Key {
+
+// define key presses to call calculator functions
+// for their implementation see the mapping in this file
+// keys that manipulate the stack
+const std::string kKeyRdn   = "v";
+const std::string kKeyLastX = "x";
+const std::string kKeySwap  = "<";
+const std::string kKeyEnter = " ";
+const std::string kKeyPi    = "p";
+const std::string kKeyClx   = "@";
+const std::string kKeyCls   = "$";
+// numerical operations with 1 argument
+const std::string kKeyChs   = "!";
+const std::string kKeyInv   = "i";
+const std::string kKeySin   = "s";
+const std::string kKeyCos   = "c";
+const std::string kKeyTan   = "t";
+const std::string kKeyAsin  = "S";
+const std::string kKeyAcos  = "C";
+const std::string kKeyAtan  = "T";
+const std::string kKeyExp   = "e";
+const std::string kKeyLn    = "l";
+const std::string kKeyLog10 = "L";
+const std::string kKeySqrt  = "r";
+// numerical operations with 2 arguments
+const std::string kKeyPlus  = "+";
+const std::string kKeyMinus = "-";
+const std::string kKeyMul   = "*";
+const std::string kKeyDiv   = "/";
+const std::string kKeyPower = "^";
 
 /**
 * @brief Point in the keypad grid with top left as origin (0, 0) 

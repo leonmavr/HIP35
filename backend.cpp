@@ -42,14 +42,14 @@ void Rpn::Backend::Rdn() {
     (*stack_)[(*stack_).size() - 1] = old_first;
     // inform the observer
     NotifyValue(Peek());
-    NotifyOperation("rdn");
+    NotifyOperation(Key::kKeyRdn);
 }
 
 void Rpn::Backend::SwapXY() {
     std::swap((*stack_)[IDX_REG_X], (*stack_)[IDX_REG_Y]);
     // inform the observer
     NotifyValue(Peek());
-    NotifyOperation("swap");
+    NotifyOperation(Key::kKeySwap);
 }
 
 void Rpn::Backend::Insert(double num) {
@@ -68,8 +68,7 @@ void Rpn::Backend::Enter() {
     // notify class observer since enter manipulates the stack
     NotifyValue(Peek());
     // don't forget to notify the observer so we can use the event later
-    // TODO: address KEY_ENTER
-    NotifyOperation("enter");
+    NotifyOperation(Key::kKeyEnter);
 }
 
 void Rpn::Backend::LastX() {
@@ -78,7 +77,7 @@ void Rpn::Backend::LastX() {
     (*stack_)[IDX_REG_X] = lastx_;
     // inform the observer
     NotifyValue(Peek());
-    NotifyOperation(KEY_LASTX);
+    NotifyOperation(Key::kKeyLastX);
 }
 
 double Rpn::Backend::Calculate(std::string operation) {
@@ -101,7 +100,6 @@ double Rpn::Backend::Calculate(std::string operation) {
         registerX = std::get<0>(it1->second)(registerX);
         valid_operation = true;
     }
-    //std::cout << "------------- " << operation << "----------\n";
     auto it2 = keypad_.double_arg_keys.find(operation);
     if (it2 != keypad_.double_arg_keys.end()) {
         // query 2-operant operations such as +, /, etc.
@@ -125,7 +123,7 @@ double Rpn::Backend::Calculate(std::string operation) {
 void Rpn::Backend::Clx() {
     stack_->writeX(0.0);
     // inform the observer 
-    NotifyOperation(KEY_CLX); 
+    NotifyOperation(Key::kKeyClx); 
     NotifyValue(Peek()); 
 }
 
@@ -134,14 +132,14 @@ void Rpn::Backend::Cls() {
     Enter();
     Enter();
     Enter();
-    NotifyOperation(KEY_CLS); 
+    NotifyOperation(Key::kKeyCls); 
     NotifyValue(Peek()); 
 }
 
 void Rpn::Backend::Pi() {
     Insert(M_PI);
     // inform the observer 
-    NotifyOperation(KEY_PI); 
+    NotifyOperation(Key::kKeyPi); 
     NotifyValue(Peek()); 
 }
 
