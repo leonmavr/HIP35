@@ -31,11 +31,14 @@ Frontend::Frontend(const Key::Keypad& keypad):
 void Frontend::SetUiDimensions() {
     max_width_pixels_ = 0;
     max_height_pixels_ = 0;
-    for (const auto& pair: key_mappings_) {
-        if (pair.second.second.x > max_width_pixels_)
-            max_width_pixels_ = pair.second.second.x;
-        if (pair.second.second.y > max_height_pixels_)
-            max_height_pixels_ = pair.second.second.y;
+    for (const auto& pair: keypad_.stack_keys) {
+        auto const& tuple = pair.second;
+        const unsigned grid_x = std::get<2>(tuple).x;
+        const unsigned grid_y = std::get<2>(tuple).y;
+        if (grid_x > max_width_pixels_)
+            max_width_pixels_ = grid_x;
+        if (grid_y > max_height_pixels_)
+            max_height_pixels_ = grid_y;
     }
     // don't forget
     // -- increment by 1 (to avoid drawing over the left border)
@@ -47,10 +50,11 @@ void Frontend::SetUiDimensions() {
     max_height_pixels_ += 1;
     max_width_pixels_ *= key_width_;
     max_height_pixels_ *= key_height_;
+    // offset by screen size
+    max_height_pixels_ += screen_height_; 
     // leave out some padding
     max_width_pixels_ += 4;
-    max_height_pixels_ += 4;
-
+    max_height_pixels_ += 2;
 }
 
 /**
@@ -78,7 +82,7 @@ void Frontend::SetUiDimensions() {
  *        ...
  */
 void Frontend::InitKeypadGrid() {
-#if 1
+#if 0
     // for the original positioning of the keys see:
     // https://upload.wikimedia.org/wikipedia/commons/3/34/HP-35_Red_Dot.jpg
     // Start from row 1 (y=1) since row 0 is reserved for the display 
