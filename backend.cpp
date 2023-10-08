@@ -32,7 +32,16 @@ Rpn::Backend::Backend(const Key::Keypad& keypad):
     stack_(std::make_unique<Stack>()),
     do_shift_up_(true),
     keypad_(keypad)
-{ }
+{ 
+    // map functions that can be input in non-interactive mode into
+    // single key presses that the calculator accepts, e.g. LN -> l
+    for (const auto& pair: keypad_.stack_keys)
+        reverse_keys_[std::get<3>(pair.second)] = pair.first;
+    for (const auto& pair: keypad_.single_arg_keys)
+        reverse_keys_[std::get<3>(pair.second)] = pair.first;
+    for (const auto& pair: keypad_.double_arg_keys)
+        reverse_keys_[std::get<3>(pair.second)] = pair.first;
+}
 
 void Rpn::Backend::Rdn() {
     // we always use the stack pointer because Stack class implements a [] operator
@@ -59,7 +68,6 @@ void Rpn::Backend::Insert(double num) {
     // notify class observers about new value
     NotifyValue(Peek());
 }
-
 
 void Rpn::Backend::Enter() {
     stack_->ShiftUp();

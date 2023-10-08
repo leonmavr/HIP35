@@ -129,8 +129,8 @@ static std::string AnnotateKey(T& it, const std::string keypress) {
 extern StackKeys stack_keys;
 extern SingleArgKeys single_arg_keys;
 extern DoubleArgKeys double_arg_keys;
-
 extern const Keypad keypad;
+
 } // namespace Key
 
 #endif /* KEYPAD_HPP */

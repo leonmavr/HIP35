@@ -264,7 +264,18 @@ private:
     double lastx_;
     // shift up (lift) stack after an operation is executed (e.g. +, -, etc.)  
     bool do_shift_up_;
+    // reference to a keypad that describes the calculator's key configuration
     const Key::Keypad& keypad_;
+    /**
+     * @brief Maps a key description back to input key, e.g.
+     *        LOG10 -> L. The purpose of this is to be able to
+     *        convert functions in non-interactive mode (parsing
+     *        from string) into functions understood by the class,
+     *        e.g. 2 10 LOG10 -> 2 10 l. Then, "l" is mapped to an
+     *        actual function (std::functional) and log10(10) takes
+     *        place.
+     */
+    std::unordered_map<std::string, std::string> reverse_keys_;
 };
 
 
