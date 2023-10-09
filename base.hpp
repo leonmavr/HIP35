@@ -22,14 +22,22 @@ class IBackend {
         virtual void SwapXY() = 0;
         /* Returns the values of two registers, e.g. X and Y */
         virtual std::pair<double, double> Peek() const = 0;
+        /* Insert a number */
         virtual void Insert(double num) = 0;
+
+        // stack-altering functions
         virtual void Rdn() = 0;
         virtual void Enter() = 0;
         virtual void LastX() = 0;
         virtual void Clx() = 0;
         virtual void Cls() = 0;
         virtual void Pi() = 0;
+        virtual void Sto(std::size_t idx) = 0;
+        virtual void Rcl(std::size_t idx) = 0;
+
+        // insert a token (operation/operand) and return curent result
         virtual double Calculate(std::string operation) = 0;
+        // perform calculation in from string parsing (non-interactive mode)
         virtual double CalculateFromString(std::string rpnExpression) = 0;
 };
 

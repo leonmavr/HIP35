@@ -277,6 +277,12 @@ static std::string padString(const std::string& input, std::size_t N) {
     }
 }
 
+static std::string DoubleToScientific(double number, int precision) {
+    std::ostringstream oss;
+    oss << std::scientific << std::setprecision(precision) << number;
+    return oss.str();
+}
+
 bool Frontend::PrintRegisters(double regx, double regy) {
     const unsigned screen_width = max_width_pixels_ - 4;
     std::string regx_string = std::to_string(regx);

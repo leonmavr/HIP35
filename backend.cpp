@@ -31,7 +31,8 @@ void Subject::NotifyOperation(const std::string& operation) {
 Rpn::Backend::Backend(const Key::Keypad& keypad):
     stack_(std::make_unique<Stack>()),
     do_shift_up_(true),
-    keypad_(keypad)
+    keypad_(keypad),
+    sto_regs_({0})
 { 
     // map functions that can be input in non-interactive mode into
     // single key presses that the calculator accepts, e.g. LN -> l
@@ -150,6 +151,22 @@ void Rpn::Backend::Pi() {
     NotifyValue(Peek()); 
 }
 
+void Rpn::Backend::Sto(std::size_t idx) {
+    // silently ignore errors
+    if (idx > sto_regs_.size())
+        return;
+    // TODO:
+
+}
+
+void Rpn::Backend::Rcl(std::size_t idx) {
+    // silently ignore errors
+    if (idx > sto_regs_.size())
+        return;
+    // TODO:
+
+}
+
 double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
     // split input by spaces
     std::istringstream iss(rpnExpression);
@@ -207,8 +224,6 @@ double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
     }
     return (*stack_)[IDX_REG_X];
 }        
-
-
 
 
 namespace Rpn {

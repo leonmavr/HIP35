@@ -11,6 +11,7 @@
 #include <stdexcept> // runtime_error
 #include <vector> // vector
 #include <utility> // make_pair, pair
+#include <array> // array 
 
 /**
  * @brief Subject class to observe in the observer design pattern.
@@ -97,7 +98,8 @@ public:
         stack_(std::make_unique<Stack>(*other.stack_)),
         do_shift_up_(other.do_shift_up_),
         lastx_(other.lastx_),
-        keypad_(other.keypad_) {}
+        keypad_(other.keypad_),
+        sto_regs_(other.sto_regs_) {}
     ~Backend() {}
     /**
      * @brief Swaps values of registers X and Y.
@@ -253,16 +255,24 @@ public:
     void Cls() override;
     /* Insert the value of PI to register X */
     void Pi() override;
+    void Sto(std::size_t idx) override;
+    void Rcl(std::size_t idx) override;
     void DoStackOperation(const std::string& operation);
     /* Overrides the << operator for the class, e.g.std::cout << <Instance>; */
     friend std::ostream& operator<<(std::ostream& os, const Backend& backend);
 
 private:
-    // owns the object - unique_ptr manages its lifetime and deallocation
+    // owns the stack - unique_ptr manages its lifetime and deallocation
     std::unique_ptr<Stack> stack_;
-    // LASTX register; stores the value of X before a function is executed
+    /**
+     * @brief General purpose storage registers (indexed 0 to 9) to
+     *        store constants or intermediate results.
+     */
+    std::array<double, 10> sto_regs_;
+    // LASTX register; stores the value of X before a function is invoked 
     double lastx_;
-    // shift up (lift) stack after an operation is executed (e.g. +, -, etc.)  
+    // shift up (lift) stack after an operation is executed (e.g. +, -, etc.)
+    // to make space for a new operand
     bool do_shift_up_;
     // reference to a keypad that describes the calculator's key configuration
     const Key::Keypad& keypad_;
