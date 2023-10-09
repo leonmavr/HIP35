@@ -89,7 +89,6 @@ void Rpn::Backend::LastX() {
 }
 
 double Rpn::Backend::Calculate(std::string operation) {
-    //std::cout << "----------- " << operation << "-------\n";
     // Shift up the stack next time a number is inserted
     do_shift_up_ = true;
     auto& registerX = (*stack_)[IDX_REG_X];
@@ -163,32 +162,51 @@ double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
         substrings.push_back(token);
 
     bool previous_token_is_digit = false;
-    for (const std::string& substring : substrings) {
+    for (std::string& substring : substrings) {
+        // convert to upper
+        std::transform(substring.begin(), substring.end(), substring.begin(),
+                       [](unsigned char c) { return std::toupper(c); });
+
+        const auto keypress = reverse_keys_[substring];
         // if substring not in dictionary keys, it's a digit so enter it
         // if substring is a digit and previous substring is a digit, press enter before entering it
-        auto it1 = Key::keypad.single_arg_keys.find(substring);
-        auto it2 = Key::keypad.double_arg_keys.find(substring);
-        if (it1 != Key::keypad.single_arg_keys.end() || it2 != Key::keypad.double_arg_keys.end()) {
+        const auto it1 = Key::keypad.stack_keys.find(keypress);
+        const auto it2 = Key::keypad.single_arg_keys.find(keypress);
+        const auto it3 = Key::keypad.double_arg_keys.find(keypress);
+        const bool is_stack_op = it1 != Key::keypad.stack_keys.end();
+        const bool is_numeric_op =
+            (it2 != Key::keypad.single_arg_keys.end()) ||
+            (it3 != Key::keypad.double_arg_keys.end());
+        if (is_numeric_op) {
             // function key (1-op or 2-op) pressed; do the calculation
-            Calculate(substring);
+            Calculate(keypress);
+            previous_token_is_digit = false;
+        } else if (is_stack_op) {
+            const auto it = keypad_.stack_keys.find(keypress);
+            std::get<0>(it->second)(*this);
             previous_token_is_digit = false;
         } else {
+
             // number was entered
             if (previous_token_is_digit) {
                 // press enter to separate the numbers
                 Enter();
             }
             try {
+                // negative number tokens behin with ~ so replace it
+                // with - before inserting it
+                if (substring[0] == '~')
+                    substring = "-" + substring.substr(1);
                 Insert(std::stod(substring));
             } catch (const std::invalid_argument& e) {
                 std::cerr << "Invalid input: " + substring + " at "
-                << e.what() << std::endl;
+                    << e.what() << std::endl;
             }
-            previous_token_is_digit = true;
         }
-    }        
+        previous_token_is_digit = true;
+    }
     return (*stack_)[IDX_REG_X];
-}
+}        
 
 
 
