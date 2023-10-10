@@ -49,6 +49,14 @@ private:
 
 namespace Rpn {
 
+typedef enum {
+    kTypeNone = 0,       // how the clas is initialized
+    kTypeOperand,        // essentially number
+    kTypeStack,          // e.g. SWAP, RDN
+    kTypeNumeric,        // e.g. +, SIN
+    kTypeStorage         // storage, load in general registers
+} TokenType;
+
 /**
 * @brief Implements a reverse Polish notation (RPN) calculator [1].
 *        The architecture more or less follows the basic architecture
@@ -99,7 +107,8 @@ public:
         do_shift_up_(other.do_shift_up_),
         lastx_(other.lastx_),
         keypad_(other.keypad_),
-        sto_regs_(other.sto_regs_) {}
+        sto_regs_(other.sto_regs_),
+        last_token_type_(other.last_token_type_) {}
     ~Backend() {}
     /**
      * @brief Swaps values of registers X and Y.
@@ -274,6 +283,8 @@ private:
     // shift up (lift) stack after an operation is executed (e.g. +, -, etc.)
     // to make space for a new operand
     bool do_shift_up_;
+    // what the last token is
+    TokenType last_token_type_;
     // reference to a keypad that describes the calculator's key configuration
     const Key::Keypad& keypad_;
     /**

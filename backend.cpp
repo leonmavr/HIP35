@@ -32,7 +32,8 @@ Rpn::Backend::Backend(const Key::Keypad& keypad):
     stack_(std::make_unique<Stack>()),
     do_shift_up_(true),
     keypad_(keypad),
-    sto_regs_({0})
+    sto_regs_({0}),
+    last_token_type_(Rpn::kTypeNone)
 { 
     // map functions that can be input in non-interactive mode into
     // single key presses that the calculator accepts, e.g. LN -> l
@@ -155,16 +156,14 @@ void Rpn::Backend::Sto(std::size_t idx) {
     // silently ignore errors
     if (idx > sto_regs_.size())
         return;
-    // TODO:
-
+    sto_regs_[idx] = (*stack_)[IDX_REG_X];
 }
 
 void Rpn::Backend::Rcl(std::size_t idx) {
     // silently ignore errors
     if (idx > sto_regs_.size())
         return;
-    // TODO:
-
+    (*stack_)[IDX_REG_X] = sto_regs_[idx];
 }
 
 double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
@@ -179,6 +178,7 @@ double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
         substrings.push_back(token);
 
     bool previous_token_is_digit = false;
+    TokenType token_type = kTypeNone;
     for (std::string& substring : substrings) {
         // convert to upper
         std::transform(substring.begin(), substring.end(), substring.begin(),

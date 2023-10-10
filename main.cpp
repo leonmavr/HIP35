@@ -7,12 +7,12 @@
 
 
 int main() {
-#if 1
+#if 0
     auto hp = Hip35();
     hp.RunUI();
     getchar();
 #else
     auto b = Rpn::Backend(Key::keypad);
-    std::cout << b.CalculateFromString("12 2 Ln LASTX ~10 +") << std::endl;;
+    std::cout << b.CalculateFromString("16 18 * LASTX / 19 *") << std::endl;;
 #endif
 }
