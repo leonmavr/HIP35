@@ -32,8 +32,7 @@ Rpn::Backend::Backend(const Key::Keypad& keypad):
     stack_(std::make_unique<Stack>()),
     do_shift_up_(true),
     keypad_(keypad),
-    sto_regs_({0}),
-    last_token_type_(Rpn::kTypeNone)
+    sto_regs_({0})
 { 
     // map functions that can be input in non-interactive mode into
     // single key presses that the calculator accepts, e.g. LN -> l
@@ -177,14 +176,15 @@ double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
     while (iss >> token)
         substrings.push_back(token);
 
-    bool previous_token_is_digit = false;
-    TokenType token_type = kTypeNone;
     for (std::string& substring : substrings) {
         // convert to upper
         std::transform(substring.begin(), substring.end(), substring.begin(),
                        [](unsigned char c) { return std::toupper(c); });
 
         const auto keypress = reverse_keys_[substring];
+        // what type the last token was, e.g. number, operation, etc.
+        auto token_type = kTypeNone;
+        
         // if substring not in dictionary keys, it's a digit so enter it
         // if substring is a digit and previous substring is a digit, press enter before entering it
         const auto it1 = Key::keypad.stack_keys.find(keypress);
@@ -197,15 +197,14 @@ double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
         if (is_numeric_op) {
             // function key (1-op or 2-op) pressed; do the calculation
             Calculate(keypress);
-            previous_token_is_digit = false;
+            token_type = kTypeNumeric;
         } else if (is_stack_op) {
             const auto it = keypad_.stack_keys.find(keypress);
-            std::get<0>(it->second)(*this);
-            previous_token_is_digit = false;
+            std::get<0>(it->second)(*this); // call the stakc method
+            token_type = kTypeStack;
         } else {
-
             // number was entered
-            if (previous_token_is_digit) {
+            if (token_type == kTypeOperand) {
                 // press enter to separate the numbers
                 Enter();
             }
@@ -220,7 +219,7 @@ double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
                     << e.what() << std::endl;
             }
         }
-        previous_token_is_digit = true;
+        token_type = kTypeOperand;
     }
     return (*stack_)[IDX_REG_X];
 }        

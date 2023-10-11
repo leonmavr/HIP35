@@ -7,7 +7,7 @@
 
 
 int main() {
-#if 0
+#if 1
     auto hp = Hip35();
     hp.RunUI();
     getchar();
