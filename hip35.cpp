@@ -33,21 +33,22 @@ static bool IsDecimal(const std::string& str) {
 void Hip35::RunUI() {
     std::string token = "";
     while (1) {
-        char input_char = getchar();
-        const std::string input_char_str = std::string(1, input_char);
+        unsigned char c = getchar();
+        const std::string keypress = std::string(1, c);
         std::string operation = "";
         double regx = 0.0;
         double regy = 0.0;
-        const auto it1 = Key::keypad.stack_keys.find(input_char_str);
+
+        const auto it1 = Key::keypad.stack_keys.find(keypress);
         const bool is_stack_operation = it1 !=
                                         Key::keypad.stack_keys.end();
-        const auto it2 = Key::keypad.single_arg_keys.find(input_char_str);
-        const auto it3 = Key::keypad.double_arg_keys.find(input_char_str);
+        const auto it2 = Key::keypad.single_arg_keys.find(keypress);
+        const auto it3 = Key::keypad.double_arg_keys.find(keypress);
         const bool is_numeric_function = (it2 !=
                 Key::keypad.single_arg_keys.end()) ||
                 (it3 !=
                  Key::keypad.double_arg_keys.end());
-        const auto it4 = Key::keypad.storage_keys.find(input_char_str);
+        const auto it4 = Key::keypad.storage_keys.find(keypress);
         const bool is_storage_function = it4 != Key::keypad.storage_keys.end();
                                         
         if (is_numeric_function) {
@@ -56,16 +57,16 @@ void Hip35::RunUI() {
             if (IsDecimal(token) && !token.empty())
                 backend_->Insert(std::stod(token));
             // clear the number from the token
-            token = std::string(1, input_char);
+            token = keypress;
             // process calculation stuff
-            backend_->Calculate(input_char_str);
+            backend_->Calculate(keypress);
             operation = observer_->GetState().first;
             regx = observer_->GetState().second.first; 
             regy = observer_->GetState().second.second; 
             frontend_->PrintRegisters(regx, regy);
-            frontend_->HighlightKey(input_char_str, delay_ms_);
+            frontend_->HighlightKey(keypress, delay_ms_);
             token = "";
-        } else if (input_char_str == Key::kKeyEnter){
+        } else if (keypress == Key::kKeyEnter){
             // if the user was typing a number, write it in the stack
             // before pressing enter
             if (IsDecimal(token) && !token.empty())
@@ -75,41 +76,41 @@ void Hip35::RunUI() {
             regx = observer_->GetState().second.first; 
             regy = observer_->GetState().second.second; 
             frontend_->PrintRegisters(regx, regy);
-            frontend_->HighlightKey(input_char_str, delay_ms_);
+            frontend_->HighlightKey(keypress, delay_ms_);
             token = "";
         } else if (is_stack_operation) {
             // write currently typed number in the stack first
-            if (IsDecimal(token) && !token.empty() && (input_char_str != Key::kKeyClx))
+            if (IsDecimal(token) && !token.empty() && (keypress != Key::kKeyClx))
                 backend_->Insert(std::stod(token));
             // discard current numerical token, then update it with the operation
-            token = std::string(1, input_char);
-            const auto it = Key::keypad.stack_keys.find(input_char_str);
+            token = keypress;
+            const auto it = Key::keypad.stack_keys.find(keypress);
             std::get<0>(it->second)(*backend_);
             operation = observer_->GetState().first;
             regx = observer_->GetState().second.first; 
             regy = observer_->GetState().second.second; 
             frontend_->PrintRegisters(regx, regy);
-            frontend_->HighlightKey(input_char_str, delay_ms_);
+            frontend_->HighlightKey(keypress, delay_ms_);
             token = "";
         } else if (is_storage_function) {
             // write currently typed number in the stack first
-            if (IsDecimal(token) && !token.empty() && (input_char_str != Key::kKeyClx))
+            if (IsDecimal(token) && !token.empty() && (keypress != Key::kKeyClx))
                 backend_->Insert(std::stod(token));
-            token = std::string(1, input_char);
+            token = keypress;
             frontend_->PrintRegisters(regx, regy);
-            frontend_->HighlightKey(input_char_str, delay_ms_);
+            frontend_->HighlightKey(keypress, delay_ms_);
             token = "";
-        } else if (input_char == 'q') {
+        } else if (keypress == "q") {
             return;
         } else {
-            if (token.empty() && (input_char_str != "@"))
+            if (token.empty() && (keypress != "@"))
                 token = "0";
             // The symbol - is reserved for functions so use ~ as unary
             // minus. Then replace ~ with - for negative numbers.
-            if (input_char == '~')
+            if (keypress == "~")
                 token = "-0";
             else
-                token += input_char;
+                token += keypress;
             if (IsDecimal(token)) {
                 operation = observer_->GetState().first;
                 regx = observer_->GetState().second.first; 
