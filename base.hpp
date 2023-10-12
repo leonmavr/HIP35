@@ -25,13 +25,14 @@ class IBackend {
         /* Insert a number */
         virtual void Insert(double num) = 0;
 
-        // stack-altering functions
+        // stack-altering calculator functions
         virtual void Rdn() = 0;
         virtual void Enter() = 0;
         virtual void LastX() = 0;
         virtual void Clx() = 0;
         virtual void Cls() = 0;
         virtual void Pi() = 0;
+        // storage/load calculator functions
         virtual void Sto(std::size_t idx) = 0;
         virtual void Rcl(std::size_t idx) = 0;
 

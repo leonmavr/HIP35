@@ -42,6 +42,8 @@ Rpn::Backend::Backend(const Key::Keypad& keypad):
         reverse_keys_[std::get<3>(pair.second)] = pair.first;
     for (const auto& pair: keypad_.double_arg_keys)
         reverse_keys_[std::get<3>(pair.second)] = pair.first;
+    for (const auto& pair: keypad_.storage_keys)
+        reverse_keys_[std::get<3>(pair.second)] = pair.first;
 }
 
 void Rpn::Backend::Rdn() {

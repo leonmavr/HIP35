@@ -141,8 +141,25 @@ DoubleArgKeys double_arg_keys = {
         "^")}
 };
 
+//----------------------------------------------------------------
+// Storage/recall functions
+//----------------------------------------------------------------
+StorageKeys storage_keys = {
+    {kKeyStore, std::make_tuple(
+        [](Rpn::Backend& b, std::size_t idx) -> void { b.Sto(idx); },
+        "STO",
+        Point{4, 2},
+        "STO")},
+    {kKeyRcl, std::make_tuple(
+        [](Rpn::Backend& b, std::size_t idx) -> void { b.Rcl(idx); },
+        "RCL",
+        Point{4, 3},
+        "RCL")},
+};
+
 const Keypad keypad{stack_keys,
                    single_arg_keys,
-                   double_arg_keys};
+                   double_arg_keys,
+                   storage_keys};
 
 } // namespace Key

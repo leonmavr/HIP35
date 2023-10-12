@@ -92,9 +92,11 @@ bool Frontend::DrawKey(const std::string& key, bool highlight) {
     const auto& it1 = keypad_.stack_keys.find(key);
     const auto& it2 = keypad_.single_arg_keys.find(key);
     const auto& it3 = keypad_.double_arg_keys.find(key);
+    const auto& it4 = keypad_.storage_keys.find(key);
     const bool found = (it1 != keypad_.stack_keys.end()) ||
                   (it2 != keypad_.single_arg_keys.end()) ||
-                  (it3 != keypad_.double_arg_keys.end());
+                  (it3 != keypad_.double_arg_keys.end()) ||
+                  (it4 != keypad_.storage_keys.end());
     // invalid input key - return without drawing anything
     if (!found)
         return found;
@@ -114,6 +116,10 @@ bool Frontend::DrawKey(const std::string& key, bool highlight) {
         grid_pos = std::get<2>(it3->second);
         text_on_key = Key::AnnotateKey(
                it3, key);
+    } else if (it4 != keypad_.storage_keys.end()) {
+        grid_pos = std::get<2>(it4->second);
+        text_on_key = Key::AnnotateKey(
+               it4, key);
     }
     //Point grid_pos = key_mappings_[key].second;
     Point top_left_coords {grid_pos.x * Frontend::key_width_ + 1,
@@ -229,6 +235,8 @@ bool Frontend::DrawKeypad() {
     for (const auto& pair : keypad_.single_arg_keys)
         DrawKey(pair.first);
     for (const auto& pair : keypad_.double_arg_keys)
+        DrawKey(pair.first);
+    for (const auto& pair : keypad_.storage_keys)
         DrawKey(pair.first);
     return dimensions_set_; 
 }

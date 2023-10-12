@@ -60,6 +60,9 @@ const std::string kKeyMinus = "-";
 const std::string kKeyMul   = "*";
 const std::string kKeyDiv   = "/";
 const std::string kKeyPower = "^";
+// storage operations (1 argument)
+const std::string kKeyRcl   = "?";
+const std::string kKeyStore = "#";
 
 /**
 * @brief Point in the keypad grid with top left as origin (0, 0) 
@@ -69,9 +72,28 @@ typedef struct {
 } Point;
 
 
-// alias the really long key types
 /**
- * @brief 
+ * @brief Maps the following:
+ *        
+ *        keypress --+--> function: 
+ *                   |    Can be a function of one or two registers  
+ *        Single     |    or a backend instance or a backend instance
+ *        length     |    and an index.
+ *        key        |
+ *                   +--> annotation:
+ *                   |    The annoration of the keypress on the
+ *                   |    frontend, e.g. for "s" it can be "SIN"
+ *                   |
+ *                   +--> grid location:
+ *                   |    The (x, y) position on the keypad grid.
+ *                   |    Each key occupies its own (x, y)
+ *                   |
+ *                   +--> long key:
+ *                        Long description of the key. This helps
+ *                        entering the key in non-interactive mode.
+ *                        e.g. instead of entering "S", we enter
+ *                        "ARCSIN". Different form the annotation.
+ *
  */
 using StackKeys = std::unordered_map<std::string, std::tuple<
                                 std::function<void(Rpn::Backend& b)>,
@@ -91,10 +113,17 @@ using DoubleArgKeys = std::unordered_map<std::string, std::tuple<
                                 Point,
                                 std::string>>;
 
+using StorageKeys = std::unordered_map<std::string, std::tuple<
+                                std::function<void(Rpn::Backend& b, std::size_t idx)>,
+                                std::string,
+                                Point,
+                                std::string>>;
+
 typedef struct {
     StackKeys stack_keys;
     SingleArgKeys single_arg_keys;
     DoubleArgKeys double_arg_keys;
+    StorageKeys storage_keys;
 } Keypad;
 
 /**
@@ -129,6 +158,7 @@ static std::string AnnotateKey(T& it, const std::string keypress) {
 extern StackKeys stack_keys;
 extern SingleArgKeys single_arg_keys;
 extern DoubleArgKeys double_arg_keys;
+extern StorageKeys storage_keys;
 extern const Keypad keypad;
 
 } // namespace Key
