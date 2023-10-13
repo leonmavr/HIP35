@@ -11,7 +11,7 @@ namespace Rpn {
 
 /**
  * @brief Blueprint of the functions an HP35-based RPN calculator
- *        must implement. Originally, the are found at the keypad
+ *        must implement. Originally, they are found at the keypad
  *        of HP35:
  *        https://en.wikipedia.org/wiki/HP-35#/media/File:HP-35_Red_Dot.jpg
  */

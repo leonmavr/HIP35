@@ -94,16 +94,35 @@ void Hip35::RunUI() {
             token = "";
         } else if (is_storage_function) {
             // write currently typed number in the stack first
-            if (IsDecimal(token) && !token.empty() && (keypress != Key::kKeyClx))
+            if (IsDecimal(token) && !token.empty() && (keypress != Key::kKeyClx)) {
                 backend_->Insert(std::stod(token));
+            }
+            operation = observer_->GetState().first;
+            regx = observer_->GetState().second.first; 
+            regy = observer_->GetState().second.second; 
+            frontend_->PrintRegisters(regx, regy);
+            frontend_->HighlightKey(keypress, delay_ms_);
             token = keypress;
+        } else if ((token == Key::kKeyStore) || (token == Key::kKeyRcl)) {
+#if 1
+            try {
+                const std::size_t idx = std::stoi(keypress);
+                const auto it = Key::keypad.storage_keys.find(token);
+                std::get<0>(it->second)(*backend_, idx);
+            } catch (const std::invalid_argument& e) {
+                backend_->Cls();
+            }
+            operation = observer_->GetState().first;
+            regx = observer_->GetState().second.first; 
+            regy = observer_->GetState().second.second; 
             frontend_->PrintRegisters(regx, regy);
             frontend_->HighlightKey(keypress, delay_ms_);
             token = "";
+#endif
         } else if (keypress == "q") {
             return;
         } else {
-            if (token.empty() && (keypress != "@"))
+            if (token.empty() && (keypress != Key::kKeyClx))
                 token = "0";
             // The symbol - is reserved for functions so use ~ as unary
             // minus. Then replace ~ with - for negative numbers.
@@ -124,7 +143,6 @@ void Hip35::RunUI() {
                     // The last operation cleared register X so we're
                     // still writing in X. Y is left untouched
                     frontend_->PrintRegisters(std::stod(token), regy);
-
                 }
             } else {
                 // invalid input so clear the stack (all 4 registers)

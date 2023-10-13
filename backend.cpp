@@ -154,17 +154,23 @@ void Rpn::Backend::Pi() {
 }
 
 void Rpn::Backend::Sto(std::size_t idx) {
-    // silently ignore errors
-    if (idx > sto_regs_.size())
-        return;
-    sto_regs_[idx] = (*stack_)[IDX_REG_X];
+    // silently ignore index errors
+    if (idx < sto_regs_.size())
+        sto_regs_[idx] = (*stack_)[IDX_REG_X];
+    // after store, shift up to make space for new entries
+    do_shift_up_ = true;
+    NotifyOperation(Key::kKeyStore); 
+    // doesn't change the stack so no values sent to observer
 }
 
 void Rpn::Backend::Rcl(std::size_t idx) {
-    // silently ignore errors
-    if (idx > sto_regs_.size())
-        return;
-    (*stack_)[IDX_REG_X] = sto_regs_[idx];
+    // silently ignore index errors
+    if (idx < sto_regs_.size())
+        (*stack_)[IDX_REG_X] = sto_regs_[idx];
+    NotifyOperation(Key::kKeyRcl); 
+    std::cout << "~~~~~~~~~~~~~ " << Peek().first << ", "
+        << Peek().second << " ~~~~~~~~~\n";
+    NotifyValue(Peek()); 
 }
 
 double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
