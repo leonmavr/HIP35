@@ -167,6 +167,8 @@ void Rpn::Backend::Rcl(std::size_t idx) {
     // silently ignore index errors
     if (idx < sto_regs_.size())
         (*stack_)[IDX_REG_X] = sto_regs_[idx];
+    // after store, shift up to make space for new entries
+    do_shift_up_ = true;
     NotifyOperation(Key::kKeyRcl); 
     NotifyValue(Peek()); 
 }
