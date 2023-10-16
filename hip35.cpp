@@ -29,7 +29,6 @@ static bool IsDecimal(const std::string& str) {
 
 
 void Hip35::RunUI() {
-    std::string token = "";
     std::string operation = "";
     std::string operand = "";
     // if previous operation is STO (storage) / RCL (recall)
@@ -81,23 +80,20 @@ void Hip35::RunUI() {
             // empty the operand to prepare for a new one
             operand = "";
             is_prev_op_storage = false;
-        } else if ((keypress == Key::kKeyStore) || (keypress == Key::kKeyRcl)) {
+        } else if (key_type == Rpn::kTypeStorage) {
             if (!operand.empty())
                 backend_->Insert(std::stod(operand));
-            operation = observer_->GetState().first;
+            // Storage/recall op/s are in prefix notation, e.g.
+            // STO 2. Overwrite operation so that the loop knows
+            // that it's expecting an argument to STO/RCL next.
+            operation = keypress;
             regx = observer_->GetState().second.first; 
             regy = observer_->GetState().second.second; 
             frontend_->PrintRegisters(regx, regy);
             frontend_->HighlightKey(keypress, delay_ms_);
-            // little hack - store/recall is prefix e.g. STO 0 as opposed
-            // to prefix such as 1 2 +. Overwrite operation so next
-            // time a key is pressed we pass it as argument to STO/RCL
-            operation = keypress;
             operand = "";
             is_prev_op_storage = true;
         } else if (is_prev_op_storage) {
-            //if (!operand.empty())
-            //    backend_->Insert(std::stod(operand));
             try {
                 const std::size_t idx = std::stoi(keypress);
                 const auto it = Key::keypad.storage_keys.find(operation);
@@ -157,6 +153,14 @@ void Hip35::RunUI() {
             is_prev_op_storage = false;
         } else if (keypress == "q") {
             return;
+        }
+        if (is_prev_op_storage ||
+            (key_type == Rpn::kTypeNumeric) ||
+            (key_type == Rpn::kTypeStack) ||
+            (key_type == Rpn::kTypeEnter) ||
+            (key_type == Rpn::kTypeStack)) {
+
+            // TODO
         }
     }
 }
