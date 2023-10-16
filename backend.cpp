@@ -168,8 +168,6 @@ void Rpn::Backend::Rcl(std::size_t idx) {
     if (idx < sto_regs_.size())
         (*stack_)[IDX_REG_X] = sto_regs_[idx];
     NotifyOperation(Key::kKeyRcl); 
-    std::cout << "~~~~~~~~~~~~~ " << Peek().first << ", "
-        << Peek().second << " ~~~~~~~~~\n";
     NotifyValue(Peek()); 
 }
 

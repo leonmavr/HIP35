@@ -54,6 +54,7 @@ typedef enum {
     kTypeOperand,        // essentially number
     kTypeStack,          // e.g. SWAP, RDN
     kTypeNumeric,        // e.g. +, SIN
+    kTypeEnter,          // ENTER key 
     kTypeStorage         // storage, load in general registers
 } TokenType;
 

@@ -13,6 +13,6 @@ int main() {
     getchar();
 #else
     auto b = Rpn::Backend(Key::keypad);
-    std::cout << b.CalculateFromString("16 18 * LASTX / 19 *") << std::endl;;
+    std::cout << b.CalculateFromString("5 16 2 / SIN *") << std::endl;;
 #endif
 }
