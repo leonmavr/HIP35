@@ -108,7 +108,7 @@ void Hip35::RunUI() {
                 const auto it = Key::keypad.storage_keys.find(operation);
                 std::get<0>(it->second)(*backend_, idx);
             } catch (const std::invalid_argument& e) {
-                backend_->Cls();
+                // don't do anything and wait for next key
             }
             operation = observer_->GetState().first;
             PrintRegs();
