@@ -41,7 +41,9 @@ void Hip35::RunUI() {
         double regx = 0.0;
         double regy = 0.0;
         auto key_type = Rpn::kTypeNone;
-
+        //------------------------------------------------------
+        // Determine operation type
+        //------------------------------------------------------
         const auto it1 = Key::keypad.stack_keys.find(keypress);
                                         Key::keypad.stack_keys.end();
         const auto it2 = Key::keypad.single_arg_keys.find(keypress);
@@ -57,6 +59,9 @@ void Hip35::RunUI() {
             key_type = Rpn::kTypeNumeric;
         else if (it4 != Key::keypad.storage_keys.end())
             key_type = Rpn::kTypeStorage;
+        //------------------------------------------------------
+        // Append to operand if necessary 
+        //------------------------------------------------------
         if (IsDecimal(operand + keypress)) {
             operand += keypress;
             key_type = Rpn::kTypeOperand;
@@ -65,18 +70,25 @@ void Hip35::RunUI() {
             key_type = Rpn::kTypeOperand;
         }
 
-        if (key_type == Rpn::kTypeNumeric) {
-            // insert the operand the user was typing
-            if (!operand.empty())
-                backend_->Insert(std::stod(operand));
-            // feed the keypress to backend to execute the function
-            backend_->Calculate(keypress);
-            // after execution, get registers X, Y and print them
-            operation = observer_->GetState().first;
+        auto PrintRegs = [&]() {
             regx = observer_->GetState().second.first; 
             regy = observer_->GetState().second.second; 
             frontend_->PrintRegisters(regx, regy);
             frontend_->HighlightKey(keypress, delay_ms_);
+        };
+
+        //------------------------------------------------------
+        // Call Backend instance to execute 
+        //------------------------------------------------------
+        if (key_type == Rpn::kTypeNumeric) {
+            // write currently typed number in the stack first
+            if (!operand.empty())
+                backend_->Insert(std::stod(operand));
+            // feed the keypress to backend to execute the function
+            backend_->Calculate(keypress);
+            // store operation and print registers after execution
+            operation = observer_->GetState().first;
+            PrintRegs();
             // empty the operand to prepare for a new one
             operand = "";
             is_prev_op_storage = false;
@@ -87,10 +99,7 @@ void Hip35::RunUI() {
             // STO 2. Overwrite operation so that the loop knows
             // that it's expecting an argument to STO/RCL next.
             operation = keypress;
-            regx = observer_->GetState().second.first; 
-            regy = observer_->GetState().second.second; 
-            frontend_->PrintRegisters(regx, regy);
-            frontend_->HighlightKey(keypress, delay_ms_);
+            PrintRegs();
             operand = "";
             is_prev_op_storage = true;
         } else if (is_prev_op_storage) {
@@ -102,38 +111,24 @@ void Hip35::RunUI() {
                 backend_->Cls();
             }
             operation = observer_->GetState().first;
-            regx = observer_->GetState().second.first; 
-            regy = observer_->GetState().second.second; 
-            frontend_->PrintRegisters(regx, regy);
-            frontend_->HighlightKey(keypress, delay_ms_);
+            PrintRegs();
             operand = "";
             is_prev_op_storage = false;
         } else if (keypress == Key::kKeyEnter) {
-            // insert the currently typed opeand
             if (!operand.empty())
                 backend_->Insert(std::stod(operand));
-            // execute the ENTER function
             backend_->Enter();
-            // get new values of registers and print them
             operation = observer_->GetState().first;
-            regx = observer_->GetState().second.first; 
-            regy = observer_->GetState().second.second; 
-            frontend_->PrintRegisters(regx, regy);
-            frontend_->HighlightKey(keypress, delay_ms_);
-            // empty the operand to prepare for a new one
+            PrintRegs();
             operand = "";
             is_prev_op_storage = false;
         } else if (key_type == Rpn::kTypeStack) {
-            // write currently typed number in the stack first
             if (!operand.empty())
                 backend_->Insert(std::stod(operand));
             const auto it = Key::keypad.stack_keys.find(keypress);
             std::get<0>(it->second)(*backend_);
             operation = observer_->GetState().first;
-            regx = observer_->GetState().second.first; 
-            regy = observer_->GetState().second.second; 
-            frontend_->PrintRegisters(regx, regy);
-            frontend_->HighlightKey(keypress, delay_ms_);
+            PrintRegs();
             operand = "";
             is_prev_op_storage = false;
         } else if (key_type == Rpn::kTypeOperand) {
@@ -153,14 +148,6 @@ void Hip35::RunUI() {
             is_prev_op_storage = false;
         } else if (keypress == "q") {
             return;
-        }
-        if (is_prev_op_storage ||
-            (key_type == Rpn::kTypeNumeric) ||
-            (key_type == Rpn::kTypeStack) ||
-            (key_type == Rpn::kTypeEnter) ||
-            (key_type == Rpn::kTypeStack)) {
-
-            // TODO
         }
     }
 }
