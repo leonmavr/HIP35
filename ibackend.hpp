@@ -42,6 +42,9 @@ class IBackend {
         virtual void Cls() = 0;
         /*Abstract method for the `PI` key. */
         virtual void Pi() = 0;
+        // TODO:
+        // see http://h10032.www1.hp.com/ctg/Manual/c01579350 p32
+        // virtual void Eex() = 0;
 
         //-------------------------------------------------------
         // Storage/load keys
