@@ -63,36 +63,48 @@ typedef enum {
 *        The architecture more or less follows the basic architecture
 *        of the HP35 calculator. It contains a stack of 4 registers;
 *        X, Y, Z and T (T for top, X for bottom). Therefore when we store
-*        a number, it's written to the X register. When we query data
-*        from the stack, the first item to be removed is X. It also
-*        contains a LASTX register which stores the last value of X
-*        before a function button is pressed. Its purpose is to correct
-*        mistakes. The calculator supports the following basic operations
-*        blueprinted in the `IBackend` class:
-*        -- swapXY
-*        -- Peek
-*        -- Insert
-*        -- RND (Rotate down)
-*        -- Enter
-*        -- Calculate (calculator's function buttons)
-*        RPN notation heavily relies on the stack. Operands are pushed
-*        on a stack. An operation (e.g. +, SIN, etc.) always follows
-*        its operand(s) and when it's complete the top of the stack
-*        gets overwritten with its result.
+*        a number, it's written to the X register. It also contains
+*        a LASTX register which stores the last value of X before a
+*        function button is pressed.The calculator supports the
+*        following basic operations blueprinted in the `IBackend`
+*        class such as:
+*        - `SwapXY`
+*        - `Peek`
+*        - `Insert`
+*        - `Rdn` (Rotate down)
+*        - `Enter`
+*        RPN notation heavily relies on the stack. When we enter
+*        an operand, it's pushed at the bottom of its stack. When
+*        an operation is made, it takes place on the stack.
+*        Operations are not stored anywhere and simply manipulate
+*        the stack. An operation (e.g. +, SIN, etc.) always follows
+*        its operand(s) and when it's complete the bottom of the
+*        stack gets overwritten with its result.
 *        Below is an example to give you some intuition:
-*
-*        4 - (3 + 2) or in RPN; we do 3+2 first, then 4 - 5:
-*        4 3 2 + -
+*        `4 * (3 + 2)` or in RPN  `4 3 2 + *`; we do `3+2` first, 
+*        then `4*5`:
+*        @verbatim
+*        4 3 2 + *
 *          |     |    |     |    |  4  |   |     |   |     |
-*        4 |     | 3  |  4  | 2  |  3  | + |  4  | - |     | <- Y
-*          |  4  |    |  3  |    |  2  |   |  5  |   | -1  | <- X
+*        4 |     | 3  |  4  | 2  |  3  | + |  4  | * |     | <- Y
+*          |  4  |    |  3  |    |  2  |   |  5  |   | 20  | <- X
 *          +-----+    +-----+    +-----+   +-----+   +-----+ 
+*        @endverbatim
+*        An expression does not have a unique RPN translation, e.g. 
+*         `4 * (3 + 2)` can also be evaluated as `3 2 + 4 *`.  
+*        More details on how it works in each method's documentation.
 *
-*        More details in each method's documentation.
+*        After you read each method's docs, you can refer to the
+*        following python code for the general implementation of a
+*        RPN calculator. The way the HP35 differentiates itself is
+*        via its internals (stack of 4 elements, LASTX, general
+*        registers etc.).
+*
+*        @include docs/rpn.py
 *
 *        Inherits from:
-*        -- IBackend; to implement its abstract methods
-*        -- Subject; to be an observable subject by the Observer class
+*        - IBackend; to implement its abstract methods
+*        - Subject; to be an observable subject by the Observer class
 *
 *        References:
 *        -----------
@@ -129,63 +141,74 @@ public:
      *        Therefore this method lifts the stack up before
      *        writing in it if a calculation previously took place.
      *        Example:
-     *        Initially: X = 6, Y = 6
-     *        Type: 9 + 13
+     *        Initially: `X = 6, Y = 6`
+     *
+     *        Type: `9 + 13`
+     *        @verbatim
      *        (L means lift the stack, aka shift up)
      *        |     |     |     |     |     |      |     |
      *        |  6  |  9  |  6  |  +  |     |  13  |  15 | 
      *        |  6  |     |  9  |     |  15 |      |  13 |
      *        +-----+     +-----+     +-----+      +-----+
-     *           L = false      L = true     L = false
+     *            L = false     L = true    L = false
+     *        @endverbatim
      * @param num Decimal number to insert.
      */
     void Insert(double num) override;
     /**
      * @brief Circularly rotates the stack down, e.g.:
+     *        @verbatim
      *           before:     after:    |
      *        T->   4          1       |   t ----------+  T <-+
      *        Z->   3          4       |   z -------+  +> Z   |
      *        Y->   2          3       |   y ----+  +---> Y   |
      *        X->   1          2       |   x     +------> X   |
      *                                 |   -------------------+
+     *        @endverbatim
      */                                
     void Rdn() override;
     /**
      * @brief Emulate enter key; shift the stack up, discarding T
      *        register and then clone Y into X, e.g.:
+     *        @verbatim
      *           before:     after:    |
-     *        T->   4          3       |   t   +----------> T
-     *        Z->   3          2       |   z --+  +-------> Z
-     *        Y->   2          1       |   y -----+  +----> Y
-     *        X->   1          1       |   x --------+----> X
+     *        T->   4          3       |   t  +-----------> T
+     *        Z->   3          2       |   z -+   +-------> Z
+     *        Y->   2          1       |   y -----+    +--> Y
+     *        X->   1          1       |   x ----------+--> X
+     *        @endverbatim
      */
     void Enter() override;
     /**
     * @brief The LASTX register is a companion to the stack: it holds
     *        holds the number that was in the X–register before the
-    *        last numeric function (e.g. SQRT or +) was executed.
+    *        last numeric function (e.g. `SQRT` or `+`) was executed.
     *        Pressing LASTX inserts the value of LASTX in the stack.
-    *        1. Reusing a number in a calculation
-    *           Suppose we want to compute sin(6.24) * tan(6.24/2)
-    *           by pressing 6.24 SIN 6.24 2 / TAN *
+    *        1. Reusing a number in a calculation.  
+    *           Suppose we want to compute `sin(6.24) * tan(6.24/2)`
+    *           by pressing `6.24 SIN 6.24 2 / TAN *`
+    *
     *           6.24 was written to LASTX when pressing SIN so it
     *           can be reused in the following way:
-    *           6.24 SIN LASTX 2 / TAN *
-    *        2. Correcting errors.
+    *           `6.24 SIN LASTX 2 / TAN *`
+    *        2. Correcting errors.  
     *           2a) Single-argument functions
-    *               Suppose we typed 6.24 SIN 6.24 2 / COS instead 
-    *               of 6.24 SIN 6.24 2 / TAN. We can correct it w/o
+    *               Suppose we typed `6.24 SIN 6.24 2 / COS` instead 
+    *               of `6.24 SIN 6.24 2 / TAN`. We can correct it w/o
     *               erasing the whole thing. Before pressing COS,
-    *               LASTX will store 6.24/2 so to correct it use:
+    *               LASTX will store `6.24/2` so to correct it use:
+    *               @verbatim
     *               RDN   (get rid of cos(6.24/2)) X -> g sin(6.24))
-    *               LASTX (insert LASTX 6.24/2)    X -> 6.24/2 
+    *               LASTX (insert LASTX 6.24/2) . .X -> 6.24/2 
     *                                              Y -> sin(6.24)
-    *               TAN                            X -> tan(6.24/2)  
+    *               TAN . . . . . . . . . . . . . .X -> tan(6.24/2)  
     *                                              Y -> sin(6.24) 
     *               *       X -> sin(6.24) * tan(6.24/2) = 0.00093 
+    *               @endverbatim
     *           2b) 2-argument function and wrong function
-    *               Suppose we want to calculate 20*23  (20 ENT 23 *)
-    *               but typed 20 ENT 23 -. Correct it as follows:
+    *               Suppose we want to calculate `20*23  (20 ENT 23 *)`
+    *               but typed `20 ENT 23 -`. Correct it as follows:
+    *               @verbatim
     *               20 ENT 23 - . . . . . . . . . X -> 20 - 23
     *               LASTX . . . . . . . . . . . . X -> 23
     *                                             Y -> 20 - 23
@@ -193,7 +216,9 @@ public:
     *               23 . . . . . . . . . . . . . .X -> 23
     *                                             Y -> 20
     *               * . . . . . . . . . . . . . . X -> 460
+    *               @endverbatim
     *           2c) Wrong first number (Y register)
+    *               @verbatim
     *               19 ENT 23 * . . . . . . . . . X -> 440 
     *               20 . . . . . . . . . . . . . .X -> 20
     *                                             Y -> 440 
@@ -202,8 +227,10 @@ public:
     *                                             Z -> 440 
     *               * . . . . . . . . . . . . . . X -> 460
     *                                             Y -> 440 
+    *               @endverbatim
     *               Before starting, we can optionally RND to discard 440.
     *           2d) Wrong second number (X register)
+    *               @verbatim
     *               20 ENT 22 * . . . . . . . . . X -> 22 * 20
     *               LASTX . . . . . . . . . . . . X -> 22
     *                                             Y -> 22 * 20
@@ -211,6 +238,7 @@ public:
     *               23 . . . . . . . . . . . . . .X -> 23
     *                                             Y -> 20
     *               * . . . . . . . . . . . . . . X -> 23 * 20
+    *               @endverbatim
     */
     void LastX() override;
     /**
@@ -221,6 +249,7 @@ public:
      *        input and output. If a 2-op calculation is entered, use
      *        reg. X, Y as inputs, write output to Y and shift down
      *        the stack. Example:
+     *        @verbatim
      *           before: (LOG)  after:  |  before:    (/)    after:
      *        T->   4             3     |     4                4
      *        Z->   3             2     |     3                4
@@ -231,6 +260,7 @@ public:
      *        z->   ------------> Z     |  z->   ------+   +-> Z
      *        y->   ------------> Y     |  y->   ---+  +-----> Y
      *        x->   -----f(x)---> X     |  x->   ---+-f(x,y)-> X
+     *        @endverbatim
      *         
      * @param operation What numerical operation to perform. This
      *                  can be one of the keys of function_key_1op_ 
@@ -243,8 +273,8 @@ public:
      * @brief Calculte a results of an expression written in reverse
      *        Polish notation (RPN). In RPN only records operations 
      *        and operands and each operation follows its operands.
-     *        Example: 12 7 - gives 5
-     *                 6 2 / COS gives COS(6/2)
+     *        Example: `12 7 -` gives 5
+     *                 `6 2 / COS` gives `COS(6/2)`
      *
      * @param rpnExpression A string that contains a RPN notation
      *                      expression. Operands and operations are
