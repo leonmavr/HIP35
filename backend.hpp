@@ -49,6 +49,10 @@ private:
 
 namespace Rpn {
 
+/**
+* @brief The type of the current token - helps determine what
+*        function to execute.
+*/
 typedef enum {
     kTypeNone = 0,       // how the clas is initialized
     kTypeOperand,        // essentially number
@@ -309,7 +313,6 @@ public:
     * @param idx
     */
     void Rcl(std::size_t idx) override;
-    void DoStackOperation(const std::string& operation);
     /* Overrides the << operator for the class, e.g.std::cout << <Instance>; */
     friend std::ostream& operator<<(std::ostream& os, const Backend& backend);
 

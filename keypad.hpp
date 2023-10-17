@@ -10,6 +10,8 @@
 #include <stdexcept> // invalid_argument
 #include <cmath> // invalid_argument
 
+// Forward-declaration of class `Backend` to resolve the
+// circular dependency keypad -> backend -> keypad
 namespace Rpn {
     class Backend;
 }
@@ -75,6 +77,7 @@ typedef struct {
 /**
  * @brief Maps the following:
  *        
+ *        @verbatim
  *        keypress --+--> function: 
  *                   |    Can be a function of one or two registers  
  *        Single     |    or a backend instance or a backend instance
@@ -82,7 +85,7 @@ typedef struct {
  *        key        |
  *                   +--> annotation:
  *                   |    The annoration of the keypress on the
- *                   |    frontend, e.g. for "s" it can be "SIN"
+ *                   |    frontend, e.g. for `s` it can be `SIN` 
  *                   |
  *                   +--> grid location:
  *                   |    The (x, y) position on the keypad grid.
@@ -91,9 +94,9 @@ typedef struct {
  *                   +--> long key:
  *                        Long description of the key. This helps
  *                        entering the key in non-interactive mode.
- *                        e.g. instead of entering "S", we enter
- *                        "ARCSIN". Different form the annotation.
- *
+ *                        e.g. instead of entering `S`, we enter
+ *                        `ARCSIN`. Different form the annotation.
+ *        @endverbatim
  */
 using StackKeys = std::unordered_map<std::string, std::tuple<
                                 std::function<void(Rpn::Backend& b)>,
@@ -129,8 +132,8 @@ typedef struct {
 /**
  * @brief Compiles a description of the input key as long as
  *        it's found in the keypad; e.g. if the input keypress
- *        is "s" and the long key description is SIN, it could
- *        return SIN (s) or however we decide to annotate them.
+ *        is `s` and the long key description is SIN, it could
+ *        return `SIN (s)` or however we decide to annotate them.
  *
  * @param keypad   A keypad description object. Unordered map
  *                 which describes a number of keys.

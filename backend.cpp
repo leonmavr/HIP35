@@ -28,7 +28,9 @@ void Subject::NotifyOperation(const std::string& operation) {
         observer->UpdateOperation(operation);
 }
 
-Rpn::Backend::Backend(const Key::Keypad& keypad):
+namespace Rpn {
+
+Backend::Backend(const Key::Keypad& keypad):
     stack_(std::make_unique<Stack>()),
     do_shift_up_(true),
     keypad_(keypad),
@@ -46,7 +48,7 @@ Rpn::Backend::Backend(const Key::Keypad& keypad):
         reverse_keys_[std::get<3>(pair.second)] = pair.first;
 }
 
-void Rpn::Backend::Rdn() {
+void Backend::Rdn() {
     // we always use the stack pointer because Stack class implements a [] operator
     auto old_first = (*stack_)[0];
     for (std::size_t i = 0; i < (*stack_).size() - 1; ++i)
@@ -57,14 +59,14 @@ void Rpn::Backend::Rdn() {
     NotifyOperation(Key::kKeyRdn);
 }
 
-void Rpn::Backend::SwapXY() {
+void Backend::SwapXY() {
     std::swap((*stack_)[IDX_REG_X], (*stack_)[IDX_REG_Y]);
     // inform the observer
     NotifyValue(Peek());
     NotifyOperation(Key::kKeySwap);
 }
 
-void Rpn::Backend::Insert(double num) {
+void Backend::Insert(double num) {
     if (do_shift_up_)
         stack_->ShiftUp();
     stack_->writeX(num);
@@ -72,7 +74,7 @@ void Rpn::Backend::Insert(double num) {
     NotifyValue(Peek());
 }
 
-void Rpn::Backend::Enter() {
+void Backend::Enter() {
     stack_->ShiftUp();
     (*stack_)[IDX_REG_X] = (*stack_)[IDX_REG_Y];
     do_shift_up_ = false;
@@ -82,7 +84,7 @@ void Rpn::Backend::Enter() {
     NotifyOperation(Key::kKeyEnter);
 }
 
-void Rpn::Backend::LastX() {
+void Backend::LastX() {
     // Make space to insert regisrer LASTX
     stack_->ShiftUp();
     (*stack_)[IDX_REG_X] = lastx_;
@@ -91,7 +93,7 @@ void Rpn::Backend::LastX() {
     NotifyOperation(Key::kKeyLastX);
 }
 
-double Rpn::Backend::Calculate(std::string operation) {
+double Backend::Calculate(std::string operation) {
     // Shift up the stack next time a number is inserted
     do_shift_up_ = true;
     auto& registerX = (*stack_)[IDX_REG_X];
@@ -130,14 +132,14 @@ double Rpn::Backend::Calculate(std::string operation) {
     }
 }
 
-void Rpn::Backend::Clx() {
+void Backend::Clx() {
     stack_->writeX(0.0);
     // inform the observer 
     NotifyOperation(Key::kKeyClx); 
     NotifyValue(Peek()); 
 }
 
-void Rpn::Backend::Cls() {
+void Backend::Cls() {
     stack_->writeX(0.0);
     Enter();
     Enter();
@@ -146,14 +148,14 @@ void Rpn::Backend::Cls() {
     NotifyValue(Peek()); 
 }
 
-void Rpn::Backend::Pi() {
+void Backend::Pi() {
     Insert(M_PI);
     // inform the observer 
     NotifyOperation(Key::kKeyPi); 
     NotifyValue(Peek()); 
 }
 
-void Rpn::Backend::Sto(std::size_t idx) {
+void Backend::Sto(std::size_t idx) {
     // silently ignore index errors
     if (idx < sto_regs_.size())
         sto_regs_[idx] = (*stack_)[IDX_REG_X];
@@ -163,7 +165,7 @@ void Rpn::Backend::Sto(std::size_t idx) {
     // doesn't change the stack so no values sent to observer
 }
 
-void Rpn::Backend::Rcl(std::size_t idx) {
+void Backend::Rcl(std::size_t idx) {
     // silently ignore index errors
     if (idx < sto_regs_.size())
         (*stack_)[IDX_REG_X] = sto_regs_[idx];
@@ -173,7 +175,7 @@ void Rpn::Backend::Rcl(std::size_t idx) {
     NotifyValue(Peek()); 
 }
 
-double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
+double Backend::CalculateFromString(std::string rpnExpression) {
     // split input by spaces
     std::istringstream iss(rpnExpression);
     // space-separated substrings
@@ -246,16 +248,16 @@ double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
 }        
 
 
-namespace Rpn {
-    std::ostream& operator<<(std::ostream& os, const Backend& backend) {
-        const auto& stack = *(backend.stack_);
-        os << std::fixed << std::setprecision(2) <<
-            "X\tY\tZ\tT\tLASTX" << std::endl <<
-            stack[IDX_REG_X] << "\t" <<
-            stack[IDX_REG_Y] << "\t" <<
-            stack[IDX_REG_Z] << "\t" <<
-            stack[IDX_REG_T] << "\t" <<
-            backend.lastx_ << std::endl;
-        return os;
-    }
+std::ostream& operator<<(std::ostream& os, const Backend& backend) {
+    const auto& stack = *(backend.stack_);
+    os << std::fixed << std::setprecision(2) <<
+        "X\tY\tZ\tT\tLASTX" << std::endl <<
+        stack[IDX_REG_X] << "\t" <<
+        stack[IDX_REG_Y] << "\t" <<
+        stack[IDX_REG_Z] << "\t" <<
+        stack[IDX_REG_T] << "\t" <<
+        backend.lastx_ << std::endl;
+    return os;
+}
+
 } /* namespace Rpn */

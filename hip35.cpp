@@ -5,6 +5,8 @@
 #include "keypad.hpp"
 #include <memory> // unique_ptr
 
+namespace Ui {
+
 Hip35::Hip35():
         delay_ms_(std::chrono::milliseconds(100)) {
     backend_ = std::make_unique<Rpn::Backend>(Key::keypad);
@@ -151,3 +153,5 @@ void Hip35::RunUI() {
         }
     }
 }
+
+} // namespace Ui

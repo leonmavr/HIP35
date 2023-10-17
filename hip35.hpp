@@ -7,6 +7,7 @@
 #include <memory> // unique_ptr
 #include <chrono> // chrono::milliseconds
 
+namespace Ui {
 
 class Hip35
 {
@@ -24,5 +25,7 @@ private:
     std::chrono::milliseconds delay_ms_;
 
 };
+
+} // namespace Ui
 
 #endif /* HIP35_HPP */
