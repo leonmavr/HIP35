@@ -1,7 +1,7 @@
 #ifndef BACKEND_HPP
 #define BACKEND_HPP 
 
-#include "base.hpp"
+#include "ibackend.hpp"
 #include "observer.hpp"
 #include "stack.hpp"
 #include "keypad.hpp"
@@ -275,7 +275,7 @@ public:
     /**
      * @brief Calculte a results of an expression written in reverse
      *        Polish notation (RPN). In RPN only records operations 
-     *        and operands and each operation follows its operands.
+     *        and operands and each operation follows its operands.  
      *        Example: `12 7 -` gives 5
      *                 `6 2 / COS` gives `COS(6/2)`
      *
@@ -297,7 +297,17 @@ public:
     void Cls() override;
     /* Insert the value of PI to register X */
     void Pi() override;
+    /**
+    * @brief TODO
+    *
+    * @param idx
+    */
     void Sto(std::size_t idx) override;
+    /**
+    * @brief TODO
+    *
+    * @param idx
+    */
     void Rcl(std::size_t idx) override;
     void DoStackOperation(const std::string& operation);
     /* Overrides the << operator for the class, e.g.std::cout << <Instance>; */

@@ -1,0 +1,67 @@
+#ifndef IBACKEND_HPP
+#define IBACKEND_HPP 
+
+#include <unordered_map> // unordered_map
+#include <functional> // function
+#include <string> // string
+#include <utility> // pair
+#include <vector> // vector 
+
+namespace Rpn {
+
+/**
+ * @brief Blueprint of the functions an HP35-based RPN calculator
+ *        must implement. Originally, the are found at the keypad
+ *        of HP35:
+ *        https://en.wikipedia.org/wiki/HP-35#/media/File:HP-35_Red_Dot.jpg
+ */
+class IBackend {
+    public:
+        IBackend() {}
+        ~IBackend() {}
+        //------------------------------------------------------
+        // Stack manipulation keys                         
+        //-------------------------------------------------------
+        /* Abstract method for the `SWAP` key */
+        virtual void SwapXY() = 0;
+        /**
+        * @brief Abstract method for insertion functionality.
+        *
+        * @param num Number to insert
+        */
+        virtual void Insert(double num) = 0;
+        /* Abstract method for `RDN` (rotate down). */ 
+        virtual void Rdn() = 0;
+        /* Abstract method for the `ENTER` key. */
+        virtual void Enter() = 0;
+        /* Abstract method for the `LASTX` key. */
+        virtual void LastX() = 0;
+        /*Abstract method for the `CLX` key. */
+        virtual void Clx() = 0;
+        /*Abstract method for the `CLS` key. */
+        virtual void Cls() = 0;
+        /*Abstract method for the `PI` key. */
+        virtual void Pi() = 0;
+
+        //-------------------------------------------------------
+        // Storage/load keys
+        //-------------------------------------------------------
+        /*Abstract method for the `STO` key. */
+        virtual void Sto(std::size_t idx) = 0;
+        /*Abstract method for the `RCL` key. */
+        virtual void Rcl(std::size_t idx) = 0;
+
+        //-------------------------------------------------------
+        // Execution methods
+        //-------------------------------------------------------
+        /* Returns the values of two registers, e.g. X and Y */
+        virtual std::pair<double, double> Peek() const = 0;
+        /* Abstract method for calculating last token */
+        virtual double Calculate(std::string operation) = 0;
+        /* Abstract method for calculating from a given RPN string */
+        virtual double CalculateFromString(std::string rpnExpression) = 0;
+};
+
+} /* namespace Rpn */
+
+#endif /* IBACKEND_HPP */
