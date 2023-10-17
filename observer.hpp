@@ -20,9 +20,9 @@ class Observer: public IObserver {
             data_(std::make_pair<double, double>(0, 0)),
             operation_("") {}
         ~Observer() {}
-        virtual void UpdateRegisters(std::pair<double, double> registers);
-        virtual void UpdateOperation(const std::string& operation);
-        virtual std::pair<std::string, std::pair<double, double>> GetState() const {
+        void UpdateRegisters(std::pair<double, double> registers) override;
+        void UpdateOperation(const std::string& operation) override;
+        std::pair<std::string, std::pair<double, double>> GetState() const override {
            return std::make_pair(operation_, data_);
         }
 

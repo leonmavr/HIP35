@@ -7,9 +7,9 @@
 
 
 int main() {
-#if 0
-    auto hp = Hip35();
-    hp.RunUI();
+#if 1
+    auto hp = std::make_unique<Hip35>();
+    hp->RunUI();
     getchar();
 #else
     auto b = Rpn::Backend(Key::keypad);
