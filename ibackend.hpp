@@ -18,7 +18,7 @@ namespace Rpn {
 class IBackend {
     public:
         IBackend() {}
-        ~IBackend() {}
+        virtual ~IBackend() {}
         //------------------------------------------------------
         // Stack manipulation keys                         
         //-------------------------------------------------------
