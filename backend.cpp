@@ -179,8 +179,12 @@ double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
     // space-separated substrings
     std::vector<std::string> substrings;
     // current substring (i.e. operation or data)
-    std::string token;
+    auto token_type = kTypeNone;
+    // previous token - needs to be recorded as storage/recall
+    // (STO/RCL) are prefix op/s - e.g. STO 4
+    std::string previous_token = "";
 
+    std::string token;
     while (iss >> token)
         substrings.push_back(token);
 
@@ -191,18 +195,26 @@ double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
 
         const auto keypress = reverse_keys_[substring];
         // what type the last token was, e.g. number, operation, etc.
-        auto token_type = kTypeNone;
         
         // if substring not in dictionary keys, it's a digit so enter it
         // if substring is a digit and previous substring is a digit, press enter before entering it
         const auto it1 = Key::keypad.stack_keys.find(keypress);
         const auto it2 = Key::keypad.single_arg_keys.find(keypress);
         const auto it3 = Key::keypad.double_arg_keys.find(keypress);
+        const auto it4 = Key::keypad.storage_keys.find(keypress);
         const bool is_stack_op = it1 != Key::keypad.stack_keys.end();
         const bool is_numeric_op =
             (it2 != Key::keypad.single_arg_keys.end()) ||
             (it3 != Key::keypad.double_arg_keys.end());
-        if (is_numeric_op) {
+        const bool is_storage_op = it4 != Key::keypad.storage_keys.end();
+
+        if (is_storage_op) {
+            token_type = kTypeStorage;
+        } else if (token_type == kTypeStorage) {
+            const auto it = keypad_.storage_keys.find(reverse_keys_[previous_token]);
+            std::get<0>(it->second)(*this, std::stoi(token));
+            token_type = kTypeNone; // numeric token was consumed
+        } else if (is_numeric_op) {
             // function key (1-op or 2-op) pressed; do the calculation
             Calculate(keypress);
             token_type = kTypeNumeric;
@@ -226,8 +238,9 @@ double Rpn::Backend::CalculateFromString(std::string rpnExpression) {
                 std::cerr << "Invalid input: " + substring + " at "
                     << e.what() << std::endl;
             }
+            token_type = kTypeOperand;
         }
-        token_type = kTypeOperand;
+        previous_token = substring;
     }
     return (*stack_)[IDX_REG_X];
 }        

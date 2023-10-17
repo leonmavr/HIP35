@@ -7,12 +7,12 @@
 
 
 int main() {
-#if 1
+#if 0
     auto hp = Hip35();
     hp.RunUI();
     getchar();
 #else
     auto b = Rpn::Backend(Key::keypad);
-    std::cout << b.CalculateFromString("5 16 2 / SIN *") << std::endl;;
+    std::cout << b.CalculateFromString("1337 STO 0 1 2 + RCL 0") << std::endl;;
 #endif
 }
