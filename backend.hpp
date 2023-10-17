@@ -73,6 +73,7 @@ typedef enum {
 *        - `Insert`
 *        - `Rdn` (Rotate down)
 *        - `Enter`
+*
 *        RPN notation heavily relies on the stack. When we enter
 *        an operand, it's pushed at the bottom of its stack. When
 *        an operation is made, it takes place on the stack.
@@ -92,7 +93,9 @@ typedef enum {
 *        @endverbatim
 *        An expression does not have a unique RPN translation, e.g. 
 *         `4 * (3 + 2)` can also be evaluated as `3 2 + 4 *`.  
-*        More details on how it works in each method's documentation.
+*        This relies on automatically lifting the stack after each 
+*        calculation to make space for new operands. More details
+*        on how it works in each method's documentation.
 *
 *        After you read each method's docs, you can refer to the
 *        following python code for the general implementation of a
