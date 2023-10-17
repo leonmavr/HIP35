@@ -6,9 +6,16 @@
 #include <tuple> // make_pair, tuple
 
 
-// observer's interface
+/**
+* @brief Observer class' interface. Blueprint for observer's
+*        basic methods:
+*        - UpdateOperation - records last operation entered
+*        - UpdateRegisters - records last registers X, Y 
+*/
 class IObserver {
 public:
+    IObserver() {};
+    virtual ~IObserver() {};
     virtual void UpdateOperation(const std::string& operation) = 0;
     virtual void UpdateRegisters(std::pair<double, double> registers) = 0;
     virtual std::pair<std::string, std::pair<double, double>> GetState() const = 0;
