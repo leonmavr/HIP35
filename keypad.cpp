@@ -53,6 +53,8 @@ static inline double Rad2Deg(double rad) {
     return rad * 180.0 / M_PI;;
 }
 
+// TODO: these should operate on Backend, x and call
+// Calculate
 SingleArgKeys single_arg_keys = {
     {kKeyChs, std::make_tuple(
         [](double x) -> double { return -x; },
@@ -119,6 +121,8 @@ SingleArgKeys single_arg_keys = {
 //----------------------------------------------------------------
 // Double argument numeric functions
 //----------------------------------------------------------------
+// TODO: these should operate on Backend, x, y and call
+// Calculate
 DoubleArgKeys double_arg_keys = {
     {kKeyPlus, std::make_tuple(
         [](double x, double y) -> double { return x + y; },
