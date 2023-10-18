@@ -44,6 +44,15 @@ StackKeys stack_keys = {
 //----------------------------------------------------------------
 // Single-argument numeric functions
 //----------------------------------------------------------------
+
+static inline double Deg2Rad(double deg) {
+    return deg * M_PI / 180.0;
+}
+
+static inline double Rad2Deg(double rad) {
+    return rad * 180.0 / M_PI;;
+}
+
 SingleArgKeys single_arg_keys = {
     {kKeyChs, std::make_tuple(
         [](double x) -> double { return -x; },
@@ -56,32 +65,32 @@ SingleArgKeys single_arg_keys = {
         Point{0, 3},
         "INV")},
     {kKeySin, std::make_tuple(
-        [](double x) -> double { return sin(x); },
+        [](double x) -> double { return sin(Deg2Rad(x)); },
         "sin",
         Point{1, 1},
         "SIN")},
     {kKeyCos, std::make_tuple(
-        [](double x) -> double { return cos(x); },
+        [](double x) -> double { return cos(Deg2Rad(x)); },
         "cos",
         Point{2, 1},
         "COS")},
     {kKeyTan, std::make_tuple(
-        [](double x) -> double { return tan(x); },
+        [](double x) -> double { return tan(Deg2Rad(x)); },
         "tan",
         Point{3, 1},
         "TAN")},
     {kKeyAsin, std::make_tuple(
-        [](double x) -> double { return asin(x); },
+        [](double x) -> double { return asin(Rad2Deg(x)); },
         "asin",
         Point{1, 2},
         "ASIN")},
     {kKeyAcos, std::make_tuple(
-        [](double x) -> double { return acos(x); },
+        [](double x) -> double { return acos(Rad2Deg(x)); },
         "acos",
         Point{2, 2},
         "ACOS")},
     {kKeyAtan, std::make_tuple(
-        [](double x) -> double { return atan(x); },
+        [](double x) -> double { return atan(Rad2Deg(x)); },
         "atan",
         Point{3, 2},
         "ATAN")},
