@@ -166,6 +166,9 @@ void Backend::Sto(std::size_t idx) {
 }
 
 void Backend::Rcl(std::size_t idx) {
+    // RCL operation stores X in LASTX:
+    // http://h10032.www1.hp.com/ctg/Manual/c01579350 p306
+    lastx_ = (*stack_)[IDX_REG_X];
     // silently ignore index errors
     if (idx < sto_regs_.size())
         (*stack_)[IDX_REG_X] = sto_regs_[idx];
