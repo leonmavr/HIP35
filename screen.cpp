@@ -286,14 +286,14 @@ static std::string padString(const std::string& input, std::size_t N) {
 }
 
 /**
- * @brief  Converts a number to a string that represents it in
+ * @brief  Formats a number to a string that represents it in
  *         scientific format. The scientific format is defined as
  *         follows:  
- *         m * 10^E
+ *         m * 10^E  
  *         m is the mantissa, with 1 <= |m| < 10. It can have a given
  *         precision of decimals. E is the exponent. Any trailing
  *         zeros are truncated from the mantissa, so 1.20 would
- *         become 1.2. Examples (E-4 denotes 10^(-4)):  
+ *         become 1.2. Examples (`E-4` denotes `10^(-4)`):  
  *         @verbatim
  *          -.000123456, 3  -> -1.235 E-4 
  *          -.000123456, 14 -> -1.2356 E-4 
@@ -306,18 +306,18 @@ static std::string padString(const std::string& input, std::size_t N) {
  * @return A string representing the number in scientific format:  
  *         m * 10^E
  */
-std::string FormatEngineeringNotation(double number, int precision) {
+std::string FmtEngineeringNotation(double number, int precision) {
     // order of magnitude (power of 10) of the number
     const int magnitude = static_cast<int>(std::floor(
                               std::log10(std::fabs(number))));
     // the mantissa m (coefficient of the exponent)
     const double mantissa = number / std::pow(10, magnitude);
     // we will append the mantissa to an output string stream
-    std::ostringstream mantissa_formatted;
+    std::ostringstream mantissa_fmt;
     // then format it to the given precision
-    mantissa_formatted << std::fixed << std::setprecision(precision)
+    mantissa_fmt << std::fixed << std::setprecision(precision)
                        << mantissa;
-    std::string mantissa_string = mantissa_formatted.str();
+    std::string mantissa_string = mantissa_fmt.str();
     // erase any trailing zeros
     mantissa_string.erase(mantissa_string.find_last_not_of('0') + 1, 
                           std::string::npos); 
@@ -325,14 +325,18 @@ std::string FormatEngineeringNotation(double number, int precision) {
     return scientific_fmt;
 }
 
+std::string FmtFixedPrecision(double num, unsigned prec = 5) {
+    std::ostringstream num_fmt;
+    num_fmt << std::fixed << std::setprecision(prec) << num;
+    return num_fmt.str();
+}
+
 
 bool Frontend::PrintRegisters(double regx, double regy) {
     const unsigned screen_width = max_width_pixels_ - 4;
-    std::string regx_string = std::to_string(regx);
-    std::string regy_string = std::to_string(regy);
     // TODO: if numbers take too much space, use eng. notationn
-    regx_string = padString(regx_string, screen_width-2);
-    regy_string = padString(regy_string, screen_width-2);
+    std::string regx_string = padString(FmtFixedPrecision(regx), screen_width-2);
+    std::string regy_string = padString(FmtFixedPrecision(regy), screen_width-2);
     // top screen row
     wmove(win_, 3, 3);
     wprintw(win_, regy_string.c_str());
