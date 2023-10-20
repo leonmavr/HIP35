@@ -9,6 +9,7 @@
 #include <unistd.h> // STDIN_FILENO
 #include <chrono> // sleep_for, milliseconds
 #include <thread> // this_thread
+#include <cfloat> // DBL_MIN 
 
 namespace Gui {
 
@@ -282,28 +283,8 @@ static std::string padString(const std::string& input, std::size_t N) {
     }
 }
 
-/**
- * @brief  Formats a number to a string that represents it in
- *         scientific format. The scientific format is defined as
- *         follows:  
- *         m * 10^E  
- *         m is the mantissa, with 1 <= |m| < 10. It can have a given
- *         precision of decimals. E is the exponent. Any trailing
- *         zeros are truncated from the mantissa, so 1.20 would
- *         become 1.2. Examples (`E-4` denotes `10^(-4)`):  
- *         @verbatim
- *          -.000123456, 3  -> -1.235 E-4 
- *          -.000123456, 14 -> -1.2356 E-4 
- *          123.12345,   2  ->  1.23, E2
- *          @endverbatim
- *
- * @param number    Number to convert
- * @param precision The number of decimals of the mantissa
- *
- * @return A string representing the number in scientific format:  
- *         m * 10^E
- */
-std::string FmtEngineeringNotation(double number, int precision) {
+
+static std::string FmtEngineeringNotation(double number, int precision) {
     // order of magnitude (power of 10) of the number
     const int magnitude = static_cast<int>(std::floor(
                               std::log10(std::fabs(number))));
@@ -322,7 +303,7 @@ std::string FmtEngineeringNotation(double number, int precision) {
     return scientific_fmt;
 }
 
-std::string FmtFixedPrecision(double num, unsigned prec = 5) {
+static std::string FmtFixedPrecision(double num, unsigned prec = 5) {
     std::ostringstream num_fmt;
     num_fmt << std::fixed << std::setprecision(prec) << num;
     auto num_fmt_string = num_fmt.str();
@@ -332,38 +313,39 @@ std::string FmtFixedPrecision(double num, unsigned prec = 5) {
     return num_fmt_string;
 }
 
-static inline std::string FmtBasedOnRange(double num) {
-
+static inline std::string FmtBasedOnRange(double num, unsigned screen_width) {
+    std::string ret = "";
+    const unsigned nspaces = screen_width - 3;
+    // below we pad with spaces to avoid having to redraw with ncurses
+    if (std::abs(num) < DBL_MIN*100)
+        ret = padString(FmtFixedPrecision(num, 5), nspaces);
+    else  if (std::abs(num) < 0.01)
+        ret = padString(FmtEngineeringNotation(num, 6), nspaces);
+    else if (std::abs(num) < 1e3)
+        ret = padString(FmtFixedPrecision(num, 5), nspaces);
+    else if (std::abs(num) < 1e6)
+        ret = padString(FmtFixedPrecision(num, 1), nspaces);
+    else if (std::abs(num) < 1e12)
+        ret = padString(FmtEngineeringNotation(num, 6), nspaces);
+    else if (std::abs(num) < 1e18)
+        ret = padString(FmtEngineeringNotation(num, 7), nspaces);
+    else
+        ret = padString(FmtEngineeringNotation(num, 8), nspaces);
+    return ret;
 }
 
 bool Frontend::PrintRegisters(double regx, double regy) {
     const unsigned screen_width = max_width_pixels_ - 3;
     // make sure that they're represented concisely on the screen
     // by choosing format based on their range
-    std::string regx_string = "";
-    std::string regy_string = "";
-    // below we pad with spaces to avoid having to redraw with ncurses
-    auto nspaces = screen_width - 3;
-    if (std::abs(regx) < 0.001)
-        regx_string = padString(FmtFixedPrecision(regx, 6), nspaces);
-    else if (std::abs(regx) < std::pow(10, 7))
-        regx_string = padString(FmtFixedPrecision(regx, screen_width/4), nspaces);
-    else
-        regx_string = padString(FmtEngineeringNotation(regx, screen_width/3), nspaces);
-
-    if (std::abs(regy) < 0.001)
-        regy_string = padString(FmtFixedPrecision(regy, 6), nspaces);
-    else if (std::abs(regy) < std::pow(10, 7))
-        regy_string = padString(FmtFixedPrecision(regy, screen_width/4), nspaces);
-    else
-        regy_string = padString(FmtEngineeringNotation(regy, screen_width/3), nspaces);
-
+    std::string regx_str= FmtBasedOnRange(regx, screen_width);
+    std::string regy_str= FmtBasedOnRange(regy, screen_width);
     // top screen row
     wmove(win_, 3, 3);
-    wprintw(win_, regy_string.c_str());
+    wprintw(win_, regy_str.c_str());
     // bottom screen row
     wmove(win_, 4, 3);
-    wprintw(win_, regx_string.c_str());
+    wprintw(win_, regx_str.c_str());
     wrefresh(win_);
     return dimensions_set_;
 }

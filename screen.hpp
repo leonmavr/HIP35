@@ -94,5 +94,55 @@ private:
 
 } // namespace Gui
 
+/**
+ * @brief  Formats a number to a string that represents it in
+ *         scientific format. The scientific format is defined as
+ *         follows:  
+ *         m * 10^E  
+ *         m is the mantissa, with 1 <= |m| < 10. It can have a given
+ *         precision of decimals. E is the exponent. Any trailing
+ *         zeros are truncated from the mantissa, so 1.20 would
+ *         become 1.2. Examples (`E-4` denotes `10^(-4)`):  
+ *         @verbatim
+ *          -.000123456, 3  -> -1.235 E-4 
+ *          -.000123456, 14 -> -1.2356 E-4 
+ *          123.12345,   2  ->  1.23, E2
+ *          @endverbatim
+ *
+ * @param number    Number to convert
+ * @param precision The number of decimals of the mantissa
+ *
+ * @return A string representing the number in scientific format:  
+ *         m * 10^E
+ */
+static std::string FmtEngineeringNotation(double number, int precision);
+/**
+ * @brief  Formats a number in fixed decimal precision format, e.g.
+ *         with precision = 2:  
+ *          3.14159 ->  3.14
+ *         -3.1     -> -3.10
+ *         NOTE: trailing zeros are preserved.
+ *
+ * @param num  A number in 64-bit signed double range
+ * @param prec How many decimals to retain in the format 
+ *
+ * @return A number string formatted in fixed precision
+ */
+static std::string FmtFixedPrecision(double num, unsigned prec = 5);
+
+/**
+ * @brief Formats a numbers base on its magnitude. It selects format
+ *        (fixed precision/engineering) and number of decimals. The 
+ *        scheme is somewhat arbitrary but works well for a 
+ *        calculator.
+ *
+ * @param num          A number in 64-bit signed double range
+ * @param screen_width Calculator's screen width. Required to pad 
+ *                     the number with spaces and avoid redrawing 
+ *                     with ncurses.
+ *
+ * @return A formatted number string 
+ */
+static inline std::string FmtBasedOnRange(double num, unsigned screen_width);
 
 #endif /* SCREEN_HPP */
