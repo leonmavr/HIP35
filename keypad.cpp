@@ -82,17 +82,17 @@ SingleArgKeys single_arg_keys = {
         Point{3, 1},
         "TAN")},
     {kKeyAsin, std::make_tuple(
-        [](double x) -> double { return asin(Rad2Deg(x)); },
+        [](double x) -> double { return Rad2Deg(asin(x)); },
         "asin",
         Point{1, 2},
         "ASIN")},
     {kKeyAcos, std::make_tuple(
-        [](double x) -> double { return acos(Rad2Deg(x)); },
+        [](double x) -> double { return Rad2Deg(acos(x)); },
         "acos",
         Point{2, 2},
         "ACOS")},
     {kKeyAtan, std::make_tuple(
-        [](double x) -> double { return atan(Rad2Deg(x)); },
+        [](double x) -> double { return Rad2Deg(atan(x)); },
         "atan",
         Point{3, 2},
         "ATAN")},
