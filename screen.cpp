@@ -52,9 +52,6 @@ void Frontend::SetUiDimensions() {
     max_height_pixels_ *= key_height_;
     // offset by screen size
     max_height_pixels_ += screen_height_; 
-    // leave out some padding
-    max_width_pixels_ += 4;
-    max_height_pixels_ += 2;
 }
 
 /**
@@ -328,15 +325,39 @@ std::string FmtEngineeringNotation(double number, int precision) {
 std::string FmtFixedPrecision(double num, unsigned prec = 5) {
     std::ostringstream num_fmt;
     num_fmt << std::fixed << std::setprecision(prec) << num;
-    return num_fmt.str();
+    auto num_fmt_string = num_fmt.str();
+    // remove trailing zeros
+    //num_fmt_string.erase(num_fmt_string.find_last_not_of('0') + 1, 
+    //                     std::string::npos); 
+    return num_fmt_string;
 }
 
+static inline std::string FmtBasedOnRange(double num) {
+
+}
 
 bool Frontend::PrintRegisters(double regx, double regy) {
-    const unsigned screen_width = max_width_pixels_ - 4;
-    // TODO: if numbers take too much space, use eng. notationn
-    std::string regx_string = padString(FmtFixedPrecision(regx), screen_width-2);
-    std::string regy_string = padString(FmtFixedPrecision(regy), screen_width-2);
+    const unsigned screen_width = max_width_pixels_ - 3;
+    // make sure that they're represented concisely on the screen
+    // by choosing format based on their range
+    std::string regx_string = "";
+    std::string regy_string = "";
+    // below we pad with spaces to avoid having to redraw with ncurses
+    auto nspaces = screen_width - 3;
+    if (std::abs(regx) < 0.001)
+        regx_string = padString(FmtFixedPrecision(regx, 6), nspaces);
+    else if (std::abs(regx) < std::pow(10, 7))
+        regx_string = padString(FmtFixedPrecision(regx, screen_width/4), nspaces);
+    else
+        regx_string = padString(FmtEngineeringNotation(regx, screen_width/3), nspaces);
+
+    if (std::abs(regy) < 0.001)
+        regy_string = padString(FmtFixedPrecision(regy, 6), nspaces);
+    else if (std::abs(regy) < std::pow(10, 7))
+        regy_string = padString(FmtFixedPrecision(regy, screen_width/4), nspaces);
+    else
+        regy_string = padString(FmtEngineeringNotation(regy, screen_width/3), nspaces);
+
     // top screen row
     wmove(win_, 3, 3);
     wprintw(win_, regy_string.c_str());
