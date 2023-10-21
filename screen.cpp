@@ -19,6 +19,7 @@ Frontend::Frontend(const Key::Keypad& keypad):
     key_width_(12),
     key_height_(3),
     screen_height_(6),
+    gen_reg_width_(12),
     dimensions_set_(false)
 {
     // state where each button is to be drawn
@@ -46,7 +47,6 @@ void Frontend::SetUiDimensions() {
     // -- scale grid positions by width and height
     // -- increment by a small number to leave out some padding
     // to find UI width and height in pixels
-    // width and height
     max_width_pixels_ += 1;
     max_height_pixels_ += 1;
     max_width_pixels_ *= key_width_;
@@ -54,6 +54,12 @@ void Frontend::SetUiDimensions() {
     screen_width_ = max_width_pixels_ - 3;
     // offset by screen size
     max_height_pixels_ += screen_height_; 
+    
+
+    // make horizontal space for general register area
+    max_width_pixels_ += 3;
+    // this is the top left point where general register will be printed
+    gen_regs_top_left_ = Key::Point{max_width_pixels_, 3};
 }
 
 /**

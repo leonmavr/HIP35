@@ -92,6 +92,13 @@ private:
     const Key::Keypad& keypad_;
     // screen width in characters, not including the frame
     unsigned screen_width_;
+    //------------------------------------------------------
+    // 10 general registers
+    //------------------------------------------------------
+    // top left position of the general register display area
+    Key::Point gen_regs_top_left_;
+    // how many characters each general register can display
+    unsigned gen_reg_width_;
 };
 
 } // namespace Gui
