@@ -90,6 +90,8 @@ private:
     struct termios new_tio_;
     // reference to keypad - we draw the interface based on it
     const Key::Keypad& keypad_;
+    // screen width in characters, not including the frame
+    unsigned screen_width_;
 };
 
 } // namespace Gui

@@ -51,6 +51,7 @@ void Frontend::SetUiDimensions() {
     max_height_pixels_ += 1;
     max_width_pixels_ *= key_width_;
     max_height_pixels_ *= key_height_;
+    screen_width_ = max_width_pixels_ - 3;
     // offset by screen size
     max_height_pixels_ += screen_height_; 
 }
@@ -335,11 +336,10 @@ static inline std::string FmtBasedOnRange(double num, unsigned screen_width) {
 }
 
 bool Frontend::PrintRegisters(double regx, double regy) {
-    const unsigned screen_width = max_width_pixels_ - 3;
     // make sure that they're represented concisely on the screen
     // by choosing format based on their range
-    std::string regx_str= FmtBasedOnRange(regx, screen_width);
-    std::string regy_str= FmtBasedOnRange(regy, screen_width);
+    std::string regx_str= FmtBasedOnRange(regx, screen_width_);
+    std::string regy_str= FmtBasedOnRange(regy, screen_width_);
     // top screen row
     wmove(win_, 3, 3);
     wprintw(win_, regy_str.c_str());
