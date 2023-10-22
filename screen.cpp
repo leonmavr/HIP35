@@ -42,6 +42,10 @@ void Frontend::SetUiDimensions() {
         if (grid_y > max_height_pixels_)
             max_height_pixels_ = grid_y;
     }
+
+    //------------------------------------------------------
+    // Keypad
+    //------------------------------------------------------
     // don't forget
     // -- increment by 1 (to avoid drawing over the left border)
     // -- scale grid positions by width and height
@@ -56,15 +60,18 @@ void Frontend::SetUiDimensions() {
     max_height_pixels_ += screen_height_; 
     
 
+    //------------------------------------------------------
+    // General register display 
+    //------------------------------------------------------
     // make margin for general register area
     max_width_pixels_ += 3;
     constexpr unsigned offsety = 3;
     // this is the top left point where general register will be printed
     gen_regs_top_left_ = Key::Point{max_width_pixels_, offsety};
     for (int i = 0; i < Key::kNamesGenRegs.size(); i++)
-        gen_regs_[Key::kNamesGenRegs[i]] = Key::Point{max_width_pixels_, offsety + 1};
+        gen_regs_[Key::kNamesGenRegs[i]] = Key::Point{max_width_pixels_, offsety + i};
     // make enough horizontal space for general register display
-    max_width_pixels_ += gen_reg_width_;
+    max_width_pixels_ += gen_reg_width_ + 3;
 }
 
 /**
@@ -99,14 +106,14 @@ void Frontend::InitKeypadGrid() {
 }
 
 bool Frontend::DrawKey(const std::string& key, bool highlight) {
-    const auto& it1 = keypad_.stack_keys.find(key);
-    const auto& it2 = keypad_.single_arg_keys.find(key);
-    const auto& it3 = keypad_.double_arg_keys.find(key);
-    const auto& it4 = keypad_.storage_keys.find(key);
+    const auto it1 = keypad_.stack_keys.find(key);
+    const auto it2 = keypad_.single_arg_keys.find(key);
+    const auto it3 = keypad_.double_arg_keys.find(key);
+    const auto it4 = keypad_.storage_keys.find(key);
     const bool found = (it1 != keypad_.stack_keys.end()) ||
-                  (it2 != keypad_.single_arg_keys.end()) ||
-                  (it3 != keypad_.double_arg_keys.end()) ||
-                  (it4 != keypad_.storage_keys.end());
+                       (it2 != keypad_.single_arg_keys.end()) ||
+                       (it3 != keypad_.double_arg_keys.end()) ||
+                       (it4 != keypad_.storage_keys.end());
     // invalid input key - return without drawing anything
     if (!found)
         return found;
@@ -226,7 +233,7 @@ void Frontend::InitTerminal() {
     // NOTE: newwin call needs to be AFTER initscr()!
     constexpr int startx = 0, starty = 0;
     win_ = newwin(max_height_pixels_, max_width_pixels_, startx, starty);
-    //            l    r    t    d   tl   tr   bl   br
+    //             l    r    t    b    tl   tr   bl   br
     wborder(win_, '.', '.', '.', '.', '.', '.', '.', '.');
 }
 
@@ -240,6 +247,7 @@ void Frontend::EndTerminal() {
 }
 
 bool Frontend::DrawKeypad() {
+    // draw the keypad
     for (const auto& pair : keypad_.stack_keys)
         DrawKey(pair.first);
     for (const auto& pair : keypad_.single_arg_keys)
@@ -248,22 +256,35 @@ bool Frontend::DrawKeypad() {
         DrawKey(pair.first);
     for (const auto& pair : keypad_.storage_keys)
         DrawKey(pair.first);
+
+    // draw the general registers' frame
+    for (const auto& it: gen_regs_) {
+        const std::string label = it.first;
+        const unsigned x = it.second.x, y = it.second.y;
+        wmove(win_, y, x);
+        wprintw(win_, "|");
+        wmove(win_, y, x + gen_reg_width_);
+        wprintw(win_, "|");
+        wmove(win_, y, x-2);
+        wprintw(win_, (label + ":").c_str());
+    }
+
     return dimensions_set_; 
 }
 
 bool Frontend::DrawScreen() {
     /**
      * (0,0)
-     * +-------------------------------------------+
-     * |                                    HIP-35 |
-     * | |----------------------------------------||
-     * |Y|                                        ||
-     * |X|                                        ||
-     * | |----------------------------------------||
-     * |                                           |
+     * +-------------------------------------------
+     * |                                    HIP-35 
+     * | |----------------------------------------|
+     * |Y|                                        |
+     * |X|                                        |
+     * | |----------------------------------------|
+     * |                                           
      */
-    // wmove(win_name, y, x)
-    wmove(win_, 1, screen_width_ - 6);
+    // wmove(win_struct, y, x)
+    wmove(win_, 1, max_width_pixels_ - 7);
     wprintw(win_, "HIP-35");
     wmove(win_, 3, 1);
     wprintw(win_, "Y");
@@ -327,7 +348,7 @@ static std::string FmtFixedPrecision(double num, unsigned prec = 5) {
 
 static inline std::string FmtBasedOnRange(double num, unsigned screen_width) {
     std::string ret = "";
-    const unsigned nspaces = screen_width - 3;
+    const unsigned nspaces = screen_width - 4;
     // below we pad with spaces to avoid having to redraw with ncurses
     if (std::abs(num) < DBL_MIN*100)
         ret = padString(FmtFixedPrecision(num, 5), nspaces);
