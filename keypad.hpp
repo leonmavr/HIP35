@@ -9,6 +9,7 @@
 #include <functional> // function
 #include <stdexcept> // invalid_argument
 #include <cmath> // invalid_argument
+#include <array> // array 
 
 // Forward-declaration of class `Backend` to resolve the
 // circular dependency keypad -> backend -> keypad
@@ -65,6 +66,10 @@ const std::string kKeyPower = "^";
 // storage operations (1 argument)
 const std::string kKeyRcl   = "?";
 const std::string kKeyStore = "#";
+
+/** @brief names for the 10 general registers */
+const std::array<std::string, 10> kNamesGenRegs = {"A", "B", "C", "D", "E",
+                                                   "F", "G", "H", "I", "J"};
 
 /**
 * @brief Point in the keypad grid with top left as origin (0, 0) 

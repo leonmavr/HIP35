@@ -56,10 +56,15 @@ void Frontend::SetUiDimensions() {
     max_height_pixels_ += screen_height_; 
     
 
-    // make horizontal space for general register area
+    // make margin for general register area
     max_width_pixels_ += 3;
+    constexpr unsigned offsety = 3;
     // this is the top left point where general register will be printed
-    gen_regs_top_left_ = Key::Point{max_width_pixels_, 3};
+    gen_regs_top_left_ = Key::Point{max_width_pixels_, offsety};
+    for (int i = 0; i < Key::kNamesGenRegs.size(); i++)
+        gen_regs_[Key::kNamesGenRegs[i]] = Key::Point{max_width_pixels_, offsety + 1};
+    // make enough horizontal space for general register display
+    max_width_pixels_ += gen_reg_width_;
 }
 
 /**
@@ -258,19 +263,19 @@ bool Frontend::DrawScreen() {
      * |                                           |
      */
     // wmove(win_name, y, x)
-    wmove(win_, 1, max_width_pixels_ - 7);
+    wmove(win_, 1, screen_width_ - 6);
     wprintw(win_, "HIP-35");
     wmove(win_, 3, 1);
     wprintw(win_, "Y");
     wmove(win_, 2, 2);
-    whline(win_, '-', max_width_pixels_ - 4);
+    whline(win_, '-', screen_width_ - 3);
     wmove(win_, 4, 1);
     wprintw(win_, "X");
     wmove(win_, 5, 2);
-    whline(win_, '-', max_width_pixels_ - 4);
+    whline(win_, '-', screen_width_ - 3);
     wmove(win_, 2, 2);
     wvline(win_, '|', 4);
-    wmove(win_, 2, max_width_pixels_ - 2);
+    wmove(win_, 2, screen_width_ - 1);
     wvline(win_, '|', 4);
     wrefresh(win_);
     return dimensions_set_;
