@@ -93,7 +93,13 @@ void Hip35::RunUI() {
                 // don't do anything and wait for next key
             }
             operation = observer_->GetState().first;
-            PrintRegs();
+            if (operation == Key::kKeyStore) {
+                const double regx = observer_->GetState().second.first;
+                frontend_->PrintGenRegister(keypress, regx);
+            } else if (operation == Key::kKeyRcl) {
+                // registers have changed due to RCL
+                PrintRegs();
+            }
             operand = "";
             is_prev_op_storage = false;
         } else if (key_type == Rpn::kTypeNumeric) {

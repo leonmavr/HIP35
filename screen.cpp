@@ -76,20 +76,37 @@ void Frontend::SetUiDimensions() {
     max_width_pixels_ += gen_reg_width_ + 3;
 }
 
+static inline std::string ToUpper(std::string s) {
+    std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+    return s;
+}
+
+static inline std::string ToLower(std::string s) {
+    std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+    return s;
+}
+
 void Frontend::PrintGenRegister(const std::string& name, double val) {
-    // silently ignore errors
-    if (gen_regs_.find(name) != gen_regs_.end()) {
-        auto xy = gen_regs_[name];
-        auto val_str = padString(FmtFixedPrecision(val, 4),
-                                 gen_reg_width_ - 1);
-        wmove(win_, xy.y, xy.x+1);
-        wprintw(win_, val_str.c_str());
-        // TODO: decide on num format 
-        // if < 1e-3: en format, 2 dec
-        // if < 100: 4 decimals of prec
-        // if < 1e6: 1 decimal of prec
-        // else: en format
-    }
+    // where to print the number
+    Key::Point xy;
+    if (gen_regs_.find(ToLower(name)) != gen_regs_.end())
+        xy = gen_regs_[ToLower(name)];
+    else if (gen_regs_.find(ToUpper(name)) != gen_regs_.end())
+        xy = gen_regs_[ToUpper(name)];
+    else // silently ignore errors
+        return;
+    std::string val_str = "";
+    // select a scheme (format) to display general registers
+    if (std::fabs(val) < 1e-3)
+        val_str = padString(FmtEngineeringNotation(val, 2), gen_reg_width_ - 1);
+    else if (std::fabs(val) < 100)
+        val_str = padString(FmtFixedPrecision(val, 4), gen_reg_width_ - 1);
+    else if (std::fabs(val) < 1e6)
+        val_str = padString(FmtFixedPrecision(val, 1), gen_reg_width_ - 1);
+    else
+        val_str = padString(FmtEngineeringNotation(val, 1), gen_reg_width_ - 1);
+    wmove(win_, xy.y, xy.x+1);
+    wprintw(win_, val_str.c_str());
 }
 
 /**
