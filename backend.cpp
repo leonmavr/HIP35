@@ -46,6 +46,10 @@ Backend::Backend(const Key::Keypad& keypad):
         reverse_keys_[std::get<3>(pair.second)] = pair.first;
     for (const auto& pair: keypad_.storage_keys)
         reverse_keys_[std::get<3>(pair.second)] = pair.first;
+    // map a general register name to the index of the gr array
+    std::size_t i = 0;
+    for (const auto& n: Key::kNamesGenRegs)
+        gen_regs_name2idx[n] = i++;
 }
 
 void Backend::Rdn() {
@@ -155,8 +159,27 @@ void Backend::Pi() {
     NotifyValue(Peek()); 
 }
 
-void Backend::Sto(std::size_t idx) {
-    // silently ignore index errors
+static inline std::string ToUpper(std::string s) {
+    std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+    return s;
+}
+
+static inline std::string ToLower(std::string s) {
+    std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+    return s;
+}
+
+void Backend::Sto(std::string name) {
+    // general register index
+    std::size_t idx;
+    // name is case insensitive
+    if (gen_regs_name2idx.find(ToUpper(name)) != gen_regs_name2idx.end())
+        idx = gen_regs_name2idx[name];
+    else if (gen_regs_name2idx.find(ToLower(name)) != gen_regs_name2idx.end())
+        idx = gen_regs_name2idx[name];
+    else // silently ignore index errors
+        return;
+
     if (idx < sto_regs_.size())
         sto_regs_[idx] = (*stack_)[IDX_REG_X];
     // after store, shift up to make space for new entries
@@ -165,7 +188,17 @@ void Backend::Sto(std::size_t idx) {
     // doesn't change the stack so no values sent to observer
 }
 
-void Backend::Rcl(std::size_t idx) {
+void Backend::Rcl(std::string name) {
+    // general register index
+    std::size_t idx;
+    // name is case insensitive
+    if (gen_regs_name2idx.find(ToUpper(name)) != gen_regs_name2idx.end())
+        idx = gen_regs_name2idx[name];
+    else if (gen_regs_name2idx.find(ToLower(name)) != gen_regs_name2idx.end())
+        idx = gen_regs_name2idx[name];
+    else // silently ignore index errors
+        return;
+
     // RCL operation stores X in LASTX:
     // http://h10032.www1.hp.com/ctg/Manual/c01579350 p306
     lastx_ = (*stack_)[IDX_REG_X];
@@ -217,7 +250,7 @@ double Backend::CalculateFromString(std::string rpnExpression) {
             token_type = kTypeStorage;
         } else if (token_type == kTypeStorage) {
             const auto it = keypad_.storage_keys.find(reverse_keys_[previous_token]);
-            std::get<0>(it->second)(*this, std::stoi(token));
+            std::get<0>(it->second)(*this, token);
             token_type = kTypeNone; // numeric token was consumed
         } else if (is_numeric_op) {
             // function key (1-op or 2-op) pressed; do the calculation

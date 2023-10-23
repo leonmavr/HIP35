@@ -105,10 +105,10 @@ void Hip35::RunUI() {
             operand = "";
             is_prev_op_storage = true;
         } else if (is_prev_op_storage) {
+            // TODO: if storage key, print general register
             try {
-                const std::size_t idx = std::stoi(keypress);
                 const auto it = Key::keypad.storage_keys.find(operation);
-                std::get<0>(it->second)(*backend_, idx);
+                std::get<0>(it->second)(*backend_, keypress);
             } catch (const std::invalid_argument& e) {
                 // don't do anything and wait for next key
             }

@@ -159,12 +159,12 @@ DoubleArgKeys double_arg_keys = {
 //----------------------------------------------------------------
 StorageKeys storage_keys = {
     {kKeyStore, std::make_tuple(
-        [](Rpn::Backend& b, std::size_t idx) -> void { b.Sto(idx); },
+        [](Rpn::Backend& b, std::string name) -> void { b.Sto(name); },
         "STO",
         Point{4, 2},
         "STO")},
     {kKeyRcl, std::make_tuple(
-        [](Rpn::Backend& b, std::size_t idx) -> void { b.Rcl(idx); },
+        [](Rpn::Backend& b, std::string name) -> void { b.Rcl(name); },
         "RCL",
         Point{4, 3},
         "RCL")},

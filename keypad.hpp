@@ -67,13 +67,11 @@ const std::string kKeyPower = "^";
 const std::string kKeyRcl   = "?";
 const std::string kKeyStore = "#";
 
-/** @brief names for the 10 general registers */
-const std::array<std::string, 10> kNamesGenRegs = {"A", "B", "C", "D", "E",
-                                                   "F", "G", "H", "I", "J"};
+/** @brief Names for the 10 general registers - MUST be one letter */
+const std::array<std::string, 10> kNamesGenRegs = {"0", "1", "2", "3", "4",
+                                                   "5", "6", "7", "8", "9"};
 
-/**
-* @brief Point in the keypad grid with top left as origin (0, 0) 
-*/
+/** @brief Point in the keypad grid with top left as origin (0, 0) */
 typedef struct {
     unsigned x, y;
 } Point;
@@ -81,7 +79,6 @@ typedef struct {
 
 /**
  * @brief Maps the following:
- *        
  *        @verbatim
  *        keypress --+--> function: 
  *                   |    Can be a function of one or two registers  
@@ -109,20 +106,23 @@ using StackKeys = std::unordered_map<std::string, std::tuple<
                                 Point,
                                 std::string>>;
 
+/** @copydoc StackKeys */
 using SingleArgKeys = std::unordered_map<std::string, std::tuple<
                                 std::function<double(double)>,
                                 std::string,
                                 Point,
                                 std::string>>;
 
+/** @copydoc StackKeys */
 using DoubleArgKeys = std::unordered_map<std::string, std::tuple<
                                 std::function<double(double, double)>,
                                 std::string,
                                 Point,
                                 std::string>>;
 
+/** @copydoc StackKeys */
 using StorageKeys = std::unordered_map<std::string, std::tuple<
-                                std::function<void(Rpn::Backend& b, std::size_t idx)>,
+                                std::function<void(Rpn::Backend& b, std::string name)>,
                                 std::string,
                                 Point,
                                 std::string>>;
@@ -161,7 +161,7 @@ static std::string AnnotateKey(T& it, const std::string keypress) {
 }
 
 //----------------------------------------------------------------
-// stack-altering functions
+// keypad mapping types to be used by frontend and backend 
 //----------------------------------------------------------------
 extern StackKeys stack_keys;
 extern SingleArgKeys single_arg_keys;

@@ -306,13 +306,13 @@ public:
     *
     * @param idx
     */
-    void Sto(std::size_t idx) override;
+    void Sto(std::string name) override;
     /**
     * @brief TODO
     *
     * @param idx
     */
-    void Rcl(std::size_t idx) override;
+    void Rcl(std::string name) override;
     /* Overrides the << operator for the class, e.g.std::cout << <Instance>; */
     friend std::ostream& operator<<(std::ostream& os, const Backend& backend);
 
@@ -341,6 +341,13 @@ private:
      *        place.
      */
     std::unordered_map<std::string, std::string> reverse_keys_;
+    /**
+     * @brief Maps a register name as defined in Key namespace to
+     *        and index of the `sto_regs_` array. This way, the user 
+     *        can store or load from a general register given its name,
+     *        e.g. "A" -> 0, "B" -> 1, etc.
+     */
+    std::unordered_map<std::string, std::size_t> gen_regs_name2idx;
 };
 
 

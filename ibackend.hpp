@@ -49,9 +49,9 @@ class IBackend {
         // Storage/load keys
         //-------------------------------------------------------
         /** @brief Abstract method for the `STO` key. */
-        virtual void Sto(std::size_t idx) = 0;
+        virtual void Sto(std::string name) = 0;
         /** @brief Abstract method for the `RCL` key. */
-        virtual void Rcl(std::size_t idx) = 0;
+        virtual void Rcl(std::string name) = 0;
 
         //-------------------------------------------------------
         // Execution methods
