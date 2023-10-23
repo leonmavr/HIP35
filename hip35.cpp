@@ -85,7 +85,6 @@ void Hip35::RunUI() {
         if (is_prev_op_storage) {
             // check this first as storage may use the same keys
             // as the keypad functions
-            // TODO: if storage key, print general register
             try {
                 const auto it = Key::keypad.storage_keys.find(operation);
                 std::get<0>(it->second)(*backend_, keypress);
