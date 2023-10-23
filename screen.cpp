@@ -240,11 +240,10 @@ void Frontend::DrawBox(const std::string& text,
 
 void Frontend::InitTerminal() {
     //// getchar modifications
-    // modify terminal so that getchar reads character by character
-    // without waiting to hit enter
     tcgetattr(STDIN_FILENO, &old_tio_);
     new_tio_ = old_tio_;
-    // disable buffering for stdin (key press buffered automatically)
+    // modify terminal so that getchar reads character by character
+    // without waiting to hit enter (aka no buffering)
     new_tio_.c_lflag &=(~ICANON & ~ECHO);
     tcsetattr(STDIN_FILENO, TCSANOW, &new_tio_);
 
@@ -291,6 +290,8 @@ bool Frontend::DrawKeypad() {
         DrawKey(pair.first);
     for (const auto& pair : keypad_.storage_keys)
         DrawKey(pair.first);
+    // print some zeros in X, Y registers
+    Frontend::PrintRegisters(0, 0);
 
     // draw the general registers' frame
     for (const auto& it: gen_regs_) {
@@ -298,6 +299,8 @@ bool Frontend::DrawKeypad() {
         const unsigned x = it.second.x, y = it.second.y;
         wmove(win_, y, x);
         wprintw(win_, "|");
+        wmove(win_, y, x + gen_reg_width_ - 3);
+        wprintw(win_, "0.0");
         wmove(win_, y, x + gen_reg_width_);
         wprintw(win_, "|");
         wmove(win_, y, x-2);
