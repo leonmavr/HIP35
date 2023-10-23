@@ -67,7 +67,11 @@ const std::string kKeyPower = "^";
 const std::string kKeyRcl   = "?";
 const std::string kKeyStore = "#";
 
-/** @brief Names for the 10 general registers - MUST be one letter */
+/**
+ *  @brief Names for the 10 general registers - MUST be one letter.
+ *         Names are not case sensitive so please don't use the same
+ *         letter for two general registers, e.g. A and a
+ */
 const std::array<std::string, 10> kNamesGenRegs = {"A", "B", "C", "D", "E",
                                                    "F", "G", "H", "I", "J"};
 /** @brief Point in the keypad grid with top left as origin (0, 0) */
