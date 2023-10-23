@@ -69,8 +69,9 @@ void Frontend::SetUiDimensions() {
     constexpr unsigned offsety = 3;
     // this is the top left point where general register will be printed
     gen_regs_top_left_ = Key::Point{max_width_pixels_, offsety};
-    for (int i = 0; i < Key::kNamesGenRegs.size(); i++)
+    for (int i = 0; i < Key::kNamesGenRegs.size(); i++) {
         gen_regs_[Key::kNamesGenRegs[i]] = Key::Point{max_width_pixels_, offsety + i};
+    }
     // make enough horizontal space for general register display
     max_width_pixels_ += gen_reg_width_ + 3;
 }
@@ -79,8 +80,9 @@ void Frontend::PrintGenRegister(const std::string& name, double val) {
     // silently ignore errors
     if (gen_regs_.find(name) != gen_regs_.end()) {
         auto xy = gen_regs_[name];
-        auto val_str = FmtFixedPrecision(val, 4);
-        wmove(win_, xy.x, xy.y);
+        auto val_str = padString(FmtFixedPrecision(val, 4),
+                                 gen_reg_width_ - 1);
+        wmove(win_, xy.y, xy.x+1);
         wprintw(win_, val_str.c_str());
         // TODO: decide on num format 
         // if < 1e-3: en format, 2 dec

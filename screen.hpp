@@ -162,5 +162,17 @@ static std::string FmtFixedPrecision(double num, unsigned prec = 5);
 static inline std::string FmtBasedOnRange(double num, unsigned screen_width);
 
 
+
+/**
+ * @brief Pads the beginning of a string with spaces up to a specified 
+ *        length.
+ *
+ * @param input Input string (read only)
+ * @param N     The desired length
+ *
+ * @return The padded version of the input string
+ */
+static std::string padString(const std::string& input, std::size_t N);
+
 } // namespace Gui
 #endif /* SCREEN_HPP */
