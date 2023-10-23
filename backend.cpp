@@ -174,9 +174,9 @@ void Backend::Sto(std::string name) {
     std::size_t idx;
     // name is case insensitive
     if (gen_regs_name2idx.find(ToUpper(name)) != gen_regs_name2idx.end())
-        idx = gen_regs_name2idx[name];
+        idx = gen_regs_name2idx[ToUpper(name)];
     else if (gen_regs_name2idx.find(ToLower(name)) != gen_regs_name2idx.end())
-        idx = gen_regs_name2idx[name];
+        idx = gen_regs_name2idx[ToLower(name)];
     else // silently ignore index errors
         return;
 
@@ -193,9 +193,9 @@ void Backend::Rcl(std::string name) {
     std::size_t idx;
     // name is case insensitive
     if (gen_regs_name2idx.find(ToUpper(name)) != gen_regs_name2idx.end())
-        idx = gen_regs_name2idx[name];
+        idx = gen_regs_name2idx[ToUpper(name)];
     else if (gen_regs_name2idx.find(ToLower(name)) != gen_regs_name2idx.end())
-        idx = gen_regs_name2idx[name];
+        idx = gen_regs_name2idx[ToLower(name)];
     else // silently ignore index errors
         return;
 

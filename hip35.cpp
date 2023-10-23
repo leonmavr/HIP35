@@ -82,7 +82,21 @@ void Hip35::RunUI() {
         //------------------------------------------------------
         // Call Backend instance to execute 
         //------------------------------------------------------
-        if (key_type == Rpn::kTypeNumeric) {
+        if (is_prev_op_storage) {
+            // check this first as storage may use the same keys
+            // as the keypad functions
+            // TODO: if storage key, print general register
+            try {
+                const auto it = Key::keypad.storage_keys.find(operation);
+                std::get<0>(it->second)(*backend_, keypress);
+            } catch (const std::invalid_argument& e) {
+                // don't do anything and wait for next key
+            }
+            operation = observer_->GetState().first;
+            PrintRegs();
+            operand = "";
+            is_prev_op_storage = false;
+        } else if (key_type == Rpn::kTypeNumeric) {
             // write currently typed number in the stack first
             if (!operand.empty())
                 backend_->Insert(std::stod(operand));
@@ -104,18 +118,6 @@ void Hip35::RunUI() {
             PrintRegs();
             operand = "";
             is_prev_op_storage = true;
-        } else if (is_prev_op_storage) {
-            // TODO: if storage key, print general register
-            try {
-                const auto it = Key::keypad.storage_keys.find(operation);
-                std::get<0>(it->second)(*backend_, keypress);
-            } catch (const std::invalid_argument& e) {
-                // don't do anything and wait for next key
-            }
-            operation = observer_->GetState().first;
-            PrintRegs();
-            operand = "";
-            is_prev_op_storage = false;
         } else if (keypress == Key::kKeyEnter) {
             if (!operand.empty())
                 backend_->Insert(std::stod(operand));
