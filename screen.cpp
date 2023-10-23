@@ -13,6 +13,7 @@
 
 namespace Gui {
 
+
 Frontend::Frontend(const Key::Keypad& keypad):
     keypad_(keypad),
 	active_key_(""),
@@ -72,6 +73,21 @@ void Frontend::SetUiDimensions() {
         gen_regs_[Key::kNamesGenRegs[i]] = Key::Point{max_width_pixels_, offsety + i};
     // make enough horizontal space for general register display
     max_width_pixels_ += gen_reg_width_ + 3;
+}
+
+void Frontend::PrintGenRegister(const std::string& name, double val) {
+    // silently ignore errors
+    if (gen_regs_.find(name) != gen_regs_.end()) {
+        auto xy = gen_regs_[name];
+        auto val_str = FmtFixedPrecision(val, 4);
+        wmove(win_, xy.x, xy.y);
+        wprintw(win_, val_str.c_str());
+        // TODO: decide on num format 
+        // if < 1e-3: en format, 2 dec
+        // if < 100: 4 decimals of prec
+        // if < 1e6: 1 decimal of prec
+        // else: en format
+    }
 }
 
 /**
@@ -247,7 +263,7 @@ void Frontend::EndTerminal() {
 }
 
 bool Frontend::DrawKeypad() {
-    // draw the keypad
+    // draw the keypad by reading the various key mappings
     for (const auto& pair : keypad_.stack_keys)
         DrawKey(pair.first);
     for (const auto& pair : keypad_.single_arg_keys)
@@ -268,15 +284,14 @@ bool Frontend::DrawKeypad() {
         wmove(win_, y, x-2);
         wprintw(win_, (label + ":").c_str());
     }
-
     return dimensions_set_; 
 }
 
 bool Frontend::DrawScreen() {
     /**
      * (0,0)
-     * +-------------------------------------------
-     * |                                    HIP-35 
+     * +-----------------------------------------------------
+     * |                                              HIP-35 
      * | |----------------------------------------|
      * |Y|                                        |
      * |X|                                        |
@@ -302,20 +317,6 @@ bool Frontend::DrawScreen() {
     return dimensions_set_;
 }
 
-static std::string padString(const std::string& input, std::size_t N) {
-    if (input.length() >= N) {
-        // No need to pad, return the original string
-        return input;
-    } else {
-        // Calculate the number of spaces needed
-        std::size_t spacesToAdd = N - input.length();
-        // Create a string of spaces
-        std::string padding(spacesToAdd, ' ');
-        // Concatenate the padding and the input string
-        return padding + input;
-    }
-}
-
 
 static std::string FmtEngineeringNotation(double number, int precision) {
     // order of magnitude (power of 10) of the number
@@ -336,7 +337,24 @@ static std::string FmtEngineeringNotation(double number, int precision) {
     return scientific_fmt;
 }
 
-static std::string FmtFixedPrecision(double num, unsigned prec = 5) {
+
+
+bool Frontend::PrintRegisters(double regx, double regy) {
+    // make sure that they're represented concisely on the screen
+    // by choosing format based on their range
+    std::string regx_str= FmtBasedOnRange(regx, screen_width_);
+    std::string regy_str= FmtBasedOnRange(regy, screen_width_);
+    // top screen row
+    wmove(win_, 3, 3);
+    wprintw(win_, regy_str.c_str());
+    // bottom screen row
+    wmove(win_, 4, 3);
+    wprintw(win_, regx_str.c_str());
+    wrefresh(win_);
+    return dimensions_set_;
+}
+
+static std::string FmtFixedPrecision(double num, unsigned prec) {
     std::ostringstream num_fmt;
     num_fmt << std::fixed << std::setprecision(prec) << num;
     auto num_fmt_string = num_fmt.str();
@@ -345,6 +363,21 @@ static std::string FmtFixedPrecision(double num, unsigned prec = 5) {
     //                     std::string::npos); 
     return num_fmt_string;
 }
+
+static std::string padString(const std::string& input, std::size_t N) {
+    if (input.length() >= N) {
+        // No need to pad, return the original string
+        return input;
+    } else {
+        // Calculate the number of spaces needed
+        std::size_t spacesToAdd = N - input.length();
+        // Create a string of spaces
+        std::string padding(spacesToAdd, ' ');
+        // Concatenate the padding and the input string
+        return padding + input;
+    }
+}
+
 
 static inline std::string FmtBasedOnRange(double num, unsigned screen_width) {
     std::string ret = "";
@@ -366,20 +399,4 @@ static inline std::string FmtBasedOnRange(double num, unsigned screen_width) {
         ret = padString(FmtEngineeringNotation(num, 8), nspaces);
     return ret;
 }
-
-bool Frontend::PrintRegisters(double regx, double regy) {
-    // make sure that they're represented concisely on the screen
-    // by choosing format based on their range
-    std::string regx_str= FmtBasedOnRange(regx, screen_width_);
-    std::string regy_str= FmtBasedOnRange(regy, screen_width_);
-    // top screen row
-    wmove(win_, 3, 3);
-    wprintw(win_, regy_str.c_str());
-    // bottom screen row
-    wmove(win_, 4, 3);
-    wprintw(win_, regx_str.c_str());
-    wrefresh(win_);
-    return dimensions_set_;
-}
-
 } // namespace Gui

@@ -55,10 +55,16 @@ public:
             return "";
         return key_mappings_.at(key).first;
     }
+    void PrintGenRegister(const std::string& name, double val);
 
 private:
 	void InitKeypadGrid();
     void InitTerminal();
+    /**
+     * @brief Restores the terminal to the state before it was set.
+     *        Deletes various ncurses structures. Meant to be called 
+     *        upon deletion of the instance.
+     */
     void EndTerminal();
     bool DrawKeypad();
     bool DrawScreen();
@@ -104,8 +110,6 @@ private:
     std::unordered_map<std::string, Key::Point> gen_regs_;
 };
 
-} // namespace Gui
-
 /**
  * @brief  Formats a number to a string that represents it in
  *         scientific format. The scientific format is defined as
@@ -127,7 +131,7 @@ private:
  * @return A string representing the number in scientific format:  
  *         m * 10^E
  */
-static std::string FmtEngineeringNotation(double number, int precision);
+static std::string FmtEngineeringNotation(double number, int precision = 5);
 /**
  * @brief  Formats a number in fixed decimal precision format, e.g.
  *         with precision = 2:  
@@ -157,4 +161,6 @@ static std::string FmtFixedPrecision(double num, unsigned prec = 5);
  */
 static inline std::string FmtBasedOnRange(double num, unsigned screen_width);
 
+
+} // namespace Gui
 #endif /* SCREEN_HPP */
