@@ -33,7 +33,6 @@ namespace Rpn {
 
 Backend::Backend(const Key::Keypad& keypad):
     stack_(std::make_unique<Stack>()),
-    do_shift_up_(true),
     keypad_(keypad),
     sto_regs_({0})
 { 
@@ -51,6 +50,10 @@ Backend::Backend(const Key::Keypad& keypad):
     std::size_t i = 0;
     for (const auto& n: Key::kNamesGenRegs)
         gen_regs_name2idx[n] = i++;
+    // initialize flags
+    flags_.shift_up = true;
+    flags_.eex_pressed = false;
+    flags_.rcl_sto_pressed = false;
 }
 
 void Backend::Rdn() {
@@ -74,7 +77,7 @@ void Backend::SwapXY() {
 }
 
 void Backend::Insert(double num) {
-    if (do_shift_up_)
+    if (flags_.shift_up)
         stack_->ShiftUp();
     stack_->writeX(num);
     // notify class observers about new value
@@ -85,7 +88,7 @@ void Backend::Enter() {
     stack_->ShiftUp();
     (*stack_)[IDX_REG_X] = (*stack_)[IDX_REG_Y];
     flags_.eex_pressed = false;
-    do_shift_up_ = false;
+    flags_.shift_up = false;
     // notify class observer since enter manipulates the stack
     NotifyValue(Peek());
     // don't forget to notify the observer so we can use the event later
@@ -103,8 +106,7 @@ void Backend::LastX() {
 }
 
 double Backend::Calculate(std::string operation) {
-    // Shift up the stack next time a number is inserted
-    do_shift_up_ = true;
+    flags_.shift_up = true;
     auto& registerX = (*stack_)[IDX_REG_X];
     auto& registerY = (*stack_)[IDX_REG_Y];
     // We did an operation so calculator needs to store register X
@@ -195,8 +197,8 @@ void Backend::Sto(std::string name) {
 
     if (idx < sto_regs_.size())
         sto_regs_[idx] = (*stack_)[IDX_REG_X];
-    // after store, shift up to make space for new entries
-    do_shift_up_ = true;
+    flags_.shift_up = true;
+
     NotifyOperation(Key::kKeyStore); 
     // doesn't change the stack so no values sent to observer
 }
@@ -204,7 +206,7 @@ void Backend::Sto(std::string name) {
 void Backend::Rcl(std::string name) {
     // general register index
     std::size_t idx;
-    // name is case insensitive
+    // name is case insensitive - check validity
     if (gen_regs_name2idx.find(ToUpper(name)) != gen_regs_name2idx.end())
         idx = gen_regs_name2idx[ToUpper(name)];
     else if (gen_regs_name2idx.find(ToLower(name)) != gen_regs_name2idx.end())
@@ -218,8 +220,7 @@ void Backend::Rcl(std::string name) {
     // silently ignore index errors
     if (idx < sto_regs_.size())
         (*stack_)[IDX_REG_X] = sto_regs_[idx];
-    // after store, shift up to make space for new entries
-    do_shift_up_ = true;
+    flags_.shift_up = true;
     NotifyOperation(Key::kKeyRcl); 
     NotifyValue(Peek()); 
 }
@@ -249,15 +250,15 @@ double Backend::CalculateFromString(std::string rpnExpression) {
         
         // if substring not in dictionary keys, it's a digit so enter it
         // if substring is a digit and previous substring is a digit, press enter before entering it
-        const auto it1 = Key::keypad.stack_keys.find(keypress);
-        const auto it2 = Key::keypad.single_arg_keys.find(keypress);
-        const auto it3 = Key::keypad.double_arg_keys.find(keypress);
-        const auto it4 = Key::keypad.storage_keys.find(keypress);
-        const bool is_stack_op = it1 != Key::keypad.stack_keys.end();
+        const auto it1 = keypad_.stack_keys.find(keypress);
+        const auto it2 = keypad_.single_arg_keys.find(keypress);
+        const auto it3 = keypad_.double_arg_keys.find(keypress);
+        const auto it4 = keypad_.storage_keys.find(keypress);
+        const bool is_stack_op = it1 != keypad_.stack_keys.end();
         const bool is_numeric_op =
-            (it2 != Key::keypad.single_arg_keys.end()) ||
-            (it3 != Key::keypad.double_arg_keys.end());
-        const bool is_storage_op = it4 != Key::keypad.storage_keys.end();
+            (it2 != keypad_.single_arg_keys.end()) ||
+            (it3 != keypad_.double_arg_keys.end());
+        const bool is_storage_op = it4 != keypad_.storage_keys.end();
 
         if (is_storage_op) {
             token_type = kTypeStorage;

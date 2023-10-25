@@ -16,7 +16,6 @@ namespace Gui {
 
 Frontend::Frontend(const Key::Keypad& keypad):
     keypad_(keypad),
-	active_key_(""),
     key_width_(12),
     key_height_(3),
     screen_height_(6),

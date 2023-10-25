@@ -62,9 +62,15 @@ typedef enum {
     kTypeStorage         // storage, load in general registers
 } TokenType;
 
+/**
+ * @brief Various flags set during the calculator's operation.
+ */
 typedef struct Flags {
+    /** @brief Shift up the stack to make space for new entries */
     bool shift_up;
+    /** @brief EEX key pressed*/
     bool eex_pressed;
+    /** @brief RCL or STO key pressed*/
     bool rcl_sto_pressed;
 } Flags;
 
@@ -130,10 +136,10 @@ public:
     Backend(const Key::Keypad& keypad);
     Backend(const Backend& other) :
         stack_(std::make_unique<Stack>(*other.stack_)),
-        do_shift_up_(other.do_shift_up_),
         lastx_(other.lastx_),
         keypad_(other.keypad_),
-        sto_regs_(other.sto_regs_) {}
+        sto_regs_(other.sto_regs_),
+        flags_(other.flags_) {}
     ~Backend() {}
     /** @brief Swaps values of registers X and Y. */
     void SwapXY() override;
@@ -284,10 +290,6 @@ private:
     std::array<double, 10> sto_regs_;
     // LASTX register; stores the value of X before a function is invoked 
     double lastx_;
-    // shift up (lift) stack after an operation is executed (e.g. +, -, etc.)
-    // to make space for a new operand
-    bool do_shift_up_;
-    bool flag_eex_;
     // reference to a keypad that describes the calculator's key configuration
     const Key::Keypad& keypad_;
     /**
