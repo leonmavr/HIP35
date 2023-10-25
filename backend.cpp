@@ -155,6 +155,7 @@ void Backend::Cls() {
 
 void Backend::Pi() {
     Insert(M_PI);
+    flags_.eex_pressed = false;
     // inform the observer 
     NotifyOperation(Key::kKeyPi); 
     NotifyValue(Peek()); 
@@ -164,6 +165,7 @@ void Backend::Eex() {
     // if register X is zero, make it 1 to prepare it for multiplication 
     if (std::fabs((*stack_)[IDX_REG_X]) < DBL_MIN*100)
         (*stack_)[IDX_REG_X] = 1.0;
+    flags_.eex_pressed = true;
 }
 
 static inline std::string ToUpper(std::string s) {
