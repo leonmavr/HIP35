@@ -9,6 +9,7 @@
 #include <stdexcept> // runtime_error 
 #include <algorithm> // erase, remove
 #include <cmath> // M_PI
+#include <cfloat> // DBL_MIN 
 
 
 void Subject::Detach(Observer* observer) {
@@ -157,6 +158,12 @@ void Backend::Pi() {
     // inform the observer 
     NotifyOperation(Key::kKeyPi); 
     NotifyValue(Peek()); 
+}
+
+void Backend::Eex() {
+    // if register X is zero, make it 1 to prepare it for multiplication 
+    if (std::fabs((*stack_)[IDX_REG_X]) < DBL_MIN*100)
+        (*stack_)[IDX_REG_X] = 1.0;
 }
 
 static inline std::string ToUpper(std::string s) {

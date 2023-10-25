@@ -62,6 +62,12 @@ typedef enum {
     kTypeStorage         // storage, load in general registers
 } TokenType;
 
+typedef struct Flags {
+    bool shift_up;
+    bool eex_pressed;
+    bool rcl_sto_pressed;
+} Flags;
+
 /**
 * @brief Implements a reverse Polish notation (RPN) calculator [1].
 *        The architecture more or less follows the basic architecture
@@ -129,9 +135,7 @@ public:
         keypad_(other.keypad_),
         sto_regs_(other.sto_regs_) {}
     ~Backend() {}
-    /**
-     * @brief Swaps values of registers X and Y.
-     */
+    /** @brief Swaps values of registers X and Y. */
     void SwapXY() override;
     /**
      * @brief Gets current value of register X.
@@ -191,71 +195,20 @@ public:
     *        holds the number that was in the X–register before the
     *        last numeric function (e.g. `SQRT` or `+`) was executed.
     *        Pressing LASTX inserts the value of LASTX in the stack.
-    *        1. Reusing a number in a calculation.  
-    *           Suppose we want to compute `sin(6.24) * tan(6.24/2)`
-    *           by pressing `6.24 SIN 6.24 2 / TAN *`
+    *        It's used to either reuse a value or correct mistakes.
     *
-    *           6.24 was written to LASTX when pressing SIN so it
-    *           can be reused in the following way:
-    *           `6.24 SIN LASTX 2 / TAN *`
-    *        2. Correcting errors.  
-    *           2a) Single-argument functions
-    *               Suppose we typed `6.24 SIN 6.24 2 / COS` instead 
-    *               of `6.24 SIN 6.24 2 / TAN`. We can correct it w/o
-    *               erasing the whole thing. Before pressing COS,
-    *               LASTX will store `6.24/2` so to correct it use:
-    *               @verbatim
-    *               RDN   (get rid of cos(6.24/2)) X -> g sin(6.24))
-    *               LASTX (insert LASTX 6.24/2) . .X -> 6.24/2 
-    *                                              Y -> sin(6.24)
-    *               TAN . . . . . . . . . . . . . .X -> tan(6.24/2)  
-    *                                              Y -> sin(6.24) 
-    *               *       X -> sin(6.24) * tan(6.24/2) = 0.00093 
-    *               @endverbatim
-    *           2b) 2-argument function and wrong function
-    *               Suppose we want to calculate `20*23  (20 ENT 23 *)`
-    *               but typed `20 ENT 23 -`. Correct it as follows:
-    *               @verbatim
-    *               20 ENT 23 - . . . . . . . . . X -> 20 - 23
-    *               LASTX . . . . . . . . . . . . X -> 23
-    *                                             Y -> 20 - 23
-    *               + (undo last operation) . . . X -> 20
-    *               23 . . . . . . . . . . . . . .X -> 23
-    *                                             Y -> 20
-    *               * . . . . . . . . . . . . . . X -> 460
-    *               @endverbatim
-    *           2c) Wrong first number (Y register)
-    *               @verbatim
-    *               19 ENT 23 * . . . . . . . . . X -> 440 
-    *               20 . . . . . . . . . . . . . .X -> 20
-    *                                             Y -> 440 
-    *               LASTX. . . . . . . . . . . .  X -> 23
-    *                                             Y -> 20
-    *                                             Z -> 440 
-    *               * . . . . . . . . . . . . . . X -> 460
-    *                                             Y -> 440 
-    *               @endverbatim
-    *               Before starting, we can optionally RND to discard 440.
-    *           2d) Wrong second number (X register)
-    *               @verbatim
-    *               20 ENT 22 * . . . . . . . . . X -> 22 * 20
-    *               LASTX . . . . . . . . . . . . X -> 22
-    *                                             Y -> 22 * 20
-    *               / . . . . . . . . . . . . . . X -> 20
-    *               23 . . . . . . . . . . . . . .X -> 23
-    *                                             Y -> 20
-    *               * . . . . . . . . . . . . . . X -> 23 * 20
-    *               @endverbatim
+    *        @include docs/backend_lastx.txt
     */
     void LastX() override;
     /**
      * @brief Emulate pressing a function key. Function keys operate
      *        either on the X register (1-operand key, e.g. LOG) or
      *        on the X and Y registers (2-operand keys, e.g. +).
-     *        If an 1-op calculation is entered, use register X as
-     *        input and output. If a 2-op calculation is entered, use
-     *        reg. X, Y as inputs, write output to Y and shift down
-     *        the stack. Example:
+     *        If an 1-op calculation write the result directly to the
+     *        X register. 2-op calculations is entered, use reg. X, Y
+     *        as inputs, write output to Y and shift down the stack. 
+     *        Example:
+     *
      *        @verbatim
      *           before: (LOG)  after:  |  before:    (/)    after:
      *        T->   4             3     |     4                4
@@ -297,10 +250,15 @@ public:
      *        fix typos and the last entered number.
      */
     void Clx() override;
-    /* Set all registers (entire stack) to zero */
+    /** @brief Set all registers (entire stack) to zero */
     void Cls() override;
-    /* Insert the value of PI to register X */
+    /** @brief Insert the value of PI to register X */
     void Pi() override;
+
+    /**
+     * @brief TODO
+     */
+    void Eex() override;
     /**
     * @brief TODO
     *
@@ -329,6 +287,7 @@ private:
     // shift up (lift) stack after an operation is executed (e.g. +, -, etc.)
     // to make space for a new operand
     bool do_shift_up_;
+    bool flag_eex_;
     // reference to a keypad that describes the calculator's key configuration
     const Key::Keypad& keypad_;
     /**
@@ -348,6 +307,7 @@ private:
      *        e.g. "A" -> 0, "B" -> 1, etc.
      */
     std::unordered_map<std::string, std::size_t> gen_regs_name2idx;
+    Flags flags_;
 };
 
 
