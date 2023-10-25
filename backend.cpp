@@ -59,6 +59,7 @@ void Backend::Rdn() {
     for (std::size_t i = 0; i < (*stack_).size() - 1; ++i)
         (*stack_)[i] = (*stack_)[i+1];
     (*stack_)[(*stack_).size() - 1] = old_first;
+    flags_.eex_pressed = false;
     // inform the observer
     NotifyValue(Peek());
     NotifyOperation(Key::kKeyRdn);
@@ -66,6 +67,7 @@ void Backend::Rdn() {
 
 void Backend::SwapXY() {
     std::swap((*stack_)[IDX_REG_X], (*stack_)[IDX_REG_Y]);
+    flags_.eex_pressed = false;
     // inform the observer
     NotifyValue(Peek());
     NotifyOperation(Key::kKeySwap);
@@ -82,6 +84,7 @@ void Backend::Insert(double num) {
 void Backend::Enter() {
     stack_->ShiftUp();
     (*stack_)[IDX_REG_X] = (*stack_)[IDX_REG_Y];
+    flags_.eex_pressed = false;
     do_shift_up_ = false;
     // notify class observer since enter manipulates the stack
     NotifyValue(Peek());
@@ -93,6 +96,7 @@ void Backend::LastX() {
     // Make space to insert regisrer LASTX
     stack_->ShiftUp();
     (*stack_)[IDX_REG_X] = lastx_;
+    flags_.eex_pressed = false;
     // inform the observer
     NotifyValue(Peek());
     NotifyOperation(Key::kKeyLastX);
