@@ -63,9 +63,10 @@ const std::string kKeyMinus = "-";
 const std::string kKeyMul   = "*";
 const std::string kKeyDiv   = "/";
 const std::string kKeyPower = "^";
-// storage operations (1 argument)
+// prefix operations (1 argument)
 const std::string kKeyRcl   = "?";
 const std::string kKeyStore = "#";
+const std::string kKeyEex   = "E";
 
 /**
  *  @brief Names for the 10 general registers - MUST be one letter.

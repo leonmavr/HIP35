@@ -79,7 +79,11 @@ void Backend::SwapXY() {
 void Backend::Insert(double num) {
     if (flags_.shift_up)
         stack_->ShiftUp();
-    stack_->writeX(num);
+    if (!flags_.eex_pressed)
+        stack_->writeX(num);
+    else
+        stack_->writeX(std::pow(10, num) * (*stack_)[IDX_REG_X]);
+    flags_.eex_pressed = false;
     // notify class observers about new value
     NotifyValue(Peek());
 }
@@ -113,8 +117,6 @@ double Backend::Calculate(std::string operation) {
     // before the operation in register LASTX
     lastx_ = registerX;
     bool valid_operation = false;
-    // because maps always take lowercase keys
-    //operation = ToLowercase(operation);
 
     auto it1 = keypad_.single_arg_keys.find(operation);
     if (it1 != keypad_.single_arg_keys.end()) {
@@ -172,6 +174,8 @@ void Backend::Eex() {
     if (std::fabs((*stack_)[IDX_REG_X]) < DBL_MIN*100)
         (*stack_)[IDX_REG_X] = 1.0;
     flags_.eex_pressed = true;
+    NotifyOperation(Key::kKeyPi); 
+    NotifyValue(Peek()); 
 }
 
 static inline std::string ToUpper(std::string s) {
