@@ -78,9 +78,8 @@ void Backend::SwapXY() {
 
 void Backend::Insert(double num) {
     if (flags_.eex_pressed) {
-        stack_->writeX(std::pow(10, num) * (*stack_)[IDX_REG_X]);
-    }
-    else if (flags_.shift_up) {
+        (*stack_)[IDX_REG_X] *= std::pow(10, num);
+    } else if (flags_.shift_up) {
         stack_->ShiftUp();
         stack_->writeX(num);
     }
@@ -163,17 +162,19 @@ void Backend::Cls() {
 }
 
 void Backend::Pi() {
-    Insert(M_PI);
     flags_.eex_pressed = false;
+    Insert(M_PI);
     // inform the observer 
     NotifyOperation(Key::kKeyPi); 
     NotifyValue(Peek()); 
 }
 
 void Backend::Eex() {
+    // TODO: give an arg - the currently typed number and write it to X
     // if register X is zero, make it 1 to prepare it for multiplication 
     if (std::fabs((*stack_)[IDX_REG_X]) < DBL_MIN*100)
         (*stack_)[IDX_REG_X] = 1.0;
+    flags_.shift_up = false;
     flags_.eex_pressed = true;
     NotifyOperation(Key::kKeyEex); 
     NotifyValue(Peek()); 
@@ -203,6 +204,7 @@ void Backend::Sto(std::string name) {
     if (idx < sto_regs_.size())
         sto_regs_[idx] = (*stack_)[IDX_REG_X];
     flags_.shift_up = true;
+    flags_.eex_pressed = false;
 
     NotifyOperation(Key::kKeyStore); 
     // doesn't change the stack so no values sent to observer
@@ -226,6 +228,7 @@ void Backend::Rcl(std::string name) {
     if (idx < sto_regs_.size())
         (*stack_)[IDX_REG_X] = sto_regs_[idx];
     flags_.shift_up = true;
+    flags_.eex_pressed = false;
     NotifyOperation(Key::kKeyRcl); 
     NotifyValue(Peek()); 
 }

@@ -101,6 +101,8 @@ void Hip35::RunUI() {
             }
             operand = "";
             is_prev_op_storage = false;
+        } else if (keypress == Key::kKeyEex) {
+            // TODO: write current value to X (w/o insering)
         } else if (key_type == Rpn::kTypeNumeric) {
             // write currently typed number in the stack first
             if (!operand.empty())
