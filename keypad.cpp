@@ -37,7 +37,7 @@ StackKeys stack_keys = {
     {kKeyEex, std::make_tuple(
         [](Rpn::Backend& b) -> void { b.Eex(); },
         "EEX",
-        Point{3, 5},
+        Point{2, 4},
         "EEX")},
     {kKeyCls, std::make_tuple(
         [](Rpn::Backend& b) -> void { b.Cls(); },
@@ -58,7 +58,6 @@ static inline double Rad2Deg(double rad) {
     return rad * 180.0 / M_PI;;
 }
 
-// TODO: these should operate on Backend, x and call
 // Calculate
 SingleArgKeys single_arg_keys = {
     {kKeyChs, std::make_tuple(

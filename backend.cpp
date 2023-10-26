@@ -77,12 +77,13 @@ void Backend::SwapXY() {
 }
 
 void Backend::Insert(double num) {
-    if (flags_.shift_up)
-        stack_->ShiftUp();
-    if (!flags_.eex_pressed)
-        stack_->writeX(num);
-    else
+    if (flags_.eex_pressed) {
         stack_->writeX(std::pow(10, num) * (*stack_)[IDX_REG_X]);
+    }
+    else if (flags_.shift_up) {
+        stack_->ShiftUp();
+        stack_->writeX(num);
+    }
     flags_.eex_pressed = false;
     // notify class observers about new value
     NotifyValue(Peek());
@@ -174,7 +175,7 @@ void Backend::Eex() {
     if (std::fabs((*stack_)[IDX_REG_X]) < DBL_MIN*100)
         (*stack_)[IDX_REG_X] = 1.0;
     flags_.eex_pressed = true;
-    NotifyOperation(Key::kKeyPi); 
+    NotifyOperation(Key::kKeyEex); 
     NotifyValue(Peek()); 
 }
 
