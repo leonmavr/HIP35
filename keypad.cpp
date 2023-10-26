@@ -34,6 +34,11 @@ StackKeys stack_keys = {
         "CLX",
         Point{3, 4},
         "CLX")},
+    {kKeyEex, std::make_tuple(
+        [](Rpn::Backend& b) -> void { b.Eex(); },
+        "EEX",
+        Point{3, 5},
+        "EEX")},
     {kKeyCls, std::make_tuple(
         [](Rpn::Backend& b) -> void { b.Cls(); },
         "CLS",
