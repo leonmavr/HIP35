@@ -77,12 +77,15 @@ void Backend::SwapXY() {
 }
 
 void Backend::Insert(double num) {
-    if (flags_.eex_pressed) {
+    if (flags_.eex_pressed) {    
         (*stack_)[IDX_REG_X] *= std::pow(10, num);
-    } else if (flags_.shift_up) {
+    } else if (flags_.shift_up) { // number was entered
         stack_->ShiftUp();
         stack_->writeX(num);
+    } else { // Enter was pressed so write in current reg. X
+        stack_->writeX(num);
     }
+    flags_.shift_up = true;
     flags_.eex_pressed = false;
     // notify class observers about new value
     NotifyValue(Peek());
@@ -92,7 +95,7 @@ void Backend::Enter() {
     stack_->ShiftUp();
     (*stack_)[IDX_REG_X] = (*stack_)[IDX_REG_Y];
     flags_.eex_pressed = false;
-    flags_.shift_up = true;
+    flags_.shift_up = false;
     // notify class observer since enter manipulates the stack
     NotifyValue(Peek());
     // don't forget to notify the observer so we can use the event later
@@ -147,6 +150,7 @@ double Backend::Calculate(std::string operation) {
 
 void Backend::Clx() {
     stack_->writeX(0.0);
+    flags_.shift_up = false;
     // inform the observer 
     NotifyOperation(Key::kKeyClx); 
     NotifyValue(Peek()); 
@@ -169,11 +173,15 @@ void Backend::Pi() {
     NotifyValue(Peek()); 
 }
 
+static inline bool IsNearZero(double x) {
+    return std::fabs(x) < DBL_MIN*100;
+}
+
 void Backend::Eex(std::string x) {
     const double regx = Peek().first; 
-    if (std::fabs((std::stod(x)) < DBL_MIN*100) && (std::fabs(regx) < DBL_MIN*100))
+    if (IsNearZero(std::stod(x)) && IsNearZero(regx))
         stack_->writeX(1);
-    else if (std::fabs((std::stod(x)) < DBL_MIN*100) && (std::fabs(regx) > DBL_MIN*100))
+    else if (IsNearZero(std::stod(x)) && !IsNearZero(regx))
         ; // don't do anything
     else
         stack_->writeX(std::stod(x));
