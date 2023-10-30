@@ -82,7 +82,16 @@ void Hip35::RunUI() {
         //------------------------------------------------------
         // Call Backend instance to execute 
         //------------------------------------------------------
-        if (is_prev_op_storage) {
+        if (keypress == Key::kKeyEex) {
+            if (IsDecimal(operand))
+                backend_->Eex(operand);
+            else
+                backend_->Eex("0.0");
+            PrintRegs();
+            // TODO: write current value to X (w/o insering)
+            operand = "";
+            is_prev_op_storage = false;
+        } else if (is_prev_op_storage) {
             // check this first as storage may use the same keys
             // as the keypad functions
             try {
@@ -101,8 +110,6 @@ void Hip35::RunUI() {
             }
             operand = "";
             is_prev_op_storage = false;
-        } else if (keypress == Key::kKeyEex) {
-            // TODO: write current value to X (w/o insering)
         } else if (key_type == Rpn::kTypeNumeric) {
             // write currently typed number in the stack first
             if (!operand.empty())

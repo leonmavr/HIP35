@@ -92,7 +92,7 @@ void Backend::Enter() {
     stack_->ShiftUp();
     (*stack_)[IDX_REG_X] = (*stack_)[IDX_REG_Y];
     flags_.eex_pressed = false;
-    flags_.shift_up = false;
+    flags_.shift_up = true;
     // notify class observer since enter manipulates the stack
     NotifyValue(Peek());
     // don't forget to notify the observer so we can use the event later
@@ -169,11 +169,14 @@ void Backend::Pi() {
     NotifyValue(Peek()); 
 }
 
-void Backend::Eex() {
-    // TODO: give an arg - the currently typed number and write it to X
-    // if register X is zero, make it 1 to prepare it for multiplication 
-    if (std::fabs((*stack_)[IDX_REG_X]) < DBL_MIN*100)
-        (*stack_)[IDX_REG_X] = 1.0;
+void Backend::Eex(std::string x) {
+    const double regx = Peek().first; 
+    if (std::fabs((std::stod(x)) < DBL_MIN*100) && (std::fabs(regx) < DBL_MIN*100))
+        stack_->writeX(1);
+    else if (std::fabs((std::stod(x)) < DBL_MIN*100) && (std::fabs(regx) > DBL_MIN*100))
+        ; // don't do anything
+    else
+        stack_->writeX(std::stod(x));
     flags_.shift_up = false;
     flags_.eex_pressed = true;
     NotifyOperation(Key::kKeyEex); 

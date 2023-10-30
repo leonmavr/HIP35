@@ -34,11 +34,6 @@ StackKeys stack_keys = {
         "CLX",
         Point{3, 4},
         "CLX")},
-    {kKeyEex, std::make_tuple(
-        [](Rpn::Backend& b) -> void { b.Eex(); },
-        "EEX",
-        Point{2, 4},
-        "EEX")},
     {kKeyCls, std::make_tuple(
         [](Rpn::Backend& b) -> void { b.Cls(); },
         "CLS",
@@ -172,6 +167,11 @@ StorageKeys storage_keys = {
         "RCL",
         Point{4, 3},
         "RCL")},
+    {kKeyEex, std::make_tuple(
+        [](Rpn::Backend& b, std::string x) -> void { b.Eex(x); },
+        "EEX",
+        Point{2, 4},
+        "EEX")},
 };
 
 const Keypad keypad{stack_keys,
