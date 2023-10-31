@@ -131,15 +131,18 @@ void Frontend::PrintGenRegister(const std::string& name, double val) {
     else // silently ignore errors
         return;
     std::string val_str = "";
+    const auto nspaces = gen_reg_width_ - 1;
     // select a scheme (format) to display general registers
-    if (std::fabs(val) < 1e-3)
-        val_str = padString(FmtEngineeringNotation(val, 2), gen_reg_width_ - 1);
+    if (std::fabs(val) < 1e-22) // display zero for negligible values
+        val_str = padString("0.0", nspaces);
+    else if (std::fabs(val) < 1e-3)
+        val_str = padString(FmtEngineeringNotation(val, 2), nspaces);
     else if (std::fabs(val) < 100)
-        val_str = padString(FmtFixedPrecision(val, 4), gen_reg_width_ - 1);
+        val_str = padString(FmtFixedPrecision(val, 4), nspaces);
     else if (std::fabs(val) < 1e6)
-        val_str = padString(FmtFixedPrecision(val, 1), gen_reg_width_ - 1);
+        val_str = padString(FmtFixedPrecision(val, 1), nspaces);
     else
-        val_str = padString(FmtEngineeringNotation(val, 1), gen_reg_width_ - 1);
+        val_str = padString(FmtEngineeringNotation(val, 1), nspaces);
     wmove(win_, xy.y, xy.x+1);
     wprintw(win_, val_str.c_str());
 }
@@ -180,13 +183,9 @@ bool Frontend::DrawKey(const std::string& key, bool highlight) {
     const auto it2 = keypad_.single_arg_keys.find(key);
     const auto it3 = keypad_.double_arg_keys.find(key);
     const auto it4 = keypad_.storage_keys.find(key);
-    const bool found = (it1 != keypad_.stack_keys.end()) ||
-                       (it2 != keypad_.single_arg_keys.end()) ||
-                       (it3 != keypad_.double_arg_keys.end()) ||
-                       (it4 != keypad_.storage_keys.end());
-    // invalid input key - return without drawing anything
-    if (!found)
-        return found;
+    const auto it5 = keypad_.eex_key.find(key);
+    // whether the keypress corresponds to a key in the keypad
+    bool found = false;
 
     Key::Point grid_pos{0, 0};
     std::string text_on_key = "";
@@ -195,19 +194,31 @@ bool Frontend::DrawKey(const std::string& key, bool highlight) {
         grid_pos = std::get<2>(it1->second);
         text_on_key = Key::AnnotateKey(
                it1, key);
+        found = true;
     } else if (it2 != keypad_.single_arg_keys.end()) {
         grid_pos = std::get<2>(it2->second);
         text_on_key = Key::AnnotateKey(
                it2, key);
+        found = true;
     } else if (it3 != keypad_.double_arg_keys.end()) {
         grid_pos = std::get<2>(it3->second);
         text_on_key = Key::AnnotateKey(
                it3, key);
+        found = true;
     } else if (it4 != keypad_.storage_keys.end()) {
         grid_pos = std::get<2>(it4->second);
         text_on_key = Key::AnnotateKey(
                it4, key);
+        found = true;
+    } else if (it5 != keypad_.eex_key.end()) {
+        grid_pos = std::get<2>(it5->second);
+        text_on_key = Key::AnnotateKey(
+               it5, key);
+        found = true;
     }
+    if (!found)
+        return found;
+
     //Point grid_pos = key_mappings_[key].second;
     Point top_left_coords {grid_pos.x * Frontend::key_width_ + 1,
                           screen_height_ + grid_pos.y * Frontend::key_height_};
@@ -325,6 +336,8 @@ bool Frontend::DrawKeypad() {
         DrawKey(pair.first);
     for (const auto& pair : keypad_.storage_keys)
         DrawKey(pair.first);
+    for (const auto& pair : keypad_.eex_key)
+        DrawKey(pair.first);
     // print some zeros in X, Y registers
     Frontend::PrintRegisters(0, 0);
 
@@ -347,7 +360,7 @@ bool Frontend::DrawKeypad() {
 bool Frontend::DrawScreen() {
     /**
      * (0,0)
-     * +-----------------------------------------------------
+     * +----------------------------------------------------+
      * |                                              HIP-35 
      * | |----------------------------------------|
      * |Y|                                        |
