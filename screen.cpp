@@ -3,6 +3,7 @@
 #include <utility> // make_pair, pair
 #include <string> // to_string
 #include <iostream> // cout 
+#include <sstream> // cout 
 #include <iomanip> // setprecision
 #include <ncurses.h> // wrefresh, wprintw, etc.
 #include <termios.h> // tcgetattr, tcsetattr
