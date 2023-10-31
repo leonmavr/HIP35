@@ -34,7 +34,44 @@ Frontend::Frontend(const Key::Keypad& keypad):
 void Frontend::SetUiDimensions() {
     max_width_pixels_ = 0;
     max_height_pixels_ = 0;
+    // find the right-most x and bottom y of the key grid
     for (const auto& pair: keypad_.stack_keys) {
+        auto const& tuple = pair.second;
+        const unsigned grid_x = std::get<2>(tuple).x;
+        const unsigned grid_y = std::get<2>(tuple).y;
+        if (grid_x > max_width_pixels_)
+            max_width_pixels_ = grid_x;
+        if (grid_y > max_height_pixels_)
+            max_height_pixels_ = grid_y;
+    }
+    for (const auto& pair: keypad_.single_arg_keys) {
+        auto const& tuple = pair.second;
+        const unsigned grid_x = std::get<2>(tuple).x;
+        const unsigned grid_y = std::get<2>(tuple).y;
+        if (grid_x > max_width_pixels_)
+            max_width_pixels_ = grid_x;
+        if (grid_y > max_height_pixels_)
+            max_height_pixels_ = grid_y;
+    }
+    for (const auto& pair: keypad_.double_arg_keys) {
+        auto const& tuple = pair.second;
+        const unsigned grid_x = std::get<2>(tuple).x;
+        const unsigned grid_y = std::get<2>(tuple).y;
+        if (grid_x > max_width_pixels_)
+            max_width_pixels_ = grid_x;
+        if (grid_y > max_height_pixels_)
+            max_height_pixels_ = grid_y;
+    }
+    for (const auto& pair: keypad_.storage_keys) {
+        auto const& tuple = pair.second;
+        const unsigned grid_x = std::get<2>(tuple).x;
+        const unsigned grid_y = std::get<2>(tuple).y;
+        if (grid_x > max_width_pixels_)
+            max_width_pixels_ = grid_x;
+        if (grid_y > max_height_pixels_)
+            max_height_pixels_ = grid_y;
+    }
+    for (const auto& pair: keypad_.eex_key) {
         auto const& tuple = pair.second;
         const unsigned grid_x = std::get<2>(tuple).x;
         const unsigned grid_y = std::get<2>(tuple).y;
@@ -50,8 +87,6 @@ void Frontend::SetUiDimensions() {
     // don't forget
     // -- increment by 1 (to avoid drawing over the left border)
     // -- scale grid positions by width and height
-    // -- increment by a small number to leave out some padding
-    // to find UI width and height in pixels
     max_width_pixels_ += 1;
     max_height_pixels_ += 1;
     max_width_pixels_ *= key_width_;

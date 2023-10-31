@@ -264,7 +264,7 @@ public:
     /**
      * @brief TODO
      */
-    void Eex(std::string x) override;
+    void Eex(std::optional<double> token) override;
     /**
     * @brief TODO
     *

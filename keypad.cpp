@@ -3,7 +3,7 @@
 
 namespace Key {
 
-StackKeys stack_keys = {
+const StackKeys stack_keys = {
     {kKeyRdn, std::make_tuple(
         [](Rpn::Backend& b) -> void { b.Rdn(); },
         "RDN",
@@ -54,7 +54,7 @@ static inline double Rad2Deg(double rad) {
 }
 
 // Calculate
-SingleArgKeys single_arg_keys = {
+const SingleArgKeys single_arg_keys = {
     {kKeyChs, std::make_tuple(
         [](double x) -> double { return -x; },
         "chs",
@@ -120,9 +120,7 @@ SingleArgKeys single_arg_keys = {
 //----------------------------------------------------------------
 // Double argument numeric functions
 //----------------------------------------------------------------
-// TODO: these should operate on Backend, x, y and call
-// Calculate
-DoubleArgKeys double_arg_keys = {
+const DoubleArgKeys double_arg_keys = {
     {kKeyPlus, std::make_tuple(
         [](double x, double y) -> double { return x + y; },
         "+",
@@ -156,7 +154,7 @@ DoubleArgKeys double_arg_keys = {
 //----------------------------------------------------------------
 // Storage/recall functions
 //----------------------------------------------------------------
-StorageKeys storage_keys = {
+const StorageKeys storage_keys = {
     {kKeyStore, std::make_tuple(
         [](Rpn::Backend& b, std::string name) -> void { b.Sto(name); },
         "STO",
@@ -166,17 +164,26 @@ StorageKeys storage_keys = {
         [](Rpn::Backend& b, std::string name) -> void { b.Rcl(name); },
         "RCL",
         Point{4, 3},
-        "RCL")},
-    {kKeyEex, std::make_tuple(
-        [](Rpn::Backend& b, std::string x) -> void { b.Eex(x); },
+        "RCL")}
+};
+
+//----------------------------------------------------------------
+// EEX key 
+//----------------------------------------------------------------
+const EexKey eex_key = {
+    {
+        kKeyEex, std::make_tuple(
+        [](Rpn::Backend& b, std::optional<double> token) -> void { b.Eex(token); },
         "EEX",
         Point{2, 4},
-        "EEX")},
+        "EEX")
+    }
 };
 
 const Keypad keypad{stack_keys,
-                   single_arg_keys,
-                   double_arg_keys,
-                   storage_keys};
+                    single_arg_keys,
+                    double_arg_keys,
+                    storage_keys,
+                    eex_key};
 
 } // namespace Key

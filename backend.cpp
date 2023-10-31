@@ -46,6 +46,8 @@ Backend::Backend(const Key::Keypad& keypad):
         reverse_keys_[std::get<3>(pair.second)] = pair.first;
     for (const auto& pair: keypad_.storage_keys)
         reverse_keys_[std::get<3>(pair.second)] = pair.first;
+    for (const auto& pair: keypad_.eex_key)
+        reverse_keys_[std::get<3>(pair.second)] = pair.first;
     // map a general register name to the index of the gr array
     std::size_t i = 0;
     for (const auto& n: Key::kNamesGenRegs)
@@ -177,14 +179,14 @@ static inline bool IsNearZero(double x) {
     return std::fabs(x) < DBL_MIN*100;
 }
 
-void Backend::Eex(std::string x) {
+void Backend::Eex(std::optional<double> token) {
     const double regx = Peek().first; 
-    if (IsNearZero(std::stod(x)) && IsNearZero(regx))
+    if (IsNearZero(*token) && IsNearZero(regx)) // prepare register X
         stack_->writeX(1);
-    else if (IsNearZero(std::stod(x)) && !IsNearZero(regx))
+    else if (IsNearZero(*token) && !IsNearZero(regx))
         ; // don't do anything
     else
-        stack_->writeX(std::stod(x));
+        stack_->writeX(*token);
     flags_.shift_up = false;
     flags_.eex_pressed = true;
     NotifyOperation(Key::kKeyEex); 

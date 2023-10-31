@@ -83,12 +83,12 @@ void Hip35::RunUI() {
         // Call Backend instance to execute 
         //------------------------------------------------------
         if (keypress == Key::kKeyEex) {
+            // it can be unset (empty operand) or a decimal
+            std::optional<double> opt_operand;
             if (IsDecimal(operand))
-                backend_->Eex(operand);
-            else
-                backend_->Eex("0.0");
+                opt_operand = std::stod(operand);
+            backend_->Eex(opt_operand);
             PrintRegs();
-            // TODO: write current value to X (w/o insering)
             operand = "";
             is_prev_op_storage = false;
         } else if (is_prev_op_storage) {

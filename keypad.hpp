@@ -1,15 +1,16 @@
 #ifndef KEYPAD_HPP
 #define KEYPAD_HPP 
 
-#include <tuple> // tuple
-#include <utility> // make_tuple
-#include <memory> // unique_ptr
+#include <tuple>         // tuple
+#include <utility>       // make_tuple
+#include <memory>        // unique_ptr
 #include <unordered_map> // unordered_map
-#include <string> // string
-#include <functional> // function
-#include <stdexcept> // invalid_argument
-#include <cmath> // invalid_argument
-#include <array> // array 
+#include <string>        // string
+#include <functional>    // function
+#include <stdexcept>     // invalid_argument
+#include <cmath>         // invalid_argument
+#include <array>         // array 
+#include <optional>      // optional 
 
 // Forward-declaration of class `Backend` to resolve the
 // circular dependency keypad -> backend -> keypad
@@ -131,11 +132,19 @@ using StorageKeys = std::unordered_map<std::string, std::tuple<
                                 Point,
                                 std::string>>;
 
+/** @copydoc StackKeys */
+using EexKey = std::unordered_map<std::string, std::tuple<
+                                std::function<void(Rpn::Backend& b, std::optional<double> operand)>,
+                                std::string,
+                                Point,
+                                std::string>>;
+
 typedef struct {
     StackKeys stack_keys;
     SingleArgKeys single_arg_keys;
     DoubleArgKeys double_arg_keys;
     StorageKeys storage_keys;
+    EexKey eex_key;
 } Keypad;
 
 /**
@@ -154,23 +163,23 @@ typedef struct {
 template <typename T>
 static std::string AnnotateKey(T& it, const std::string keypress) {
     std::string ret = "";
-    const std::string& key_short = keypress;
     const auto& tuple = it->second;
     const std::string& key_long = std::get<1>(tuple);
-    if (key_short == key_long)
-        ret = key_short;
+    if (keypress == key_long)
+        ret = keypress;
     else
-        ret = key_long + " (" + key_short + ")";
+        ret = key_long + " (" + keypress + ")";
     return ret;
 }
 
 //----------------------------------------------------------------
 // keypad mapping types to be used by frontend and backend 
 //----------------------------------------------------------------
-extern StackKeys stack_keys;
-extern SingleArgKeys single_arg_keys;
-extern DoubleArgKeys double_arg_keys;
-extern StorageKeys storage_keys;
+extern const StackKeys stack_keys;
+extern const SingleArgKeys single_arg_keys;
+extern const DoubleArgKeys double_arg_keys;
+extern const StorageKeys storage_keys;
+extern const EexKey eex_key;
 extern const Keypad keypad;
 
 } // namespace Key

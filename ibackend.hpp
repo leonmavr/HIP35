@@ -2,10 +2,11 @@
 #define IBACKEND_HPP 
 
 #include <unordered_map> // unordered_map
-#include <functional> // function
-#include <string> // string
-#include <utility> // pair
-#include <vector> // vector 
+#include <functional>    // function
+#include <string>        // string
+#include <utility>       // pair
+#include <vector>        // vector 
+#include <optional>      // oprtional 
 
 namespace Rpn {
 
@@ -43,7 +44,7 @@ class IBackend {
         virtual void Pi() = 0;
         // TODO:
         // see http://h10032.www1.hp.com/ctg/Manual/c01579350 p32
-        virtual void Eex(std::string x) = 0;
+        virtual void Eex(std::optional<double> token) = 0;
 
         //-------------------------------------------------------
         // Storage/load keys
