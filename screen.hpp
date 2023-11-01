@@ -67,7 +67,7 @@ private:
      */
     void EndTerminal();
     bool DrawKeypad();
-    bool DrawScreen();
+    bool DrawDisplay();
     void DrawBox(const std::string& text, const Point& coords,
                  bool highlight = false);
     /**

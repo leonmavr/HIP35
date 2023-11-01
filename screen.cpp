@@ -28,7 +28,7 @@ Frontend::Frontend(const Key::Keypad& keypad):
     // prepare the terminal for drawing 
     InitTerminal();
     DrawKeypad();
-    DrawScreen();
+    DrawDisplay();
 }
 
 void Frontend::SetUiDimensions() {
@@ -357,7 +357,7 @@ bool Frontend::DrawKeypad() {
     return dimensions_set_; 
 }
 
-bool Frontend::DrawScreen() {
+bool Frontend::DrawDisplay() {
     /**
      * (0,0)
      * +----------------------------------------------------+
