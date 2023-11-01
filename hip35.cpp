@@ -152,8 +152,11 @@ void Hip35::RunUI() {
         } else if (key_type == Rpn::kTypeOperand) {
             operation = observer_->GetState().first;
             regx = observer_->GetState().second.first; 
-            regy = observer_->GetState().second.second; 
-            if (operation != Key::kKeyClx) {
+            regy = observer_->GetState().second.second;
+            if (operation == Key::kKeyEex) {
+                // EEX was pressed - show the result for the curently typed operand
+                frontend_->PrintRegisters(std::pow(10, std::stod(operand)) * regx, regy);
+            } else if (operation != Key::kKeyClx) {
                 // We're about to insert to register X so display current
                 // token at X as if the stack was lifted already
                 frontend_->PrintRegisters(std::stod(operand), regx);
