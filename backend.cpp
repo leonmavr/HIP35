@@ -10,6 +10,7 @@
 #include <algorithm> // erase, remove
 #include <cmath> // M_PI
 #include <cfloat> // DBL_MIN 
+#include <optional> // optional 
 
 
 void Subject::Detach(Observer* observer) {
@@ -183,6 +184,8 @@ void Backend::Eex(std::optional<double> token) {
     const double regx = Peek().first; 
     if (IsNearZero(*token) && IsNearZero(regx)) // prepare register X
         stack_->writeX(1);
+    else if (flags_.eex_pressed) // multiply consecutively
+        (*stack_)[IDX_REG_X] *= std::pow(10, *token);
     else if (IsNearZero(*token) && !IsNearZero(regx))
         ; // don't do anything
     else
