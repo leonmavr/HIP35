@@ -30,7 +30,7 @@ static bool IsDecimal(const std::string& str) {
 }
 
 
-void Hip35::RunUI() {
+double Hip35::RunUI() {
     std::string operation = "";
     std::string operand = "";
     // if previous operation is STO (storage) / RCL (recall)
@@ -168,9 +168,11 @@ void Hip35::RunUI() {
             }
             is_prev_op_storage = false;
         } else if (keypress == "q") {
-            return;
+            break;
         }
     }
+    const auto regx = backend_->Peek().first;
+    return regx;
 }
 
 } // namespace Ui

@@ -14,7 +14,7 @@ class Hip35
 public:
     Hip35();
     ~Hip35() { delete observer_; }
-    void RunUI();
+    double RunUI();
     void SetDelay(unsigned ms) { delay_ms_ = std::chrono::milliseconds(ms); }
 
 private:

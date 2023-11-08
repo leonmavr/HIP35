@@ -31,6 +31,12 @@ Frontend::Frontend(const Key::Keypad& keypad):
     DrawDisplay();
 }
 
+Frontend::~Frontend() {
+    CloseUi();
+    // Restore terminal settings
+    tcsetattr(STDIN_FILENO, TCSANOW, &old_tio_);
+}
+
 void Frontend::SetUiDimensions() {
     max_width_pixels_ = 0;
     max_height_pixels_ = 0;
@@ -121,7 +127,7 @@ static inline std::string ToLower(std::string s) {
     return s;
 }
 
-void Frontend::PrintGenRegister(const std::string& name, double val) {
+void Frontend::PrintGenRegister(const std::string& name, double val)  {
     // where to print the number
     Key::Point xy;
     if (gen_regs_.find(ToLower(name)) != gen_regs_.end())
@@ -317,13 +323,13 @@ void Frontend::InitTerminal() {
     wborder(win_, '.', '.', '.', '.', '.', '.', '.', '.');
 }
 
-void Frontend::EndTerminal() {
+void Frontend::CloseUi() {
     // deallocate ncurses window
     delwin(win_);
+    // clear the screen
+    clear();
     // end ncurses
     endwin();
-    // Restore terminal settings
-    tcsetattr(STDIN_FILENO, TCSANOW, &old_tio_);
 }
 
 bool Frontend::DrawKeypad() {
@@ -428,9 +434,6 @@ static std::string FmtFixedPrecision(double num, unsigned prec) {
     std::ostringstream num_fmt;
     num_fmt << std::fixed << std::setprecision(prec) << num;
     auto num_fmt_string = num_fmt.str();
-    // remove trailing zeros
-    //num_fmt_string.erase(num_fmt_string.find_last_not_of('0') + 1, 
-    //                     std::string::npos); 
     return num_fmt_string;
 }
 

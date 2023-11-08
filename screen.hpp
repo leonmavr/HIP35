@@ -24,7 +24,7 @@ class Frontend
 {
 public:
     Frontend(const Key::Keypad& keypad);
-    ~Frontend() { EndTerminal(); }
+    ~Frontend();
     /**
      * @brief Draw a calculator's key on the screen. When given a
      *        (valid) key, the frontend knows where to draw it.
@@ -56,16 +56,15 @@ public:
         return key_mappings_.at(key).first;
     }
     void PrintGenRegister(const std::string& name, double val);
+    /**
+     * @brief Restores the terminal to the state before it was set.
+     *        Deletes various ncurses structures.
+     */
+    void CloseUi();
 
 private:
 	void InitKeypadGrid();
     void InitTerminal();
-    /**
-     * @brief Restores the terminal to the state before it was set.
-     *        Deletes various ncurses structures. Meant to be called 
-     *        upon deletion of the instance.
-     */
-    void EndTerminal();
     bool DrawKeypad();
     bool DrawDisplay();
     void DrawBox(const std::string& text, const Point& coords,
