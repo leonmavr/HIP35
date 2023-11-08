@@ -47,6 +47,12 @@ public:
     bool HighlightKey(const std::string& key,
                       std::chrono::milliseconds ms = std::chrono::milliseconds(100));
     bool PrintRegisters(double regx, double regy);
+    void PrintGenRegister(const std::string& name, double val);
+    /**
+     * @brief Restores the terminal to the state before it was set.
+     *        Deletes various ncurses structures.
+     */
+    void CloseUi();
     // this operator is used to return data (long function names)
     // from key_mappings_
     std::string operator[](const std::string& key) const {
@@ -55,12 +61,6 @@ public:
             return "";
         return key_mappings_.at(key).first;
     }
-    void PrintGenRegister(const std::string& name, double val);
-    /**
-     * @brief Restores the terminal to the state before it was set.
-     *        Deletes various ncurses structures.
-     */
-    void CloseUi();
 
 private:
 	void InitKeypadGrid();

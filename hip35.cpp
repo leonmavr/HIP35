@@ -8,7 +8,8 @@
 namespace Ui {
 
 Hip35::Hip35():
-        delay_ms_(std::chrono::milliseconds(100)) {
+        delay_ms_(std::chrono::milliseconds(100)),
+        headless_mode{false} {
     backend_ = std::make_unique<Rpn::Backend>(Key::keypad);
     frontend_ = std::make_unique<Gui::Frontend>(Key::keypad);
     observer_ = new Observer;
