@@ -4,8 +4,12 @@
 #include "backend.hpp"
 #include "screen.hpp"
 #include "observer.hpp"
-#include <memory> // unique_ptr
-#include <chrono> // chrono::milliseconds
+#include "keypad.hpp"
+#include <memory>        // unique_ptr
+#include <chrono>        // chrono::milliseconds
+#include <string>        // string
+#include <vector>        // vector
+#include <unordered_map> // unordered_map 
 
 namespace Ui {
 
@@ -14,9 +18,9 @@ class Hip35
 public:
     Hip35();
     ~Hip35() { delete observer_; }
-    double RunUI(bool from_file = false);
+    double RunUI(bool run_headless = false);
+    double EvalString(std::string expression);
     void SetDelay(unsigned ms) { delay_ms_ = std::chrono::milliseconds(ms); }
-    void HeadlessMode() { headless_mode = true; };
 
 private:
     std::unique_ptr<Gui::Frontend> frontend_;
@@ -24,8 +28,9 @@ private:
     Observer* observer_;
     // how many milliseconds to keep a button highlighted for after being pressed
     std::chrono::milliseconds delay_ms_;
-    bool headless_mode;
-
+    std::vector<std::string> tokens_no_ui_;
+    const Key::Keypad& keypad_;
+    // TODO: reverse keys involve code duplication, should find a better way
 };
 
 } // namespace Ui

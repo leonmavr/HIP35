@@ -9,7 +9,7 @@
 int main() {
 #if 1
     auto hp = std::make_unique<Ui::Hip35>();
-    std::cout << hp->RunUI(true) << std::endl;
+    std::cout << hp->EvalString("23 E 4 +") << std::endl;
     getchar();
 #else
     auto b = Rpn::Backend(Key::keypad);

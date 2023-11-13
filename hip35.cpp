@@ -3,13 +3,15 @@
 #include "screen.hpp"
 #include "observer.hpp"
 #include "keypad.hpp"
-#include <memory> // unique_ptr
+#include <memory>       // unique_ptr
+#include <sstream>      // std::stringstream
+
 
 namespace Ui {
 
 Hip35::Hip35():
         delay_ms_(std::chrono::milliseconds(100)),
-        headless_mode{false} {
+        tokens_no_ui_() {
     backend_ = std::make_unique<Rpn::Backend>(Key::keypad);
     frontend_ = std::make_unique<Gui::Frontend>(Key::keypad);
     observer_ = new Observer;
@@ -31,27 +33,27 @@ static bool IsDecimal(const std::string& str) {
 }
 
 
-double Hip35::RunUI(bool from_file) {
+double Hip35::RunUI(bool run_headless) {
     std::string operation = "";
     std::string operand = "";
     // if previous operation is STO (storage) / RCL (recall)
     // STO and RCL as prefix e.g. STO x, RCL so they are
     // treated differently
     bool is_prev_op_storage = false;
-    // close the ncurses window if necessary
-    if (from_file)
+    // close the ncurses window if set so 
+    if (run_headless)
         frontend_->CloseUi();
-    std::vector<std::string> tokens = {"2", " ", "3", "E", "2", "+"};
+
     while (1) {
         std::string keypress = "";
-        if (!from_file) {
+        if (!run_headless) {
             unsigned char c = getchar();
             keypress = std::string(1, c);
         } else {
-            if (tokens.empty())
-                break; // TODO: run once more and then break
-            keypress = tokens.front();
-            tokens.erase(tokens.begin());
+            if (tokens_no_ui_.empty())
+                break;
+            keypress = tokens_no_ui_.front();
+            tokens_no_ui_.erase(tokens_no_ui_.begin());
         }
         double regx = 0.0;
         double regy = 0.0;
@@ -86,7 +88,7 @@ double Hip35::RunUI(bool from_file) {
         }
 
         auto PrintRegs = [&]() {
-            if (!from_file) {
+            if (!run_headless) {
                 regx = observer_->GetState().second.first; 
                 regy = observer_->GetState().second.second; 
                 frontend_->PrintRegisters(regx, regy);
@@ -170,18 +172,18 @@ double Hip35::RunUI(bool from_file) {
             regy = observer_->GetState().second.second;
             if (operation == Key::kKeyEex) {
                 // EEX was pressed - show the result for the curently typed operand
-                if (!from_file)
+                if (!run_headless)
                     frontend_->PrintRegisters(std::pow(10, std::stod(operand)) * regx, regy);
             } else if (operation != Key::kKeyClx) {
                 // We're about to insert to register X so display current
                 // token at X as if the stack was lifted already
-                if (!from_file)
+                if (!run_headless)
                     frontend_->PrintRegisters(std::stod(operand), regx);
             }
             else {
                 // The last operation cleared register X so we're
                 // still writing in X. Y is left untouched
-                if (!from_file)
+                if (!run_headless)
                     frontend_->PrintRegisters(std::stod(operand), regy);
             }
             is_prev_op_storage = false;
@@ -191,6 +193,18 @@ double Hip35::RunUI(bool from_file) {
     }
     const auto regx = backend_->Peek().first;
     return regx;
+}
+
+double Hip35::EvalString(std::string expression) {
+    tokens_no_ui_.clear();
+    std::istringstream iss(expression);
+    std::string token;
+    while (std::getline(iss, token, ' '))    
+        tokens_no_ui_.push_back(token);
+    constexpr bool headless = true;
+    // TODO: map the long token expression (e.g. LOG10 10) into a
+    // short token one (e.g. L 10) before calling the UI
+    return RunUI(headless);
 }
 
 } // namespace Ui

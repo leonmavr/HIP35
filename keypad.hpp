@@ -38,36 +38,36 @@ namespace Key {
 // define key presses to call calculator functions
 // for their implementation see the mapping in this file
 // keys that manipulate the stack
-const std::string kKeyRdn   = "v";
-const std::string kKeyLastX = "x";
-const std::string kKeySwap  = "<";
-const std::string kKeyEnter = " ";
-const std::string kKeyPi    = "p";
-const std::string kKeyClx   = "@";
-const std::string kKeyCls   = "$";
+const std::string kKeyRdn   = "v", kKeyRdnLong   = "RND";
+const std::string kKeyLastX = "x", kKeyLastXLong = "LASTX";
+const std::string kKeySwap  = "<", kKeySwapLong  = "SWAP";
+const std::string kKeyEnter = " ", kKeyEnterLong = "ENTER";
+const std::string kKeyPi    = "p", kKeyPiLong    = "PI";
+const std::string kKeyClx   = "@", kKeyClxLong   = "CLX";
+const std::string kKeyCls   = "$", kKeyClsLong   = "CLS";
 // numerical operations with 1 argument
-const std::string kKeyChs   = "!";
-const std::string kKeyInv   = "i";
-const std::string kKeySin   = "s";
-const std::string kKeyCos   = "c";
-const std::string kKeyTan   = "t";
-const std::string kKeyAsin  = "S";
-const std::string kKeyAcos  = "C";
-const std::string kKeyAtan  = "T";
-const std::string kKeyExp   = "e";
-const std::string kKeyLn    = "l";
-const std::string kKeyLog10 = "L";
-const std::string kKeySqrt  = "r";
+const std::string kKeyChs   = "!", kKeyChsLong   = "CHS";
+const std::string kKeyInv   = "i", kKeyInvLong   = "INV";
+const std::string kKeySin   = "s", kKeySinLong   = "SIN";
+const std::string kKeyCos   = "c", kKeyCosLong   = "COS";
+const std::string kKeyTan   = "t", kKeyTanLong   = "TAN";
+const std::string kKeyAsin  = "S", kKeyAsinLong  = "ASIN";
+const std::string kKeyAcos  = "C", kKeyAcosLong  = "ACOS";
+const std::string kKeyAtan  = "T", kKeyAtanLong  = "ATAN";
+const std::string kKeyExp   = "e", kKeyExpLong   = "EXP";
+const std::string kKeyLn    = "l", kKeyLnLong    = "LN";
+const std::string kKeyLog10 = "L", kKeyLog10Long = "LOG10";
+const std::string kKeySqrt  = "r", kKeySqrtLong  = "SQRT";
 // numerical operations with 2 arguments
-const std::string kKeyPlus  = "+";
-const std::string kKeyMinus = "-";
-const std::string kKeyMul   = "*";
-const std::string kKeyDiv   = "/";
-const std::string kKeyPower = "^";
+const std::string kKeyPlus  = "+", kKeyPlusLong  = "+";
+const std::string kKeyMinus = "-", kKeyMinusLong = "-";
+const std::string kKeyMul   = "*", kKeyMulLong   = "*";
+const std::string kKeyDiv   = "/", kKeyDivLong   = "/";
+const std::string kKeyPower = "^", kKeyPowerLong = "^";
 // prefix operations (1 argument)
-const std::string kKeyRcl   = "?";
-const std::string kKeyStore = "#";
-const std::string kKeyEex   = "E";
+const std::string kKeyRcl   = "?", kKeyRclLong   = "RCL";
+const std::string kKeyStore = "#", kKeyStoreLong = "STO";
+const std::string kKeyEex   = "E", kKeyEexLong   = "EEX";
 
 /**
  *  @brief Names for the 10 general registers - MUST be one letter.
