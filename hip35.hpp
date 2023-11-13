@@ -14,7 +14,7 @@ class Hip35
 public:
     Hip35();
     ~Hip35() { delete observer_; }
-    double RunUI();
+    double RunUI(bool from_file = false);
     void SetDelay(unsigned ms) { delay_ms_ = std::chrono::milliseconds(ms); }
     void HeadlessMode() { headless_mode = true; };
 

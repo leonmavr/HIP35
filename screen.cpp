@@ -328,7 +328,7 @@ void Frontend::CloseUi() {
     delwin(win_);
     // clear the screen
     clear();
-    // end ncurses
+    // end ncurses - MUST be preceeded by delwin
     endwin();
 }
 

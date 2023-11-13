@@ -31,16 +31,28 @@ static bool IsDecimal(const std::string& str) {
 }
 
 
-double Hip35::RunUI() {
+double Hip35::RunUI(bool from_file) {
     std::string operation = "";
     std::string operand = "";
     // if previous operation is STO (storage) / RCL (recall)
     // STO and RCL as prefix e.g. STO x, RCL so they are
     // treated differently
     bool is_prev_op_storage = false;
+    // close the ncurses window if necessary
+    if (from_file)
+        frontend_->CloseUi();
+    std::vector<std::string> tokens = {"2", " ", "3", "E", "2", "+"};
     while (1) {
-        unsigned char c = getchar();
-        std::string keypress = std::string(1, c);
+        std::string keypress = "";
+        if (!from_file) {
+            unsigned char c = getchar();
+            keypress = std::string(1, c);
+        } else {
+            if (tokens.empty())
+                break; // TODO: run once more and then break
+            keypress = tokens.front();
+            tokens.erase(tokens.begin());
+        }
         double regx = 0.0;
         double regy = 0.0;
         auto key_type = Rpn::kTypeNone;
@@ -74,10 +86,12 @@ double Hip35::RunUI() {
         }
 
         auto PrintRegs = [&]() {
-            regx = observer_->GetState().second.first; 
-            regy = observer_->GetState().second.second; 
-            frontend_->PrintRegisters(regx, regy);
-            frontend_->HighlightKey(keypress, delay_ms_);
+            if (!from_file) {
+                regx = observer_->GetState().second.first; 
+                regy = observer_->GetState().second.second; 
+                frontend_->PrintRegisters(regx, regy);
+                frontend_->HighlightKey(keypress, delay_ms_);
+            }
         };
 
         //------------------------------------------------------
@@ -156,16 +170,19 @@ double Hip35::RunUI() {
             regy = observer_->GetState().second.second;
             if (operation == Key::kKeyEex) {
                 // EEX was pressed - show the result for the curently typed operand
-                frontend_->PrintRegisters(std::pow(10, std::stod(operand)) * regx, regy);
+                if (!from_file)
+                    frontend_->PrintRegisters(std::pow(10, std::stod(operand)) * regx, regy);
             } else if (operation != Key::kKeyClx) {
                 // We're about to insert to register X so display current
                 // token at X as if the stack was lifted already
-                frontend_->PrintRegisters(std::stod(operand), regx);
+                if (!from_file)
+                    frontend_->PrintRegisters(std::stod(operand), regx);
             }
             else {
                 // The last operation cleared register X so we're
                 // still writing in X. Y is left untouched
-                frontend_->PrintRegisters(std::stod(operand), regy);
+                if (!from_file)
+                    frontend_->PrintRegisters(std::stod(operand), regy);
             }
             is_prev_op_storage = false;
         } else if (keypress == "q") {
