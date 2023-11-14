@@ -67,7 +67,7 @@ double Hip35::RunUI(bool run_headless) {
         const auto it3 = Key::keypad.double_arg_keys.find(keypress);
         const auto it4 = Key::keypad.storage_keys.find(keypress);
 
-        if (keypress == Key::kKeyEnter)
+        if (keypress == KEY_ENTER_SHORT)
             key_type = Rpn::kTypeEnter;
         else if (it1 != Key::keypad.stack_keys.end())
             key_type = Rpn::kTypeStack;
@@ -99,7 +99,7 @@ double Hip35::RunUI(bool run_headless) {
         //------------------------------------------------------
         // Call Backend instance to execute 
         //------------------------------------------------------
-        if (keypress == Key::kKeyEex) {
+        if (keypress == KEY_EEX_SHORT) {
             // it can be unset (empty operand) or a decimal
             std::optional<double> opt_operand;
             if (IsDecimal(operand))
@@ -118,10 +118,10 @@ double Hip35::RunUI(bool run_headless) {
                 // don't do anything and wait for next key
             }
             operation = observer_->GetState().first;
-            if (operation == Key::kKeyStore) {
+            if (operation == KEY_STO_SHORT) {
                 const double regx = observer_->GetState().second.first;
                 frontend_->PrintGenRegister(keypress, regx);
-            } else if (operation == Key::kKeyRcl) {
+            } else if (operation == KEY_RCL_SHORT) {
                 // registers have changed due to RCL
                 PrintRegs();
             }
@@ -149,7 +149,7 @@ double Hip35::RunUI(bool run_headless) {
             PrintRegs();
             operand = "";
             is_prev_op_storage = true;
-        } else if (keypress == Key::kKeyEnter) {
+        } else if (keypress == KEY_ENTER_SHORT) {
             if (!operand.empty())
                 backend_->Insert(std::stod(operand));
             backend_->Enter();
@@ -170,11 +170,11 @@ double Hip35::RunUI(bool run_headless) {
             operation = observer_->GetState().first;
             regx = observer_->GetState().second.first; 
             regy = observer_->GetState().second.second;
-            if (operation == Key::kKeyEex) {
+            if (operation == KEY_EEX_SHORT) {
                 // EEX was pressed - show the result for the curently typed operand
                 if (!run_headless)
                     frontend_->PrintRegisters(std::pow(10, std::stod(operand)) * regx, regy);
-            } else if (operation != Key::kKeyClx) {
+            } else if (operation != KEY_CLX_SHORT) {
                 // We're about to insert to register X so display current
                 // token at X as if the stack was lifted already
                 if (!run_headless)
@@ -199,11 +199,18 @@ double Hip35::EvalString(std::string expression) {
     tokens_no_ui_.clear();
     std::istringstream iss(expression);
     std::string token;
-    while (std::getline(iss, token, ' '))    
-        tokens_no_ui_.push_back(token);
+    while (std::getline(iss, token, ' ')) {
+        const auto it = Key::reverse_keys.find(token);
+        // then the user has entered a long key for an operation,
+        // e.g. LOG10 and we reverse it to L
+        if (it != Key::reverse_keys.end())
+            tokens_no_ui_.push_back(Key::reverse_keys[token]);
+        else
+            tokens_no_ui_.push_back(token);
+    }
+    // have to register last operation
+    // double swap does not affect the stack
     constexpr bool headless = true;
-    // TODO: map the long token expression (e.g. LOG10 10) into a
-    // short token one (e.g. L 10) before calling the UI
     return RunUI(headless);
 }
 

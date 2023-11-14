@@ -37,18 +37,6 @@ Backend::Backend(const Key::Keypad& keypad):
     keypad_(keypad),
     sto_regs_({0})
 { 
-    // map functions that can be input in non-interactive mode into
-    // single key presses that the calculator accepts, e.g. LN -> l
-    for (const auto& pair: keypad_.stack_keys)
-        reverse_keys_[std::get<3>(pair.second)] = pair.first;
-    for (const auto& pair: keypad_.single_arg_keys)
-        reverse_keys_[std::get<3>(pair.second)] = pair.first;
-    for (const auto& pair: keypad_.double_arg_keys)
-        reverse_keys_[std::get<3>(pair.second)] = pair.first;
-    for (const auto& pair: keypad_.storage_keys)
-        reverse_keys_[std::get<3>(pair.second)] = pair.first;
-    for (const auto& pair: keypad_.eex_key)
-        reverse_keys_[std::get<3>(pair.second)] = pair.first;
     // map a general register name to the index of the gr array
     std::size_t i = 0;
     for (const auto& n: Key::kNamesGenRegs)
@@ -248,78 +236,6 @@ void Backend::Rcl(std::string name) {
     NotifyOperation(Key::kKeyRcl); 
     NotifyValue(Peek()); 
 }
-
-double Backend::CalculateFromString(std::string rpnExpression) {
-    // split input by spaces
-    std::istringstream iss(rpnExpression);
-    // space-separated substrings
-    std::vector<std::string> substrings;
-    // current substring (i.e. operation or data)
-    auto token_type = kTypeNone;
-    // previous token - needs to be recorded as storage/recall
-    // (STO/RCL) are prefix op/s - e.g. STO 4
-    std::string previous_token = "";
-
-    std::string token;
-    while (iss >> token)
-        substrings.push_back(token);
-
-    for (std::string& substring : substrings) {
-        // convert to upper
-        std::transform(substring.begin(), substring.end(), substring.begin(),
-                       [](unsigned char c) { return std::toupper(c); });
-
-        const auto keypress = reverse_keys_[substring];
-        // what type the last token was, e.g. number, operation, etc.
-        
-        // if substring not in dictionary keys, it's a digit so enter it
-        // if substring is a digit and previous substring is a digit, press enter before entering it
-        const auto it1 = keypad_.stack_keys.find(keypress);
-        const auto it2 = keypad_.single_arg_keys.find(keypress);
-        const auto it3 = keypad_.double_arg_keys.find(keypress);
-        const auto it4 = keypad_.storage_keys.find(keypress);
-        const bool is_stack_op = it1 != keypad_.stack_keys.end();
-        const bool is_numeric_op =
-            (it2 != keypad_.single_arg_keys.end()) ||
-            (it3 != keypad_.double_arg_keys.end());
-        const bool is_storage_op = it4 != keypad_.storage_keys.end();
-
-        if (is_storage_op) {
-            token_type = kTypeStorage;
-        } else if (token_type == kTypeStorage) {
-            const auto it = keypad_.storage_keys.find(reverse_keys_[previous_token]);
-            std::get<0>(it->second)(*this, token);
-            token_type = kTypeNone; // numeric token was consumed
-        } else if (is_numeric_op) {
-            // function key (1-op or 2-op) pressed; do the calculation
-            Calculate(keypress);
-            token_type = kTypeNumeric;
-        } else if (is_stack_op) {
-            const auto it = keypad_.stack_keys.find(keypress);
-            std::get<0>(it->second)(*this); // call the stakc method
-            token_type = kTypeStack;
-        } else {
-            // number was entered
-            if (token_type == kTypeOperand) {
-                // press enter to separate the numbers
-                Enter();
-            }
-            try {
-                // negative number tokens behin with ~ so replace it
-                // with - before inserting it
-                if (substring[0] == '~')
-                    substring = "-" + substring.substr(1);
-                Insert(std::stod(substring));
-            } catch (const std::invalid_argument& e) {
-                std::cerr << "Invalid input: " + substring + " at "
-                    << e.what() << std::endl;
-            }
-            token_type = kTypeOperand;
-        }
-        previous_token = substring;
-    }
-    return (*stack_)[IDX_REG_X];
-}        
 
 
 std::ostream& operator<<(std::ostream& os, const Backend& backend) {

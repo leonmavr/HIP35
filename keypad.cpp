@@ -180,6 +180,16 @@ const EexKey eex_key = {
     }
 };
 
+//----------------------------------------------------------------
+// Long to short mapping 
+//----------------------------------------------------------------
+
+std::unordered_map<std::string, std::string> reverse_keys = {
+#define X(a, b, c, d) {b, a},
+    KEYS(X)
+#undef X
+};
+
 const Keypad keypad{stack_keys,
                     single_arg_keys,
                     double_arg_keys,

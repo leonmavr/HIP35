@@ -61,8 +61,6 @@ class IBackend {
         virtual std::pair<double, double> Peek() const = 0;
         /** @brief  Abstract method for calculating last token */
         virtual double Calculate(std::string operation) = 0;
-        /** @brief  Abstract method for calculating from a given RPN string */
-        virtual double CalculateFromString(std::string rpnExpression) = 0;
 };
 
 } /* namespace Rpn */

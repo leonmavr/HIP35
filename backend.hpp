@@ -236,22 +236,6 @@ public:
      */
     double Calculate(std::string operation) override;
     /**
-     * @brief Calculte a results of an expression written in reverse
-     *        Polish notation (RPN). In RPN only records operations 
-     *        and operands and each operation follows its operands.  
-     *        Example: `12 7 -` gives 5
-     *                 `6 2 / COS` gives `COS(6/2)`
-     *
-     * @param rpnExpression A string that contains a RPN notation
-     *                      expression. Operands and operations are
-     *                      separated by space. Variables are not
-     *                      allowed.
-     *
-     * @return The numberic results of the RPN. 
-     */
-    double CalculateFromString(std::string rpnExpression) override;
-
-    /**
      * @brief Set register X to zero. The purpose of this is to
      *        fix typos and the last entered number.
      */
@@ -292,16 +276,6 @@ private:
     double lastx_;
     // reference to a keypad that describes the calculator's key configuration
     const Key::Keypad& keypad_;
-    /**
-     * @brief Maps a key description back to input key, e.g.
-     *        LOG10 -> L. The purpose of this is to be able to
-     *        convert functions in non-interactive mode (parsing
-     *        from string) into functions understood by the class,
-     *        e.g. 2 10 LOG10 -> 2 10 l. Then, "l" is mapped to an
-     *        actual function (std::functional) and log10(10) takes
-     *        place.
-     */
-    std::unordered_map<std::string, std::string> reverse_keys_;
     /**
      * @brief Maps a register name as defined in Key namespace to
      *        and index of the `sto_regs_` array. This way, the user 
