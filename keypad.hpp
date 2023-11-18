@@ -77,37 +77,6 @@
 #define KEY_EEX_SHORT   "E"
 #define KEY_EEX_LONG    "EEX"
 
-// short key, long key, x, y
-#define KEYS(X) \
-    X(KEY_LASTX_SHORT, KEY_LASTX_LONG, 3, 3) \
-    X(KEY_SWAP_SHORT,  KEY_SWAP_LONG,  1, 3) \
-    X(KEY_ENTER_SHORT, KEY_ENTER_LONG, 0, 4) \
-    X(KEY_PI_SHORT,    KEY_PI_LONG,    4, 4) \
-    X(KEY_CLX_SHORT,   KEY_CLX_LONG,   3, 4) \
-    X(KEY_CLS_SHORT,   KEY_CLS_LONG,   4, 0) \
-    X(KEY_CHS_SHORT,   KEY_CHS_LONG,   1, 4) \
-    X(KEY_INV_SHORT,   KEY_INV_LONG,   0, 3) \
-    X(KEY_SIN_SHORT,   KEY_SIN_LONG,   1, 1) \
-    X(KEY_COS_SHORT,   KEY_COS_LONG,   2, 1) \
-    X(KEY_TAN_SHORT,   KEY_TAN_LONG,   3, 1) \
-    X(KEY_ASIN_SHORT,  KEY_ASIN_LONG,  1, 2) \
-    X(KEY_ACOS_SHORT,  KEY_ACOS_LONG,  2, 2) \
-    X(KEY_ATAN_SHORT,  KEY_ATAN_LONG,  3, 2) \
-    X(KEY_EXP_SHORT,   KEY_EXP_LONG,   3, 0) \
-    X(KEY_LN_SHORT,    KEY_LN_LONG,    2, 0) \
-    X(KEY_LOG10_SHORT, KEY_LOG10_LONG, 1, 0) \
-    X(KEY_SQRT_SHORT,  KEY_SQRT_LONG,  0, 1) \
-    X(KEY_PLUS_SHORT,  KEY_PLUS_LONG,  0, 5) \
-    X(KEY_MINUS_SHORT, KEY_MINUS_LONG, 1, 5) \
-    X(KEY_MUL_SHORT,   KEY_MUL_LONG,   2, 5) \
-    X(KEY_DIV_SHORT,   KEY_DIV_LONG,   3, 5) \
-    X(KEY_POW_SHORT,   KEY_POW_LONG,   4, 5) \
-    X(KEY_RCL_SHORT,   KEY_RCL_LONG,   4, 3) \
-    X(KEY_STO_SHORT,   KEY_STO_LONG,   4, 2) \
-    X(KEY_EEX_SHORT,   KEY_EEX_LONG,   2, 4) \
-
-
-
 // Forward-declaration of class `Backend` to resolve the
 // circular dependency keypad -> backend -> keypad
 namespace Rpn {

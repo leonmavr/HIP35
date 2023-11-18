@@ -184,11 +184,19 @@ const EexKey eex_key = {
 // Long to short mapping 
 //----------------------------------------------------------------
 
-std::unordered_map<std::string, std::string> reverse_keys = {
-#define X(a, b, c, d) {b, a},
-    KEYS(X)
-#undef X
-};
+// define it with a lambda expression to evaluate at compile time
+std::unordered_map<std::string, std::string> reverse_keys = []{
+    std::unordered_map<std::string, std::string> ret;
+    for (const auto& pair: stack_keys)
+        ret[std::get<3>(pair.second)] = pair.first;
+    for (const auto& pair: single_arg_keys)
+        ret[std::get<3>(pair.second)] = pair.first;
+    for (const auto& pair: double_arg_keys)
+        ret[std::get<3>(pair.second)] = pair.first;
+    for (const auto& pair: eex_key)
+        ret[std::get<3>(pair.second)] = pair.first;
+    return ret;
+}();
 
 const Keypad keypad{stack_keys,
                     single_arg_keys,
