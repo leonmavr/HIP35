@@ -185,7 +185,7 @@ const EexKey eex_key = {
 //----------------------------------------------------------------
 
 // define it with a lambda expression to evaluate at compile time
-std::unordered_map<std::string, std::string> reverse_keys = []{
+static std::unordered_map<std::string, std::string> reverse_keys = []{
     std::unordered_map<std::string, std::string> ret;
     for (const auto& pair: stack_keys)
         ret[std::get<3>(pair.second)] = pair.first;
@@ -202,6 +202,7 @@ const Keypad keypad{stack_keys,
                     single_arg_keys,
                     double_arg_keys,
                     storage_keys,
-                    eex_key};
+                    eex_key,
+                    reverse_keys};
 
 } // namespace Key

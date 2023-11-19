@@ -200,13 +200,16 @@ double Hip35::EvalString(std::string expression) {
     std::istringstream iss(expression);
     std::string token;
     while (std::getline(iss, token, ' ')) {
-        const auto it = Key::reverse_keys.find(token);
+        const auto it = Key::keypad.reverse_keys.find(token);
         // then the user has entered a long key for an operation,
         // e.g. LOG10 and we reverse it to L
-        if (it != Key::reverse_keys.end())
-            tokens_no_ui_.push_back(Key::reverse_keys[token]);
-        else
+        if (it != Key::keypad.reverse_keys.end()) {
+            const auto short_key = it->second;
+            tokens_no_ui_.push_back(short_key);
+        }
+        else {
             tokens_no_ui_.push_back(token);
+        }
     }
     // have to register last operation
     // double swap does not affect the stack

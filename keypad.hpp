@@ -145,6 +145,7 @@ typedef struct {
     DoubleArgKeys double_arg_keys;
     StorageKeys storage_keys;
     EexKey eex_key;
+    std::unordered_map<std::string, std::string> reverse_keys;
 } Keypad;
 
 /**
@@ -181,7 +182,6 @@ extern const DoubleArgKeys double_arg_keys;
 extern const StorageKeys storage_keys;
 extern const EexKey eex_key;
 extern const Keypad keypad;
-extern std::unordered_map<std::string, std::string> reverse_keys;
 
 
 } // namespace Key
