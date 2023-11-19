@@ -176,11 +176,6 @@ static std::string AnnotateKey(T& it, const std::string keypress) {
 //----------------------------------------------------------------
 // keypad mapping types to be used by frontend and backend 
 //----------------------------------------------------------------
-extern const StackKeys stack_keys;
-extern const SingleArgKeys single_arg_keys;
-extern const DoubleArgKeys double_arg_keys;
-extern const StorageKeys storage_keys;
-extern const EexKey eex_key;
 extern const Keypad keypad;
 
 

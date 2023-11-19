@@ -3,7 +3,7 @@
 
 namespace Key {
 
-const StackKeys stack_keys = {
+static const StackKeys stack_keys = {
     {kKeyRdn, std::make_tuple(
         [](Rpn::Backend& b) -> void { b.Rdn(); },
         "RDN",
@@ -54,7 +54,7 @@ static inline double Rad2Deg(double rad) {
 }
 
 // Calculate
-const SingleArgKeys single_arg_keys = {
+static const SingleArgKeys single_arg_keys = {
     {kKeyChs, std::make_tuple(
         [](double x) -> double { return -x; },
         "chs",
@@ -120,7 +120,7 @@ const SingleArgKeys single_arg_keys = {
 //----------------------------------------------------------------
 // Double argument numeric functions
 //----------------------------------------------------------------
-const DoubleArgKeys double_arg_keys = {
+static const DoubleArgKeys double_arg_keys = {
     {kKeyPlus, std::make_tuple(
         [](double x, double y) -> double { return x + y; },
         "+",
@@ -154,7 +154,7 @@ const DoubleArgKeys double_arg_keys = {
 //----------------------------------------------------------------
 // Storage/recall functions
 //----------------------------------------------------------------
-const StorageKeys storage_keys = {
+static const StorageKeys storage_keys = {
     {kKeyStore, std::make_tuple(
         [](Rpn::Backend& b, std::string name) -> void { b.Sto(name); },
         "STO",
@@ -170,7 +170,7 @@ const StorageKeys storage_keys = {
 //----------------------------------------------------------------
 // EEX key 
 //----------------------------------------------------------------
-const EexKey eex_key = {
+static const EexKey eex_key = {
     {
         kKeyEex, std::make_tuple(
         [](Rpn::Backend& b, std::optional<double> token) -> void { b.Eex(token); },
