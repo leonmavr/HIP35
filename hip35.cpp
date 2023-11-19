@@ -9,11 +9,12 @@
 
 namespace Ui {
 
-Hip35::Hip35():
+Hip35::Hip35(const Key::Keypad& keypad):
         delay_ms_(std::chrono::milliseconds(100)),
-        tokens_no_ui_() {
-    backend_ = std::make_unique<Rpn::Backend>(Key::keypad);
-    frontend_ = std::make_unique<Gui::Frontend>(Key::keypad);
+        tokens_no_ui_(),
+        keypad_(keypad) {
+    backend_ = std::make_unique<Rpn::Backend>(keypad_);
+    frontend_ = std::make_unique<Gui::Frontend>(keypad_);
     observer_ = new Observer;
     // convert unique pointer to regular pointer
     backend_->Attach(observer_);
@@ -61,20 +62,20 @@ double Hip35::RunUI(bool run_headless) {
         //------------------------------------------------------
         // Determine operation type
         //------------------------------------------------------
-        const auto it1 = Key::keypad.stack_keys.find(keypress);
-                                        Key::keypad.stack_keys.end();
-        const auto it2 = Key::keypad.single_arg_keys.find(keypress);
-        const auto it3 = Key::keypad.double_arg_keys.find(keypress);
-        const auto it4 = Key::keypad.storage_keys.find(keypress);
+        const auto it1 = keypad_.stack_keys.find(keypress);
+                                        keypad_.stack_keys.end();
+        const auto it2 = keypad_.single_arg_keys.find(keypress);
+        const auto it3 = keypad_.double_arg_keys.find(keypress);
+        const auto it4 = keypad_.storage_keys.find(keypress);
 
         if (keypress == Key::kKeyEnter)
             key_type = Rpn::kTypeEnter;
-        else if (it1 != Key::keypad.stack_keys.end())
+        else if (it1 != keypad_.stack_keys.end())
             key_type = Rpn::kTypeStack;
-        else if ((it2 != Key::keypad.single_arg_keys.end()) ||
-                  it3 != Key::keypad.double_arg_keys.end())
+        else if ((it2 != keypad_.single_arg_keys.end()) ||
+                  it3 != keypad_.double_arg_keys.end())
             key_type = Rpn::kTypeNumeric;
-        else if (it4 != Key::keypad.storage_keys.end())
+        else if (it4 != keypad_.storage_keys.end())
             key_type = Rpn::kTypeStorage;
         //------------------------------------------------------
         // Append to operand if necessary 
@@ -112,7 +113,7 @@ double Hip35::RunUI(bool run_headless) {
             // check this first as storage may use the same keys
             // as the keypad functions
             try {
-                const auto it = Key::keypad.storage_keys.find(operation);
+                const auto it = keypad_.storage_keys.find(operation);
                 std::get<0>(it->second)(*backend_, keypress);
             } catch (const std::invalid_argument& e) {
                 // don't do anything and wait for next key
@@ -160,7 +161,7 @@ double Hip35::RunUI(bool run_headless) {
         } else if (key_type == Rpn::kTypeStack) {
             if (!operand.empty())
                 backend_->Insert(std::stod(operand));
-            const auto it = Key::keypad.stack_keys.find(keypress);
+            const auto it = keypad_.stack_keys.find(keypress);
             std::get<0>(it->second)(*backend_);
             operation = observer_->GetState().first;
             PrintRegs();
@@ -200,10 +201,10 @@ double Hip35::EvalString(std::string expression) {
     std::istringstream iss(expression);
     std::string token;
     while (std::getline(iss, token, ' ')) {
-        const auto it = Key::keypad.reverse_keys.find(token);
+        const auto it = keypad_.reverse_keys.find(token);
         // then the user has entered a long key for an operation,
         // e.g. LOG10 and we reverse it to L
-        if (it != Key::keypad.reverse_keys.end()) {
+        if (it != keypad_.reverse_keys.end()) {
             const auto short_key = it->second;
             tokens_no_ui_.push_back(short_key);
         }

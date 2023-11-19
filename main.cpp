@@ -8,7 +8,7 @@
 
 int main() {
 #if 1
-    auto hp = std::make_unique<Ui::Hip35>();
+    auto hp = std::make_unique<Ui::Hip35>(Key::keypad);
     hp->RunUI();
 #else
     auto b = Rpn::Backend(Key::keypad);
