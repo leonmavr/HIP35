@@ -12,71 +12,6 @@
 #include <array>         // array 
 #include <optional>      // optional 
 
-
-//// Key definitions
-// Short = keypresses the uses will type when running the UI
-//         e.g. 10 L 1 +
-// Long  = long code for the key when evaluation an expression
-//         without using the UI, e.g. "10 LOG10 1 +"
-
-// stack operations
-#define KEY_LASTX_SHORT "x"
-#define KEY_LASTX_LONG  "LASTX"
-#define KEY_SWAP_SHORT  "<"
-#define KEY_SWAP_LONG   "SWAP"
-#define KEY_ENTER_SHORT " "
-#define KEY_ENTER_LONG  "ENTER"
-#define KEY_PI_SHORT    "p"
-#define KEY_PI_LONG     "PI"
-#define KEY_CLX_SHORT   "@"
-#define KEY_CLX_LONG    "CLX"
-#define KEY_CLS_SHORT   "$"
-#define KEY_CLS_LONG    "CLS"
-// monadic operations
-#define KEY_CHS_SHORT   "!"
-#define KEY_CHS_LONG    "CHS"
-#define KEY_INV_SHORT   "i"
-#define KEY_INV_LONG    "INV"
-#define KEY_SIN_SHORT   "s"
-#define KEY_SIN_LONG    "SIN"
-#define KEY_COS_SHORT   "c"
-#define KEY_COS_LONG    "COS"
-#define KEY_TAN_SHORT   "t"
-#define KEY_TAN_LONG    "TAN"
-#define KEY_ASIN_SHORT  "S"
-#define KEY_ASIN_LONG   "ASIN"
-#define KEY_ACOS_SHORT  "C"
-#define KEY_ACOS_LONG   "ACOS"
-#define KEY_ATAN_SHORT  "T"
-#define KEY_ATAN_LONG   "ATAN"
-#define KEY_EXP_SHORT   "e"
-#define KEY_EXP_LONG    "EXP"
-#define KEY_LN_SHORT    "l"
-#define KEY_LN_LONG     "LN"
-#define KEY_LOG10_SHORT "L"
-#define KEY_LOG10_LONG  "LOG10"
-#define KEY_SQRT_SHORT  "r"
-#define KEY_SQRT_LONG   "SQRT"
-// dual operations
-#define KEY_PLUS_SHORT  "+"
-#define KEY_PLUS_LONG   "+"
-#define KEY_MINUS_SHORT "-"
-#define KEY_MINUS_LONG  "-"
-#define KEY_MUL_SHORT   "*"
-#define KEY_MUL_LONG    "*"
-#define KEY_DIV_SHORT   "/"
-#define KEY_DIV_LONG    "/"
-#define KEY_POW_SHORT   "^"
-#define KEY_POW_LONG    "^"
-// recall/store
-#define KEY_RCL_SHORT   "?"
-#define KEY_RCL_LONG    "RCL"
-#define KEY_STO_SHORT   "#"
-#define KEY_STO_LONG    "STO"
-// EEX key
-#define KEY_EEX_SHORT   "E"
-#define KEY_EEX_LONG    "EEX"
-
 // Forward-declaration of class `Backend` to resolve the
 // circular dependency keypad -> backend -> keypad
 namespace Rpn {
@@ -103,36 +38,36 @@ namespace Key {
 // define key presses to call calculator functions
 // for their implementation see the mapping in this file
 // keys that manipulate the stack
-const std::string kKeyRdn   = "v", kKeyRdnLong   = "RDN";
-const std::string kKeyLastX = "x", kKeyLastXLong = "LASTX";
-const std::string kKeySwap  = "<", kKeySwapLong  = "SWAP";
-const std::string kKeyEnter = " ", kKeyEnterLong = "ENTER";
-const std::string kKeyPi    = "p", kKeyPiLong    = "PI";
-const std::string kKeyClx   = "@", kKeyClxLong   = "CLX";
-const std::string kKeyCls   = "$", kKeyClsLong   = "CLS";
+const std::string kKeyRdn   = "v";
+const std::string kKeyLastX = "x";
+const std::string kKeySwap  = "<";
+const std::string kKeyEnter = " ";
+const std::string kKeyPi    = "p";
+const std::string kKeyClx   = "@";
+const std::string kKeyCls   = "$";
 // numerical operations with 1 argument
-const std::string kKeyChs   = "!", kKeyChsLong   = "CHS";
-const std::string kKeyInv   = "i", kKeyInvLong   = "INV";
-const std::string kKeySin   = "s", kKeySinLong   = "SIN";
-const std::string kKeyCos   = "c", kKeyCosLong   = "COS";
-const std::string kKeyTan   = "t", kKeyTanLong   = "TAN";
-const std::string kKeyAsin  = "S", kKeyAsinLong  = "ASIN";
-const std::string kKeyAcos  = "C", kKeyAcosLong  = "ACOS";
-const std::string kKeyAtan  = "T", kKeyAtanLong  = "ATAN";
-const std::string kKeyExp   = "e", kKeyExpLong   = "EXP";
-const std::string kKeyLn    = "l", kKeyLnLong    = "LN";
-const std::string kKeyLog10 = "L", kKeyLog10Long = "LOG10";
-const std::string kKeySqrt  = "r", kKeySqrtLong  = "SQRT";
+const std::string kKeyChs   = "!";
+const std::string kKeyInv   = "i";
+const std::string kKeySin   = "s";
+const std::string kKeyCos   = "c";
+const std::string kKeyTan   = "t";
+const std::string kKeyAsin  = "S";
+const std::string kKeyAcos  = "C";
+const std::string kKeyAtan  = "T";
+const std::string kKeyExp   = "e";
+const std::string kKeyLn    = "l";
+const std::string kKeyLog10 = "L";
+const std::string kKeySqrt  = "r";
 // numerical operations with 2 arguments
-const std::string kKeyPlus  = "+", kKeyPlusLong  = "+";
-const std::string kKeyMinus = "-", kKeyMinusLong = "-";
-const std::string kKeyMul   = "*", kKeyMulLong   = "*";
-const std::string kKeyDiv   = "/", kKeyDivLong   = "/";
-const std::string kKeyPower = "^", kKeyPowerLong = "^";
+const std::string kKeyPlus  = "+";
+const std::string kKeyMinus = "-";
+const std::string kKeyMul   = "*";
+const std::string kKeyDiv   = "/";
+const std::string kKeyPower = "^";
 // prefix operations (1 argument)
-const std::string kKeyRcl   = "?", kKeyRclLong   = "RCL";
-const std::string kKeyStore = "#", kKeyStoreLong = "STO";
-const std::string kKeyEex   = "E", kKeyEexLong   = "EEX";
+const std::string kKeyRcl   = "?";
+const std::string kKeyStore = "#";
+const std::string kKeyEex   = "E";
 
 /**
  *  @brief Names for the 10 general registers - MUST be one letter.
