@@ -82,14 +82,20 @@ typedef struct {
 } Point;
 
 
+struct StackKeyInfo {
+    std::function<void(Rpn::Backend& b)> function;
+    std::string annotation;
+    Key::Point point;
+    std::string long_key;
+};
 /**
  * @brief Maps the following:
  *        @verbatim
  *        keypress --+--> function: 
- *                   |    Can be a function of one or two registers  
- *        Single     |    or a backend instance or a backend instance
+ *           |       |    Can be a function of one or two registers  
+ *        (Single    |    or a backend instance or a backend instance
  *        length     |    and an index.
- *        key        |
+ *        key)       |
  *                   +--> annotation:
  *                   |    The annoration of the keypress on the
  *                   |    frontend, e.g. for `s` it can be `SIN` 
@@ -105,39 +111,44 @@ typedef struct {
  *                        `ARCSIN`. Different form the annotation.
  *        @endverbatim
  */
-using StackKeys = std::unordered_map<std::string, std::tuple<
-                                std::function<void(Rpn::Backend& b)>,
-                                std::string,
-                                Point,
-                                std::string>>;
+using StackKeys = std::unordered_map<std::string, StackKeyInfo>; 
+
+struct SingleKeyInfo {
+    std::function<double(double)> function;
+    std::string annotation;
+    Key::Point point;
+    std::string long_key;
+};
+/** @copydoc StackKeys */
+using SingleArgKeys = std::unordered_map<std::string, SingleKeyInfo>;
 
 /** @copydoc StackKeys */
-using SingleArgKeys = std::unordered_map<std::string, std::tuple<
-                                std::function<double(double)>,
-                                std::string,
-                                Point,
-                                std::string>>;
+struct DoubleKeyInfo {
+    std::function<double(double, double)> function;
+    std::string annotation;
+    Key::Point point;
+    std::string long_key;
+};
+using DoubleArgKeys = std::unordered_map<std::string, DoubleKeyInfo>;
 
+struct StorageKeyInfo {
+    std::function<void(Rpn::Backend& b, std::string name)> function;
+    std::string annotation;
+    Key::Point point;
+    std::string long_key;
+};
 /** @copydoc StackKeys */
-using DoubleArgKeys = std::unordered_map<std::string, std::tuple<
-                                std::function<double(double, double)>,
-                                std::string,
-                                Point,
-                                std::string>>;
+using StorageKeys = std::unordered_map<std::string, StorageKeyInfo>;
 
+struct KeyInfoEex {
+    std::function<void(Rpn::Backend&, std::optional<double>)> function;
+    std::string annotation;
+    Key::Point point;
+    std::string long_key;
+};
 /** @copydoc StackKeys */
-using StorageKeys = std::unordered_map<std::string, std::tuple<
-                                std::function<void(Rpn::Backend& b, std::string name)>,
-                                std::string,
-                                Point,
-                                std::string>>;
+using EexKey = std::unordered_map<std::string, KeyInfoEex>;
 
-/** @copydoc StackKeys */
-using EexKey = std::unordered_map<std::string, std::tuple<
-                                std::function<void(Rpn::Backend& b, std::optional<double> operand)>,
-                                std::string,
-                                Point,
-                                std::string>>;
 
 typedef struct {
     StackKeys stack_keys;
@@ -164,8 +175,7 @@ typedef struct {
 template <typename T>
 static std::string AnnotateKey(T& it, const std::string keypress) {
     std::string ret = "";
-    const auto& tuple = it->second;
-    const std::string& key_long = std::get<1>(tuple);
+    const std::string& key_long = it->second.long_key;
     if (keypress == key_long)
         ret = keypress;
     else

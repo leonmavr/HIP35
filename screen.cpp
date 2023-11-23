@@ -42,45 +42,45 @@ void Frontend::SetUiDimensions() {
     max_height_pixels_ = 0;
     // find the right-most x and bottom y of the key grid
     for (const auto& pair: keypad_.stack_keys) {
-        auto const& tuple = pair.second;
-        const unsigned grid_x = std::get<2>(tuple).x;
-        const unsigned grid_y = std::get<2>(tuple).y;
+        auto const& info = pair.second;
+        const unsigned grid_x = info.point.x;
+        const unsigned grid_y = info.point.y;
         if (grid_x > max_width_pixels_)
             max_width_pixels_ = grid_x;
         if (grid_y > max_height_pixels_)
             max_height_pixels_ = grid_y;
     }
     for (const auto& pair: keypad_.single_arg_keys) {
-        auto const& tuple = pair.second;
-        const unsigned grid_x = std::get<2>(tuple).x;
-        const unsigned grid_y = std::get<2>(tuple).y;
+        auto const& info = pair.second;
+        const unsigned grid_x = info.point.x;
+        const unsigned grid_y = info.point.y;
         if (grid_x > max_width_pixels_)
             max_width_pixels_ = grid_x;
         if (grid_y > max_height_pixels_)
             max_height_pixels_ = grid_y;
     }
     for (const auto& pair: keypad_.double_arg_keys) {
-        auto const& tuple = pair.second;
-        const unsigned grid_x = std::get<2>(tuple).x;
-        const unsigned grid_y = std::get<2>(tuple).y;
+        auto const& info = pair.second;
+        const unsigned grid_x = info.point.x;
+        const unsigned grid_y = info.point.y;
         if (grid_x > max_width_pixels_)
             max_width_pixels_ = grid_x;
         if (grid_y > max_height_pixels_)
             max_height_pixels_ = grid_y;
     }
     for (const auto& pair: keypad_.storage_keys) {
-        auto const& tuple = pair.second;
-        const unsigned grid_x = std::get<2>(tuple).x;
-        const unsigned grid_y = std::get<2>(tuple).y;
+        auto const& info = pair.second;
+        const unsigned grid_x = info.point.x;
+        const unsigned grid_y = info.point.y;
         if (grid_x > max_width_pixels_)
             max_width_pixels_ = grid_x;
         if (grid_y > max_height_pixels_)
             max_height_pixels_ = grid_y;
     }
     for (const auto& pair: keypad_.eex_key) {
-        auto const& tuple = pair.second;
-        const unsigned grid_x = std::get<2>(tuple).x;
-        const unsigned grid_y = std::get<2>(tuple).y;
+        auto const& info = pair.second;
+        const unsigned grid_x = info.point.x;
+        const unsigned grid_y = info.point.y;
         if (grid_x > max_width_pixels_)
             max_width_pixels_ = grid_x;
         if (grid_y > max_height_pixels_)
@@ -197,27 +197,27 @@ bool Frontend::DrawKey(const std::string& key, bool highlight) {
     std::string text_on_key = "";
     // search which map key belongs to and get the info from there
     if (it1 != keypad_.stack_keys.end()) {
-        grid_pos = std::get<2>(it1->second);
+        grid_pos = it1->second.point;
         text_on_key = Key::AnnotateKey(
                it1, key);
         found = true;
     } else if (it2 != keypad_.single_arg_keys.end()) {
-        grid_pos = std::get<2>(it2->second);
+        grid_pos = it2->second.point;
         text_on_key = Key::AnnotateKey(
                it2, key);
         found = true;
     } else if (it3 != keypad_.double_arg_keys.end()) {
-        grid_pos = std::get<2>(it3->second);
+        grid_pos = it3->second.point;
         text_on_key = Key::AnnotateKey(
                it3, key);
         found = true;
     } else if (it4 != keypad_.storage_keys.end()) {
-        grid_pos = std::get<2>(it4->second);
+        grid_pos = it4->second.point;
         text_on_key = Key::AnnotateKey(
                it4, key);
         found = true;
     } else if (it5 != keypad_.eex_key.end()) {
-        grid_pos = std::get<2>(it5->second);
+        grid_pos = it5->second.point;
         text_on_key = Key::AnnotateKey(
                it5, key);
         found = true;

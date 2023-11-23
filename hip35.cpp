@@ -114,7 +114,7 @@ double Hip35::RunUI(bool run_headless) {
             // as the keypad functions
             try {
                 const auto it = keypad_.storage_keys.find(operation);
-                std::get<0>(it->second)(*backend_, keypress);
+                (it->second.function)(*backend_, keypress);
             } catch (const std::invalid_argument& e) {
                 // don't do anything and wait for next key
             }
@@ -162,7 +162,7 @@ double Hip35::RunUI(bool run_headless) {
             if (!operand.empty())
                 backend_->Insert(std::stod(operand));
             const auto it = keypad_.stack_keys.find(keypress);
-            std::get<0>(it->second)(*backend_);
+            (it->second.function)(*backend_);
             operation = observer_->GetState().first;
             PrintRegs();
             operand = "";

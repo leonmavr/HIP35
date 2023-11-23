@@ -116,13 +116,13 @@ double Backend::Calculate(std::string operation) {
     if (it1 != keypad_.single_arg_keys.end()) {
         // query single operand op/s such as sin, log, etc.
         //registerX  = function_key_1op_[operation](registerX);
-        registerX = std::get<0>(it1->second)(registerX);
+        registerX = (it1->second.function)(registerX);
         valid_operation = true;
     }
     auto it2 = keypad_.double_arg_keys.find(operation);
     if (it2 != keypad_.double_arg_keys.end()) {
         // query 2-operant operations such as +, /, etc.
-        registerY = std::get<0>(it2->second)(registerX, registerY);
+        registerY = (it2->second.function)(registerX, registerY);
         // drop old register X
         stack_->ShiftDown();
         valid_operation = true;
