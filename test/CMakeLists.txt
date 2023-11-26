@@ -1,9 +1,10 @@
-file(GLOB SRCS *.cpp)
+file(GLOB SRCS *.cpp *.c)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(testfoo ${SRCS})
+add_executable(testhip35 ${SRCS})
 
-target_link_libraries(testfoo
+target_link_libraries(testhip35
+    m # glib math library (-lm)
     lib
 )

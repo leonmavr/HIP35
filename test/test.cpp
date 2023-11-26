@@ -1,21 +1,7 @@
 #include "hip35.hpp"
-#include <iostream>
-#include <cassert>
-
-#define ASSERT_FLOAT_CLOSE(actual, expected, epsilon) \
-    do { \
-        float actualValue = (actual); \
-        float expectedValue = (expected); \
-        float epsilonValue = (epsilon); \
-        if (!(std::fabs(actualValue - expectedValue) < epsilonValue)) { \
-            std::cerr << "Assertion failed: " #actual " and " #expected " not close at line " << __LINE__ << std::endl; \
-        } \
-    } while(0)
+#include "nanotest.h"
 
 int main() {
-	ASSERT_FLOAT_CLOSE(1, 1, 0.01);
-	ASSERT_FLOAT_CLOSE(1, 2, 0.01);
-	ASSERT_FLOAT_CLOSE(1, 1, 0.01);
-	std::cout << "running tests\n";
-
+    auto hp = std::make_unique<Ui::Hip35>(Key::keypad);
+    NTEST_ASSERT_FLOAT_CLOSE(hp->EvalString("2 3 * CHS"), -6.0);
 }

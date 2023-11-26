@@ -117,6 +117,7 @@ double Hip35::RunUI(bool run_headless) {
                 (it->second.function)(*backend_, keypress);
             } catch (const std::invalid_argument& e) {
                 // don't do anything and wait for next key
+                std::cout << "invalid arg: " <<  keypress << std::endl;
             }
             operation = observer_->GetState().first;
             if (operation == Key::kKeyStore) {
@@ -191,9 +192,9 @@ double Hip35::RunUI(bool run_headless) {
         } else if (keypress == "q") {
             break;
         }
+        std::cout << "------------------ " << observer_->GetState().second.first << " --------------\n";
     }
-    const auto regx = backend_->Peek().first;
-    return regx;
+    return observer_->GetState().second.first; 
 }
 
 double Hip35::EvalString(std::string expression) {
@@ -209,11 +210,14 @@ double Hip35::EvalString(std::string expression) {
             tokens_no_ui_.push_back(short_key);
         }
         else {
+            // operand
             tokens_no_ui_.push_back(token);
         }
     }
-    // have to register last operation
-    // double swap does not affect the stack
+    std::cout << "about to evaluate:\n";
+    for (const auto t : tokens_no_ui_)
+        std::cout << t << " ";
+    std::cout << std::endl;
     constexpr bool headless = true;
     return RunUI(headless);
 }
