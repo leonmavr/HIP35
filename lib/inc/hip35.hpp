@@ -2,7 +2,7 @@
 #define HIP35_HPP 
 
 #include "backend.hpp"
-#include "screen.hpp"
+#include "frontend.hpp"
 #include "observer.hpp"
 #include "keypad.hpp"
 #include <memory>        // unique_ptr

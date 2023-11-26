@@ -1,6 +1,6 @@
 #include "hip35.hpp"
 #include "backend.hpp"
-#include "screen.hpp"
+#include "frontend.hpp"
 #include "observer.hpp"
 #include "keypad.hpp"
 #include <memory>       // unique_ptr
