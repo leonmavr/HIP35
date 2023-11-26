@@ -1,2 +1,0 @@
-/usr/bin/ar.exe qc liblib.a CMakeFiles/lib.dir/src/backend.cpp.o CMakeFiles/lib.dir/src/hip35.cpp.o CMakeFiles/lib.dir/src/keypad.cpp.o CMakeFiles/lib.dir/src/observer.cpp.o CMakeFiles/lib.dir/src/screen.cpp.o CMakeFiles/lib.dir/src/stack.cpp.o
-/usr/bin/ranlib.exe liblib.a
