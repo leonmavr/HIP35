@@ -117,7 +117,6 @@ double Hip35::RunUI(bool run_headless) {
                 (it->second.function)(*backend_, keypress);
             } catch (const std::invalid_argument& e) {
                 // don't do anything and wait for next key
-                std::cout << "invalid arg: " <<  keypress << std::endl;
             }
             operation = observer_->GetState().first;
             if (operation == Key::kKeyStore) {
@@ -192,12 +191,13 @@ double Hip35::RunUI(bool run_headless) {
         } else if (keypress == "q") {
             break;
         }
-        std::cout << "------------------ " << observer_->GetState().second.first << " --------------\n";
     }
-    return observer_->GetState().second.first; 
+    const auto regx = observer_->GetState().second.first;
+    return regx; 
 }
 
 double Hip35::EvalString(std::string expression) {
+    // clear the buffer to prepare it for new expression
     tokens_no_ui_.clear();
     std::istringstream iss(expression);
     std::string token;
@@ -214,10 +214,6 @@ double Hip35::EvalString(std::string expression) {
             tokens_no_ui_.push_back(token);
         }
     }
-    std::cout << "about to evaluate:\n";
-    for (const auto t : tokens_no_ui_)
-        std::cout << t << " ";
-    std::cout << std::endl;
     constexpr bool headless = true;
     return RunUI(headless);
 }
