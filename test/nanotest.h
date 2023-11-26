@@ -16,8 +16,9 @@ int ntest_result = NTEST_PASS;
         if (fabs(actual_value - expected_value) < epsilon) \
             printf("[v] Assertion at line %d passed.\n", __LINE__); \
         else { \
-            fprintf(stderr, "[x] Assertion at line %d failed:\n    Values of %s and %s are not close\n", \
-                    __LINE__, #actual, #expected); \
+            fprintf(stderr, "[x] Assertion at line %d of file %s failed:\n" \
+                            "    Values of %s and %s are not close\n", \
+                    __LINE__, __FILE__, #actual, #expected); \
             ntest_result = NTEST_FAIL; \
         } \
     } while(0)
@@ -28,8 +29,8 @@ int ntest_result = NTEST_PASS;
         if (condition) \
             printf("[v] Assertion at line %d passed.\n", __LINE__); \
         else { \
-            fprintf(stderr, "[x] Assertion at line %d failed:\n    %s", \
-                    __LINE__, #condition); \
+            fprintf(stderr, "[x] Assertion at line %d of file %s failed" \
+                            ":\n    %s", __LINE__, #condition); \
             ntest_result = NTEST_FAIL; \
         } \
     } while(0)
