@@ -11,7 +11,7 @@
 #include <stdexcept> // invalid_argument
 #include <chrono> // milliseconds
 
-namespace Gui {
+namespace gui {
 
 /**
 * @brief Point in the keypad grid with top left as origin (0, 0) 
@@ -173,5 +173,5 @@ static inline std::string FmtBasedOnRange(double num, unsigned screen_width);
  */
 static std::string padString(const std::string& input, std::size_t N);
 
-} // namespace Gui
+} // namespace gui
 #endif /* SCREEN_HPP */

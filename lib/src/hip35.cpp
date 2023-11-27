@@ -14,7 +14,7 @@ Hip35::Hip35(const Key::Keypad& keypad):
         tokens_no_ui_(),
         keypad_(keypad) {
     backend_ = std::make_unique<Rpn::Backend>(keypad_);
-    frontend_ = std::make_unique<Gui::Frontend>(keypad_);
+    frontend_ = std::make_unique<gui::Frontend>(keypad_);
     observer_ = new Observer;
     // convert unique pointer to regular pointer
     backend_->Attach(observer_);

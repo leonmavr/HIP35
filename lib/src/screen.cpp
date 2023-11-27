@@ -12,7 +12,7 @@
 #include <thread> // this_thread
 #include <cfloat> // DBL_MIN 
 
-namespace Gui {
+namespace gui {
 
 
 Frontend::Frontend(const Key::Keypad& keypad):
@@ -472,4 +472,4 @@ static inline std::string FmtBasedOnRange(double num, unsigned screen_width) {
         ret = padString(FmtEngineeringNotation(num, 8), nspaces);
     return ret;
 }
-} // namespace Gui
+} // namespace gui
