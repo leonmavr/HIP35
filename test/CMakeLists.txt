@@ -6,5 +6,5 @@ add_executable(testhip35 ${SRCS})
 
 target_link_libraries(testhip35
     m # glib math library (-lm)
-    lib
+    hip35 # library built by this project
 )
