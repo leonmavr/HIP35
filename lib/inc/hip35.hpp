@@ -25,7 +25,7 @@ public:
 
 private:
     std::unique_ptr<gui::Frontend> frontend_;
-    std::unique_ptr<Rpn::Backend> backend_;
+    std::unique_ptr<backend::Backend> backend_;
     Observer* observer_;
     // how many milliseconds to keep a button highlighted for after being pressed
     std::chrono::milliseconds delay_ms_;

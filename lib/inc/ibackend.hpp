@@ -8,7 +8,7 @@
 #include <vector>        // vector 
 #include <optional>      // oprtional 
 
-namespace Rpn {
+namespace backend {
 
 /**
  * @brief Blueprint of the functions an HP35-based RPN calculator
@@ -63,6 +63,6 @@ class IBackend {
         virtual double Calculate(std::string operation) = 0;
 };
 
-} /* namespace Rpn */
+} /* namespace backend */
 
 #endif /* IBACKEND_HPP */

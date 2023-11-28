@@ -13,7 +13,7 @@ Hip35::Hip35(const Key::Keypad& keypad):
         delay_ms_(std::chrono::milliseconds(100)),
         tokens_no_ui_(),
         keypad_(keypad) {
-    backend_ = std::make_unique<Rpn::Backend>(keypad_);
+    backend_ = std::make_unique<backend::Backend>(keypad_);
     frontend_ = std::make_unique<gui::Frontend>(keypad_);
     observer_ = new Observer;
     // convert unique pointer to regular pointer
@@ -58,7 +58,7 @@ double Hip35::RunUI(bool run_headless) {
         }
         double regx = 0.0;
         double regy = 0.0;
-        auto key_type = Rpn::kTypeNone;
+        auto key_type = backend::kTypeNone;
         //------------------------------------------------------
         // Determine operation type
         //------------------------------------------------------
@@ -69,23 +69,23 @@ double Hip35::RunUI(bool run_headless) {
         const auto it4 = keypad_.storage_keys.find(keypress);
 
         if (keypress == Key::kKeyEnter)
-            key_type = Rpn::kTypeEnter;
+            key_type = backend::kTypeEnter;
         else if (it1 != keypad_.stack_keys.end())
-            key_type = Rpn::kTypeStack;
+            key_type = backend::kTypeStack;
         else if ((it2 != keypad_.single_arg_keys.end()) ||
                   it3 != keypad_.double_arg_keys.end())
-            key_type = Rpn::kTypeNumeric;
+            key_type = backend::kTypeNumeric;
         else if (it4 != keypad_.storage_keys.end())
-            key_type = Rpn::kTypeStorage;
+            key_type = backend::kTypeStorage;
         //------------------------------------------------------
         // Append to operand if necessary 
         //------------------------------------------------------
         if (IsDecimal(operand + keypress)) {
             operand += keypress;
-            key_type = Rpn::kTypeOperand;
+            key_type = backend::kTypeOperand;
         } else if (operand.empty() && (keypress == "~")) {
             operand = "-0";
-            key_type = Rpn::kTypeOperand;
+            key_type = backend::kTypeOperand;
         }
 
         auto PrintRegs = [&]() {
@@ -128,7 +128,7 @@ double Hip35::RunUI(bool run_headless) {
             }
             operand = "";
             is_prev_op_storage = false;
-        } else if (key_type == Rpn::kTypeNumeric) {
+        } else if (key_type == backend::kTypeNumeric) {
             // write currently typed number in the stack first
             if (!operand.empty())
                 backend_->Insert(std::stod(operand));
@@ -140,7 +140,7 @@ double Hip35::RunUI(bool run_headless) {
             // empty the operand to prepare for a new one
             operand = "";
             is_prev_op_storage = false;
-        } else if (key_type == Rpn::kTypeStorage) {
+        } else if (key_type == backend::kTypeStorage) {
             if (!operand.empty())
                 backend_->Insert(std::stod(operand));
             // Storage/recall op/s are in prefix notation, e.g.
@@ -158,7 +158,7 @@ double Hip35::RunUI(bool run_headless) {
             PrintRegs();
             operand = "";
             is_prev_op_storage = false;
-        } else if (key_type == Rpn::kTypeStack) {
+        } else if (key_type == backend::kTypeStack) {
             if (!operand.empty())
                 backend_->Insert(std::stod(operand));
             const auto it = keypad_.stack_keys.find(keypress);
@@ -167,7 +167,7 @@ double Hip35::RunUI(bool run_headless) {
             PrintRegs();
             operand = "";
             is_prev_op_storage = false;
-        } else if (key_type == Rpn::kTypeOperand) {
+        } else if (key_type == backend::kTypeOperand) {
             operation = observer_->GetState().first;
             regx = observer_->GetState().second.first; 
             regy = observer_->GetState().second.second;

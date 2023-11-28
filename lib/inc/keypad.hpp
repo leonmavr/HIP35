@@ -14,7 +14,7 @@
 
 // Forward-declaration of class `Backend` to resolve the
 // circular dependency keypad -> backend -> keypad
-namespace Rpn {
+namespace backend {
     class Backend;
 }
 
@@ -83,7 +83,7 @@ typedef struct {
 
 
 struct StackKeyInfo {
-    std::function<void(Rpn::Backend& b)> function;
+    std::function<void(backend::Backend& b)> function;
     std::string annotation;
     Key::Point point;
     std::string long_key;
@@ -132,7 +132,7 @@ struct DoubleKeyInfo {
 using DoubleArgKeys = std::unordered_map<std::string, DoubleKeyInfo>;
 
 struct StorageKeyInfo {
-    std::function<void(Rpn::Backend& b, std::string name)> function;
+    std::function<void(backend::Backend& b, std::string name)> function;
     std::string annotation;
     Key::Point point;
     std::string long_key;
@@ -141,7 +141,7 @@ struct StorageKeyInfo {
 using StorageKeys = std::unordered_map<std::string, StorageKeyInfo>;
 
 struct KeyInfoEex {
-    std::function<void(Rpn::Backend&, std::optional<double>)> function;
+    std::function<void(backend::Backend&, std::optional<double>)> function;
     std::string annotation;
     Key::Point point;
     std::string long_key;

@@ -8,7 +8,6 @@
 #include <string> // string
 #include <memory> // unique_ptr
 #include <cmath> // sin, cos, tan, log10, sqrt
-#include <stdexcept> // runtime_error
 #include <vector> // vector
 #include <utility> // make_pair, pair
 #include <array> // array 
@@ -47,7 +46,7 @@ private:
 };
 
 
-namespace Rpn {
+namespace backend {
 
 /**
 * @brief The type of the current token - helps determine what
@@ -135,9 +134,9 @@ public:
     Backend() = delete;
     Backend(const Key::Keypad& keypad);
     Backend(const Backend& other) :
+        keypad_(other.keypad_),
         stack_(std::make_unique<Stack>(*other.stack_)),
         lastx_(other.lastx_),
-        keypad_(other.keypad_),
         sto_regs_(other.sto_regs_),
         flags_(other.flags_) {}
     ~Backend() {}
@@ -221,7 +220,7 @@ public:
      *        Z->   3             2     |     3                4
      *        Y->   2             1     |     2                3
      *        X->   1             0     |    0.1               20
-     *
+     *                                  |
      *        t->   ------------> T     |  t->   ----------+-> T
      *        z->   ------------> Z     |  z->   ------+   +-> Z
      *        y->   ------------> Y     |  y->   ---+  +-----> Y
@@ -261,21 +260,21 @@ public:
     * @param idx
     */
     void Rcl(std::string name) override;
-    /* Overrides the << operator for the class, e.g.std::cout << <Instance>; */
+    /** Overrides the << operator for the class, e.g.std::cout << <Instance>; */
     friend std::ostream& operator<<(std::ostream& os, const Backend& backend);
 
 private:
+    /** reference to a keypad that describes the calculator's key configuration */
+    const Key::Keypad& keypad_;
     // owns the stack - unique_ptr manages its lifetime and deallocation
     std::unique_ptr<Stack> stack_;
+    // LASTX register; stores the value of X before a function is invoked 
+    double lastx_;
     /**
      * @brief General purpose storage registers (indexed 0 to 9) to
      *        store constants or intermediate results.
      */
     std::array<double, 10> sto_regs_;
-    // LASTX register; stores the value of X before a function is invoked 
-    double lastx_;
-    // reference to a keypad that describes the calculator's key configuration
-    const Key::Keypad& keypad_;
     /**
      * @brief Maps a register name as defined in Key namespace to
      *        and index of the `sto_regs_` array. This way, the user 
@@ -283,10 +282,11 @@ private:
      *        e.g. "A" -> 0, "B" -> 1, etc.
      */
     std::unordered_map<std::string, std::size_t> gen_regs_name2idx;
+    // internal flags that store info about the calc's state (e.g. shift up stack)
     Flags flags_;
 };
 
 
-} /* namespace Rpn */
+} /* namespace backend */
 
 #endif /* BACKEND_HPP */

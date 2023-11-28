@@ -1,16 +1,17 @@
 #include "keypad.hpp"
 #include "frontend.hpp"
-#include <utility> // make_pair, pair
-#include <string> // to_string
-#include <iostream> // cout 
-#include <sstream> // cout 
-#include <iomanip> // setprecision
-#include <ncurses.h> // wrefresh, wprintw, etc.
-#include <termios.h> // tcgetattr, tcsetattr
-#include <unistd.h> // STDIN_FILENO
-#include <chrono> // sleep_for, milliseconds
-#include <thread> // this_thread
-#include <cfloat> // DBL_MIN 
+#include <utility>      // make_pair, pair
+#include <string>       // to_string
+#include <iostream>     // cout 
+#include <sstream>      // cout 
+#include <iomanip>      // setprecision
+#include <ncurses.h>    // wrefresh, wprintw, etc.
+#include <termios.h>    // tcgetattr, tcsetattr
+#include <unistd.h>     // STDIN_FILENO
+#include <chrono>       // sleep_for, milliseconds
+#include <thread>       // this_thread
+#include <cfloat>       // DBL_MIN 
+#include <algorithm>    // max_element 
 
 namespace gui {
 
@@ -20,8 +21,10 @@ Frontend::Frontend(const Key::Keypad& keypad):
     key_width_(12),
     key_height_(3),
     screen_height_(6),
-    gen_reg_width_(12),
-    dimensions_set_(false)
+    max_width_pixels_(0),
+    max_height_pixels_(0),
+    dimensions_set_(false),
+    gen_reg_width_(12)
 {
     // state where each button is to be drawn
 	InitKeypadGrid();
@@ -38,54 +41,24 @@ Frontend::~Frontend() {
 }
 
 void Frontend::SetUiDimensions() {
-    max_width_pixels_ = 0;
-    max_height_pixels_ = 0;
-    // find the right-most x and bottom y of the key grid
-    for (const auto& pair: keypad_.stack_keys) {
-        auto const& info = pair.second;
-        const unsigned grid_x = info.point.x;
-        const unsigned grid_y = info.point.y;
-        if (grid_x > max_width_pixels_)
-            max_width_pixels_ = grid_x;
-        if (grid_y > max_height_pixels_)
-            max_height_pixels_ = grid_y;
-    }
-    for (const auto& pair: keypad_.single_arg_keys) {
-        auto const& info = pair.second;
-        const unsigned grid_x = info.point.x;
-        const unsigned grid_y = info.point.y;
-        if (grid_x > max_width_pixels_)
-            max_width_pixels_ = grid_x;
-        if (grid_y > max_height_pixels_)
-            max_height_pixels_ = grid_y;
-    }
-    for (const auto& pair: keypad_.double_arg_keys) {
-        auto const& info = pair.second;
-        const unsigned grid_x = info.point.x;
-        const unsigned grid_y = info.point.y;
-        if (grid_x > max_width_pixels_)
-            max_width_pixels_ = grid_x;
-        if (grid_y > max_height_pixels_)
-            max_height_pixels_ = grid_y;
-    }
-    for (const auto& pair: keypad_.storage_keys) {
-        auto const& info = pair.second;
-        const unsigned grid_x = info.point.x;
-        const unsigned grid_y = info.point.y;
-        if (grid_x > max_width_pixels_)
-            max_width_pixels_ = grid_x;
-        if (grid_y > max_height_pixels_)
-            max_height_pixels_ = grid_y;
-    }
-    for (const auto& pair: keypad_.eex_key) {
-        auto const& info = pair.second;
-        const unsigned grid_x = info.point.x;
-        const unsigned grid_y = info.point.y;
-        if (grid_x > max_width_pixels_)
-            max_width_pixels_ = grid_x;
-        if (grid_y > max_height_pixels_)
-            max_height_pixels_ = grid_y;
-    }
+    // find max x and y of keys in the grid
+    std::vector<Key::Point> grid_coords;
+    for (const auto& pair: keypad_.stack_keys)
+        grid_coords.push_back(pair.second.point);
+    for (const auto& pair: keypad_.single_arg_keys)
+        grid_coords.push_back(pair.second.point);
+    for (const auto& pair: keypad_.double_arg_keys)
+        grid_coords.push_back(pair.second.point);
+    for (const auto& pair: keypad_.storage_keys)
+        grid_coords.push_back(pair.second.point);
+    for (const auto& pair: keypad_.eex_key)
+        grid_coords.push_back(pair.second.point);
+    auto it = std::max_element(grid_coords.begin(), grid_coords.end(),
+        [] (const Key::Point& p1, const Key::Point& p2) { return p1.x < p2.x; });
+    max_width_pixels_ = it->x; 
+    it = std::max_element(grid_coords.begin(), grid_coords.end(),
+        [] (const Key::Point& p1, const Key::Point& p2) { return p1.y < p2.y; });
+    max_height_pixels_ = it->y; 
 
     //------------------------------------------------------
     // Keypad
@@ -101,7 +74,6 @@ void Frontend::SetUiDimensions() {
     // offset by screen size
     max_height_pixels_ += screen_height_; 
     
-
     //------------------------------------------------------
     // General register display 
     //------------------------------------------------------
@@ -110,9 +82,8 @@ void Frontend::SetUiDimensions() {
     constexpr unsigned offsety = 3;
     // this is the top left point where general register will be printed
     gen_regs_top_left_ = Key::Point{max_width_pixels_, offsety};
-    for (int i = 0; i < Key::kNamesGenRegs.size(); i++) {
+    for (unsigned i = 0; i < Key::kNamesGenRegs.size(); ++i)
         gen_regs_[Key::kNamesGenRegs[i]] = Key::Point{max_width_pixels_, offsety + i};
-    }
     // make enough horizontal space for general register display
     max_width_pixels_ += gen_reg_width_ + 3;
 }
@@ -140,45 +111,21 @@ void Frontend::PrintGenRegister(const std::string& name, double val)  {
     const auto nspaces = gen_reg_width_ - 1;
     // select a scheme (format) to display general registers
     if (std::fabs(val) < 1e-22) // display zero for negligible values
-        val_str = padString("0.0", nspaces);
+        val_str = PadString("0.0", nspaces);
     else if (std::fabs(val) < 1e-3)
-        val_str = padString(FmtEngineeringNotation(val, 2), nspaces);
+        val_str = PadString(FmtEngineeringNotation(val, 2), nspaces);
     else if (std::fabs(val) < 100)
-        val_str = padString(FmtFixedPrecision(val, 4), nspaces);
+        val_str = PadString(FmtFixedPrecision(val, 4), nspaces);
     else if (std::fabs(val) < 1e6)
-        val_str = padString(FmtFixedPrecision(val, 1), nspaces);
+        val_str = PadString(FmtFixedPrecision(val, 1), nspaces);
     else
-        val_str = padString(FmtEngineeringNotation(val, 1), nspaces);
+        val_str = PadString(FmtEngineeringNotation(val, 1), nspaces);
     wmove(win_, xy.y, xy.x+1);
     wprintw(win_, val_str.c_str());
 }
 
-/**
- * @brief Arranges the keypad given the key mappings (`key_mappings_`).
- *        In the end, we want to arrange the keypad as a 2D grid that
- *        looks as follows:
- *
- *        The screen requires 2 rows as we want to draw a RPN calculator.
- *        The screen displays:
- *        register Y
- *        register X
- *        
- *        Frontend
- *        |
- *        | 
- *        v
- *        +----------------------------------- 
- *        | 4.00            
- *        | 20.00
- *        +---------+---------+----------+---- <- Keypad
- *        | +       | -       | *        | ...
- *        +---------+---------+----------+----
- *        | sin (s) | cos (c) | tan (t)  | ...
- *        +---------+---------+----------+---- 
- *        ...
- */
 void Frontend::InitKeypadGrid() {
-    // records the dimensions of the UI in pixels
+    // records the dimensions of the UI in characters
     SetUiDimensions();
     // so that ncurses knows it's not dealing with garbage dimension values
     dimensions_set_ = true;
@@ -347,7 +294,7 @@ bool Frontend::DrawKeypad() {
     // print some zeros in X, Y registers
     Frontend::PrintRegisters(0, 0);
 
-    // draw the general registers' frame
+    // draw the general registers' frame and labels
     for (const auto& it: gen_regs_) {
         const std::string label = it.first;
         const unsigned x = it.second.x, y = it.second.y;
@@ -374,6 +321,8 @@ bool Frontend::DrawDisplay() {
      * | |----------------------------------------|
      * |                                           
      */
+    if (!dimensions_set_)
+        return dimensions_set_; // dimensions unset - leave
     // wmove(win_struct, y, x)
     wmove(win_, 1, max_width_pixels_ - 7);
     wprintw(win_, "HIP-35");
@@ -437,7 +386,7 @@ static std::string FmtFixedPrecision(double num, unsigned prec) {
     return num_fmt_string;
 }
 
-static std::string padString(const std::string& input, std::size_t N) {
+static std::string PadString(const std::string& input, std::size_t N) {
     if (input.length() >= N) {
         // No need to pad, return the original string
         return input;
@@ -457,19 +406,19 @@ static inline std::string FmtBasedOnRange(double num, unsigned screen_width) {
     const unsigned nspaces = screen_width - 4;
     // below we pad with spaces to avoid having to redraw with ncurses
     if (std::abs(num) < DBL_MIN*100)
-        ret = padString(FmtFixedPrecision(num, 5), nspaces);
+        ret = PadString(FmtFixedPrecision(num, 5), nspaces);
     else  if (std::abs(num) < 0.01)
-        ret = padString(FmtEngineeringNotation(num, 6), nspaces);
+        ret = PadString(FmtEngineeringNotation(num, 6), nspaces);
     else if (std::abs(num) < 1e3)
-        ret = padString(FmtFixedPrecision(num, 5), nspaces);
+        ret = PadString(FmtFixedPrecision(num, 5), nspaces);
     else if (std::abs(num) < 1e6)
-        ret = padString(FmtFixedPrecision(num, 1), nspaces);
+        ret = PadString(FmtFixedPrecision(num, 1), nspaces);
     else if (std::abs(num) < 1e12)
-        ret = padString(FmtEngineeringNotation(num, 6), nspaces);
+        ret = PadString(FmtEngineeringNotation(num, 6), nspaces);
     else if (std::abs(num) < 1e18)
-        ret = padString(FmtEngineeringNotation(num, 7), nspaces);
+        ret = PadString(FmtEngineeringNotation(num, 7), nspaces);
     else
-        ret = padString(FmtEngineeringNotation(num, 8), nspaces);
+        ret = PadString(FmtEngineeringNotation(num, 8), nspaces);
     return ret;
 }
 } // namespace gui

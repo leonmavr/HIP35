@@ -3,7 +3,7 @@
 
 #include <array>
 
-namespace Rpn {
+namespace backend {
 
 /**
 * @brief Indexes for the 4 register of HP35's stack.
@@ -93,6 +93,6 @@ class Stack {
         friend class Backend;
 };
 
-} /* namespace Rpn */
+} /* namespace backend */
 
 #endif /* STACK_HPP */

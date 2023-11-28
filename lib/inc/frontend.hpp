@@ -3,13 +3,12 @@
 
 #include "keypad.hpp"
 #include <unordered_map> // unordered_map
-#include <string> // string
-#include <vector> // vector
-#include <utility> // pair
-#include <ncurses.h> // WINDOW 
-#include <termios.h> // termios 
-#include <stdexcept> // invalid_argument
-#include <chrono> // milliseconds
+#include <string>        // string
+#include <vector>        // vector
+#include <utility>       // pair
+#include <ncurses.h>     // WINDOW 
+#include <termios.h>     // termios 
+#include <chrono>        // milliseconds
 
 namespace gui {
 
@@ -63,6 +62,27 @@ public:
     }
 
 private:
+    /**
+    * @brief Arranges the keypad given the keypad config (`keypad_`).
+    *        In the end, we want to arrange the keypad as a 2D grid that
+    *        looks as follows:
+    *
+    *        @verbatim
+    *        screen
+    *        |
+    *        | 
+    *        v
+    *        +----------------------------------- 
+    *        |                              4.00  <- register Y
+    *        |                             20.00  <- register X
+    *        +---------+---------+----------+---- <- keypad
+    *        | +       | -       | *        | ...
+    *        +---------+---------+----------+----
+    *        | sin (s) | cos (c) | tan (t)  | ...
+    *        +---------+---------+----------+---- 
+    *        ...
+    *        @endverbatim
+    */
 	void InitKeypadGrid();
     void InitTerminal();
     bool DrawKeypad();
@@ -74,29 +94,27 @@ private:
      *        and the key dimensions
      */
     void SetUiDimensions();
-    // keypad short text -> (keypad long text, keypad location x,y) e.g.
-    // (l -> (long, (4, 2))
-	std::unordered_map<std::string,
-                       std::pair<std::string, Point>> key_mappings_;
-	std::string active_key_;
+
+    // reference to keypad - we draw the interface based on it
+    const Key::Keypad& keypad_;
+    //------------------------------------------------------
+    // screen and keypad dimensions 
+    //------------------------------------------------------
     // width, height in characters
     unsigned key_width_;
     unsigned key_height_;
     unsigned screen_height_;
+    // screen width in characters, not including the frame
+    unsigned screen_width_;
     // also in characters
     unsigned max_width_pixels_;
     unsigned max_height_pixels_;
     // whether max_width_pixels_, max_height_pixels_ were set
     bool dimensions_set_;
-    // ncurses window (on the terminal) where to draw the keypad
-    WINDOW* win_;
-    // terminal property settings
-    struct termios old_tio_;
-    struct termios new_tio_;
-    // reference to keypad - we draw the interface based on it
-    const Key::Keypad& keypad_;
-    // screen width in characters, not including the frame
-    unsigned screen_width_;
+    // keypad short text -> (keypad long text, keypad location x,y) e.g.
+    // (l -> (long, (4, 2))
+	std::unordered_map<std::string,
+                       std::pair<std::string, Point>> key_mappings_;
     //------------------------------------------------------
     // 10 general registers
     //------------------------------------------------------
@@ -107,6 +125,14 @@ private:
     unsigned gen_reg_width_;
     // maps the display key of each gen. register to its coordinates
     std::unordered_map<std::string, Key::Point> gen_regs_;
+    //------------------------------------------------------
+    // ncurses and terminal 
+    //------------------------------------------------------
+    // ncurses window (on the terminal) where to draw the keypad
+    WINDOW* win_;
+    // terminal property settings
+    struct termios old_tio_;
+    struct termios new_tio_;
 };
 
 /**
@@ -171,7 +197,7 @@ static inline std::string FmtBasedOnRange(double num, unsigned screen_width);
  *
  * @return The padded version of the input string
  */
-static std::string padString(const std::string& input, std::size_t N);
+static std::string PadString(const std::string& input, std::size_t N);
 
 } // namespace gui
 #endif /* SCREEN_HPP */

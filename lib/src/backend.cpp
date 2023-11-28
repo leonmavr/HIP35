@@ -30,11 +30,12 @@ void Subject::NotifyOperation(const std::string& operation) {
         observer->UpdateOperation(operation);
 }
 
-namespace Rpn {
+namespace backend {
 
 Backend::Backend(const Key::Keypad& keypad):
-    stack_(std::make_unique<Stack>()),
     keypad_(keypad),
+    stack_(std::make_unique<Stack>()),
+    lastx_(0.0),
     sto_regs_({0})
 { 
     // map a general register name to the index of the gr array
@@ -250,4 +251,4 @@ std::ostream& operator<<(std::ostream& os, const Backend& backend) {
     return os;
 }
 
-} /* namespace Rpn */
+} /* namespace backend */

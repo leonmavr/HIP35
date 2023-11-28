@@ -5,37 +5,37 @@ namespace Key {
 
 static const StackKeys stack_keys = {
     {kKeyRdn, StackKeyInfo { 
-        [](Rpn::Backend& b) -> void { b.Rdn(); },
+        [](backend::Backend& b) -> void { b.Rdn(); },
         "RDN",
         Point{2, 3},
         "RDN"}},
     {kKeyLastX, StackKeyInfo { 
-        [](Rpn::Backend& b) -> void { b.LastX(); },
+        [](backend::Backend& b) -> void { b.LastX(); },
         "LASTX",
         Point{3, 3},
         "LASTX"}},
     {kKeySwap, StackKeyInfo { 
-        [](Rpn::Backend& b) -> void { b.SwapXY(); },
+        [](backend::Backend& b) -> void { b.SwapXY(); },
         "x<->y",
         Point{1, 3},
         "SWAP"}},
     {kKeyEnter, StackKeyInfo { 
-        [](Rpn::Backend& b) -> void { b.Enter(); },
+        [](backend::Backend& b) -> void { b.Enter(); },
         "ENTER",
         Point{0, 4},
         "ENTER"}},
     {kKeyPi, StackKeyInfo { 
-        [](Rpn::Backend& b) -> void { b.Pi(); },
+        [](backend::Backend& b) -> void { b.Pi(); },
         "pi",
         Point{4, 4},
         "PI"}},
     {kKeyClx, StackKeyInfo { 
-        [](Rpn::Backend& b) -> void { b.Clx(); },
+        [](backend::Backend& b) -> void { b.Clx(); },
         "CLX",
         Point{3, 4},
         "CLX"}},
     {kKeyCls, StackKeyInfo { 
-        [](Rpn::Backend& b) -> void { b.Cls(); },
+        [](backend::Backend& b) -> void { b.Cls(); },
         "CLS",
         Point{4, 0},
         "CLS"}},
@@ -156,12 +156,12 @@ static const DoubleArgKeys double_arg_keys = {
 //----------------------------------------------------------------
 static const StorageKeys storage_keys = {
     {kKeyStore, StorageKeyInfo {
-        [](Rpn::Backend& b, std::string name) -> void { b.Sto(name); },
+        [](backend::Backend& b, std::string name) -> void { b.Sto(name); },
         "STO",
         Point{4, 2},
         "STO"}},
     {kKeyRcl, StorageKeyInfo { 
-        [](Rpn::Backend& b, std::string name) -> void { b.Rcl(name); },
+        [](backend::Backend& b, std::string name) -> void { b.Rcl(name); },
         "RCL",
         Point{4, 3},
         "RCL"}}
@@ -173,7 +173,7 @@ static const StorageKeys storage_keys = {
 static const EexKey eex_key = {
     {
         kKeyEex, KeyInfoEex{ 
-        [](Rpn::Backend& b, std::optional<double> token) -> void { b.Eex(token); },
+        [](backend::Backend& b, std::optional<double> token) -> void { b.Eex(token); },
         "EEX",
         Point{2, 4},
         "EEX"}
