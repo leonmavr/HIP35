@@ -12,10 +12,131 @@
 #include <thread>       // this_thread
 #include <cfloat>       // DBL_MIN 
 #include <algorithm>    // max_element 
+                        
+//-------------------------------------------------------------//
+// Static helper functions                                     //
+//-------------------------------------------------------------//
+/**
+ * @brief  Formats a number in fixed decimal precision format, e.g.
+ *         with precision = 2:  
+ *          3.14159 ->  3.14
+ *         -3.1     -> -3.10
+ *         NOTE: trailing zeros are preserved.
+ *
+ * @param num  A number in 64-bit signed double range
+ * @param prec How many decimals to retain in the format 
+ *
+ * @return A number string formatted in fixed precision
+ */
+static std::string FmtFixedPrecision(double num, unsigned prec = 5) {
+    std::ostringstream num_fmt;
+    num_fmt << std::fixed << std::setprecision(prec) << num;
+    auto num_fmt_string = num_fmt.str();
+    return num_fmt_string;
+}
+
+/**
+ * @brief Pads the beginning of a string with spaces up to a specified 
+ *        length.
+ *
+ * @param input Input string (read only)
+ * @param N     The desired length
+ *
+ * @return The padded version of the input string
+ */
+static std::string PadString(const std::string& input, std::size_t N) {
+    if (input.length() >= N) {
+        // No need to pad, return the original string
+        return input;
+    } else {
+        // Calculate the number of spaces needed
+        std::size_t spacesToAdd = N - input.length();
+        // Create a string of spaces
+        std::string padding(spacesToAdd, ' ');
+        // Concatenate the padding and the input string
+        return padding + input;
+    }
+}
+
+/**
+ * @brief  Formats a number to a string that represents it in
+ *         scientific format. The scientific format is defined as
+ *         follows:  
+ *         m * 10^E  
+ *         m is the mantissa, with 1 <= |m| < 10. It can have a given
+ *         precision of decimals. E is the exponent. Any trailing
+ *         zeros are truncated from the mantissa, so 1.20 would
+ *         become 1.2. Examples (`E-4` denotes `10^(-4)`):  
+ *         @verbatim
+ *          -.000123456, 3  -> -1.235 E-4 
+ *          -.000123456, 14 -> -1.2356 E-4 
+ *          123.12345,   2  ->  1.23, E2
+ *          @endverbatim
+ *
+ * @param number    Number to convert
+ * @param precision The number of decimals of the mantissa
+ *
+ * @return A string representing the number in scientific format:  
+ *         m * 10^E
+ */
+static std::string FmtEngineeringNotation(double number, int precision = 5) {
+    // order of magnitude (power of 10) of the number
+    const int magnitude = static_cast<int>(std::floor(
+                              std::log10(std::fabs(number))));
+    // the mantissa m (coefficient of the exponent)
+    const double mantissa = number / std::pow(10, magnitude);
+    // we will append the mantissa to an output string stream
+    std::ostringstream mantissa_fmt;
+    // then format it to the given precision
+    mantissa_fmt << std::fixed << std::setprecision(precision)
+                       << mantissa;
+    std::string mantissa_string = mantissa_fmt.str();
+    // erase any trailing zeros
+    mantissa_string.erase(mantissa_string.find_last_not_of('0') + 1, 
+                          std::string::npos); 
+    std::string scientific_fmt = mantissa_string + " E" + std::to_string(magnitude);
+    return scientific_fmt;
+}
+
+/**
+ * @brief Formats a numbers base on its magnitude. It selects format
+ *        (fixed precision/engineering) and number of decimals. The 
+ *        scheme is somewhat arbitrary but works well for a 
+ *        calculator.
+ *
+ * @param num          A number in 64-bit signed double range
+ * @param screen_width Calculator's screen width. Required to pad 
+ *                     the number with spaces and avoid redrawing 
+ *                     with ncurses.
+ *
+ * @return A formatted number string 
+ */
+static inline std::string FmtBasedOnRange(double num, unsigned screen_width) {
+    std::string ret = "";
+    const unsigned nspaces = screen_width - 4;
+    // below we pad with spaces to avoid having to redraw with ncurses
+    if (std::abs(num) < DBL_MIN*100)
+        ret = PadString(FmtFixedPrecision(num, 5), nspaces);
+    else  if (std::abs(num) < 0.01)
+        ret = PadString(FmtEngineeringNotation(num, 6), nspaces);
+    else if (std::abs(num) < 1e3)
+        ret = PadString(FmtFixedPrecision(num, 5), nspaces);
+    else if (std::abs(num) < 1e6)
+        ret = PadString(FmtFixedPrecision(num, 1), nspaces);
+    else if (std::abs(num) < 1e12)
+        ret = PadString(FmtEngineeringNotation(num, 6), nspaces);
+    else if (std::abs(num) < 1e18)
+        ret = PadString(FmtEngineeringNotation(num, 7), nspaces);
+    else
+        ret = ::PadString(FmtEngineeringNotation(num, 8), nspaces);
+    return ret;
+}
+
 
 namespace gui {
-
-
+//-------------------------------------------------------------//
+// Class methods                                               // 
+//-------------------------------------------------------------//
 Frontend::Frontend(const Key::Keypad& keypad):
     keypad_(keypad),
     key_width_(12),
@@ -113,13 +234,13 @@ void Frontend::PrintGenRegister(const std::string& name, double val)  {
     if (std::fabs(val) < 1e-22) // display zero for negligible values
         val_str = PadString("0.0", nspaces);
     else if (std::fabs(val) < 1e-3)
-        val_str = PadString(FmtEngineeringNotation(val, 2), nspaces);
+        val_str = PadString(::FmtEngineeringNotation(val, 2), nspaces);
     else if (std::fabs(val) < 100)
-        val_str = PadString(FmtFixedPrecision(val, 4), nspaces);
+        val_str = PadString(::FmtFixedPrecision(val, 4), nspaces);
     else if (std::fabs(val) < 1e6)
-        val_str = PadString(FmtFixedPrecision(val, 1), nspaces);
+        val_str = PadString(::FmtFixedPrecision(val, 1), nspaces);
     else
-        val_str = PadString(FmtEngineeringNotation(val, 1), nspaces);
+        val_str = PadString(::FmtEngineeringNotation(val, 1), nspaces);
     wmove(win_, xy.y, xy.x+1);
     wprintw(win_, val_str.c_str());
 }
@@ -342,33 +463,11 @@ bool Frontend::DrawDisplay() {
     return dimensions_set_;
 }
 
-
-static std::string FmtEngineeringNotation(double number, int precision) {
-    // order of magnitude (power of 10) of the number
-    const int magnitude = static_cast<int>(std::floor(
-                              std::log10(std::fabs(number))));
-    // the mantissa m (coefficient of the exponent)
-    const double mantissa = number / std::pow(10, magnitude);
-    // we will append the mantissa to an output string stream
-    std::ostringstream mantissa_fmt;
-    // then format it to the given precision
-    mantissa_fmt << std::fixed << std::setprecision(precision)
-                       << mantissa;
-    std::string mantissa_string = mantissa_fmt.str();
-    // erase any trailing zeros
-    mantissa_string.erase(mantissa_string.find_last_not_of('0') + 1, 
-                          std::string::npos); 
-    std::string scientific_fmt = mantissa_string + " E" + std::to_string(magnitude);
-    return scientific_fmt;
-}
-
-
-
 bool Frontend::PrintRegisters(double regx, double regy) {
     // make sure that they're represented concisely on the screen
     // by choosing format based on their range
-    std::string regx_str= FmtBasedOnRange(regx, screen_width_);
-    std::string regy_str= FmtBasedOnRange(regy, screen_width_);
+    std::string regx_str= ::FmtBasedOnRange(regx, screen_width_);
+    std::string regy_str= ::FmtBasedOnRange(regy, screen_width_);
     // top screen row
     wmove(win_, 3, 3);
     wprintw(win_, regy_str.c_str());
@@ -377,48 +476,5 @@ bool Frontend::PrintRegisters(double regx, double regy) {
     wprintw(win_, regx_str.c_str());
     wrefresh(win_);
     return dimensions_set_;
-}
-
-static std::string FmtFixedPrecision(double num, unsigned prec) {
-    std::ostringstream num_fmt;
-    num_fmt << std::fixed << std::setprecision(prec) << num;
-    auto num_fmt_string = num_fmt.str();
-    return num_fmt_string;
-}
-
-static std::string PadString(const std::string& input, std::size_t N) {
-    if (input.length() >= N) {
-        // No need to pad, return the original string
-        return input;
-    } else {
-        // Calculate the number of spaces needed
-        std::size_t spacesToAdd = N - input.length();
-        // Create a string of spaces
-        std::string padding(spacesToAdd, ' ');
-        // Concatenate the padding and the input string
-        return padding + input;
-    }
-}
-
-
-static inline std::string FmtBasedOnRange(double num, unsigned screen_width) {
-    std::string ret = "";
-    const unsigned nspaces = screen_width - 4;
-    // below we pad with spaces to avoid having to redraw with ncurses
-    if (std::abs(num) < DBL_MIN*100)
-        ret = PadString(FmtFixedPrecision(num, 5), nspaces);
-    else  if (std::abs(num) < 0.01)
-        ret = PadString(FmtEngineeringNotation(num, 6), nspaces);
-    else if (std::abs(num) < 1e3)
-        ret = PadString(FmtFixedPrecision(num, 5), nspaces);
-    else if (std::abs(num) < 1e6)
-        ret = PadString(FmtFixedPrecision(num, 1), nspaces);
-    else if (std::abs(num) < 1e12)
-        ret = PadString(FmtEngineeringNotation(num, 6), nspaces);
-    else if (std::abs(num) < 1e18)
-        ret = PadString(FmtEngineeringNotation(num, 7), nspaces);
-    else
-        ret = PadString(FmtEngineeringNotation(num, 8), nspaces);
-    return ret;
 }
 } // namespace gui
