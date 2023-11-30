@@ -175,11 +175,11 @@ typedef struct {
 template <typename T>
 static std::string AnnotateKey(T& it, const std::string keypress) {
     std::string ret = "";
-    const std::string& key_long = it->second.long_key;
-    if (keypress == key_long)
+    const std::string& annot = it->second.annotation;
+    if (keypress == annot)
         ret = keypress;
     else
-        ret = key_long + " (" + keypress + ")";
+        ret = annot + " (" + keypress + ")";
     return ret;
 }
 
