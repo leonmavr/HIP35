@@ -49,9 +49,9 @@ int ntest_result = NTEST_PASS;
             printf("[v] Assertion at line %d passed.\n", __LINE__);          \
         else {                                                               \
             fprintf(stderr, "[x] Assertion at line %d of file %s failed:\n"  \
-                            "    Values of %s=%s and %s=%s are not close\n", \
-                    __LINE__, __FILENAME__, #actual, STR_VAL(actual),        \
-                    #expected, STR_VAL(expected));                           \
+                            "    Values of %s and %s are not close\n",       \
+                    __LINE__,__FILENAME__, STR_VAL(actual),                  \
+                    STR_VAL(expected));                                      \
             ntest_result = NTEST_FAIL;                                       \
         }                                                                    \
     } while(0)
