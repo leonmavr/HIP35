@@ -79,7 +79,7 @@ Unit tests are found at `test/test.cpp`.
 
 TODO!!
 
-## Basic theory
+## 4. Basic theory
 ### What is RPN?
 
 RPN allows a stack-based evaluation of numerical expressions,
@@ -135,12 +135,12 @@ that.
 keys are directly implemented in HIP-35.
 * The number format on the display is automatically adjusted based
 on the range the number is in.
-* The LASTX key from HP35s is ported as it makes calculations
-much easier.
+* The `LASTX` key from HP-35s is ported as it makes certain 
+calculations much faster.
 
 You can read more at the [wiki](https://en.wikipedia.org/wiki/HP-35)
 page, at [HP museum](https://www.hpmuseum.org/hp35.htm) or at the
-[HP35s manual](http://h10032.www1.hp.com/ctg/Manual/c01579350),
+[HP-35s manual](http://h10032.www1.hp.com/ctg/Manual/c01579350),
 which is its successor.
 
 ### Cool trivia
@@ -159,7 +159,7 @@ programs that perform calculations related to the spacecraft's
 orbit around the moon (Lunar Orbital Rendezvous or LOR).
 * It was able to perform calculations both in algebraic a RPN mode.
 
-## 4. Future ideas
+## 5. Future ideas
 
 - [ ] Paste text into display
 - [ ] In headless mode (parsing a string), throw an error instead of
