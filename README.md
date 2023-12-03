@@ -22,11 +22,12 @@ acting as buffers.
 
 ### Dependencies
 
-Ncurses is required install it by:
+CMake is required to build the project and ncurses for the frontend.
+Install both by:
 
-| Arch-based               | Ubuntu-based                                 |
-|--------------------------|----------------------------------------------|
-| `sudo pacman -S ncurses` | `sudo apt install libncurses5 libncursesw5`  |
+| Arch-based                     | Debian-based                                       |
+|--------------------------------|----------------------------------------------------|
+| `sudo pacman -S cmake ncurses` | `sudo apt install cmake libncurses5 libncursesw5`  |
 
 ### Compilation
 The build system is based on CMake. To build the project run:
@@ -47,7 +48,8 @@ That's it, have fun doing RPN calculations!
 
 It works like any RPN calculator however enter (`<space>`) needs to
 be pressed to separated two successive numbers. When running the UI,
-press `q` to quit. `<Ctr-C>` is not captured so the only way to quit.
+press `q` to quit. `<Ctr-C>` is not captured so it's the only way to
+quit.
 
 A unit test executable is also generated at
 `./build/test/testhip35`.
