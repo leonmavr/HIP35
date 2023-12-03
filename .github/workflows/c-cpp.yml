@@ -13,11 +13,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: set terminal environment
+      run: echo "TERM=xterm" >> $GITHUB_ENV
     - name: dependencies
       run: sudo apt install libncurses5 libncursesw5
     - name: build
       run: ./build.sh
-    - name: prepare terminal
-      run: export TERM=xterm-256color
     - name: unit tests
       run: ./build/test/testhip35
