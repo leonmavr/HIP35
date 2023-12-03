@@ -92,16 +92,16 @@ separated by space in this script so you don't need to press enter.
 ### Why RPN?
 
 RPN makes it very easy to compute long expressions containing
-lots of brackets [[1]](#ref-1). When using it, you don't need to think how
-terms are grouped anymore. With a little practice it's faster
-and it saves keystrokes to evaluate in RPN.
+lots of brackets [[1]](#ref-1). When using it, you don't need
+to think how terms are grouped anymore. With a little practice
+it's faster and it saves keystrokes to evaluate in RPN.
 
 ### HIP-35 additional features
 HIP-35 includes some minor additions compared to HP-35:
 * The display now has two rows, displaying the X and Y registers
 instead of just X.
-* There is space on the right to display the 10 general registers
-- back in the day users had to write down which register stores
+* There is space on the right to display the 10 general registers.
+Back in the day users had to write down which register stores
 what.
 * User can also enter negative numbers using the `~` as the unary
 minus. HP35 only supposed the `CHS` (change sign) operation for
