@@ -5,7 +5,7 @@
 ### What's this project?
 HIP-35 is a calculator for hipsters. It emulates the RPN (reverse
 Polish notation) mode of HP-35 from 1972. It runs a terminal UI
-built with ncurses that displays the current result on a display. 
+built with ncurses that displays the current result on a display.
 
 ### The memory
 HP-35 had a stack-based memory of 4 registers `X`, `Y`, `Z`, `T`
@@ -20,6 +20,15 @@ acting as buffers.
 
 ## Usage
 
+### Dependencies
+
+Ncurses is required install it by:
+
+| Arch-based               | Ubuntu-based                                 |
+|--------------------------|----------------------------------------------|
+| `sudo pacman -S ncurses` | `sudo apt install libncurses5 libncursesw5`  |
+
+### Compilation
 The build system is based on CMake. To build the project run:
 ```
 cmake . -Bbuild
@@ -34,9 +43,9 @@ The demo executable that runs the UI will be generated at
 ```
 ./build/demo/demo
 ```
-That's it, have fun doing RPN calculations!  
+That's it, have fun doing RPN calculations!
 
-It works like any RPN calculator however enter (`<space>`) needs to 
+It works like any RPN calculator however enter (`<space>`) needs to
 be pressed to separated two successive numbers. When running the UI,
 press `q` to quit. `<Ctr-C>` is not captured so the only way to quit.
 
@@ -44,17 +53,17 @@ A unit test executable is also generated at
 `./build/test/testhip35`.
 
 
-## Basic theory 
+## Basic theory
 ### What is RPN?
 
-RPN allows a stack-based evaluation of numerical expressions, 
-eliminating the need of brackets. There are two main ideas behind 
-RPN:  
+RPN allows a stack-based evaluation of numerical expressions,
+eliminating the need of brackets. There are two main ideas behind
+RPN:
 1. operands (numbers) are pushed in a stack
 2. it follows the postfix notation, i.e. each operator follows one
-or two operands preceeding it  
+or two operands preceeding it
 
-Physical calculators need a way to separate successive numbers, 
+Physical calculators need a way to separate successive numbers,
 accomplished with the enter (E) key.
 
 
@@ -74,7 +83,7 @@ For example:
 | 13*sin(37) | 13 37 SIN *   | 13 E 37 SIN *     | [13], [13,13], [13,37] [13,s(37)], [13*s(37)] |
 +------------+---------------+-------------------+-----------------------------------------------+
 ```
-You can practise more with RPN by using the script `docs/rpn.py` 
+You can practise more with RPN by using the script `docs/rpn.py`
 which evaluates RPN expressions from a string. Numbers are
 separated by space in this script so you don't need to press enter.
 
@@ -98,14 +107,14 @@ that.
 * There is no `ARC` key. `ARC` key had to pressed to enable the
 `SIN, COS, TAN` keys to compute `ASIN, ACOS, ATAN`. The latter
 keys are directly implemented in HIP-35.
-* The number format on the display is automatically adjusted based 
+* The number format on the display is automatically adjusted based
 on the range the number is in.
 * The LASTX key from HP35s is ported as it makes calculations
 much easier.
 
 You can read more at the [wiki](https://en.wikipedia.org/wiki/HP-35)
 page, at [HP museum](https://www.hpmuseum.org/hp35.htm) or at the
-[HP35s manual](http://h10032.www1.hp.com/ctg/Manual/c01579350), 
+[HP35s manual](http://h10032.www1.hp.com/ctg/Manual/c01579350),
 which is its successor.
 
 ### Cool trivia
@@ -127,5 +136,5 @@ Rendezvous or LOR).
 ## References
 
 [1] https://leachlegacy.ece.gatech.edu/revpol/
-[2] https://killerinnovations.com/interview-with-david-cochran-on-creating-the-hp35-calculator/  
-[3] https://core.ac.uk/download/pdf/10564548.pdf 
+[2] https://killerinnovations.com/interview-with-david-cochran-on-creating-the-hp35-calculator/
+[3] https://core.ac.uk/download/pdf/10564548.pdf
