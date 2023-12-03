@@ -16,7 +16,7 @@ acting as buffers.
 
 | HP-35 | HIP-35 |
 |---------|---------|
-| <img src="image1.jpg" alt="Alt text 1" width="200"/> | <img src="image2.jpg" alt="Alt text 2" width="300"/> |
+| <img src="https://raw.githubusercontent.com/leonmavr/HIP35/master/assets/wiki_image.jpg" alt="HP 35 front face" width="200"/> | <img src="https://raw.githubusercontent.com/leonmavr/HIP35/master/assets/demo_screenshot.png" alt="hip 35 screenshot" width="300"/> |
 
 ## Usage
 
