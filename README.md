@@ -16,7 +16,7 @@ acting as buffers.
 
 | HP-35 | HIP-35 |
 |---------|---------|
-| <img src="https://raw.githubusercontent.com/leonmavr/HIP35/master/assets/wiki_image.jpg" alt="HP 35 front face" width="200"/> | <img src="https://raw.githubusercontent.com/leonmavr/HIP35/master/assets/demo_screenshot.png" alt="hip 35 screenshot" width="300"/> |
+| <img src="https://raw.githubusercontent.com/leonmavr/HIP35/master/assets/wiki_image.jpg" alt="HP 35 front face" width="200"/> | <img src="https://raw.githubusercontent.com/leonmavr/HIP35/master/assets/demo_screenshot.png" alt="hip 35 screenshot" width="400"/> |
 
 ## Usage
 
@@ -92,7 +92,7 @@ separated by space in this script so you don't need to press enter.
 ### Why RPN?
 
 RPN makes it very easy to compute long expressions containing
-lots of brackets [1]. When using it, you don't need to think how
+lots of brackets [[1]](#ref-1). When using it, you don't need to think how
 terms are grouped anymore. With a little practice it's faster
 and it saves keystrokes to evaluate in RPN.
 
@@ -124,19 +124,19 @@ which is its successor.
 * HP35 was the first ever scientific pocket calculator. It was
   released in 1972. Before that, the only practical portable
   devices for performing trigonometric and exponential functions
-  were slide rules [2].
+  were slide rules [[2]](#ref-2)
 * The co-founder of HP himself, Bill Hewlett, challenged his
 coworkers to create it as a "shirt-pocket sized HP-9100“ (HP-9100
 was a scientific computer from the 60s).
 * HP-35 calculators, were used by NASA's Skylab crew from 1973 to
-1974 [3]. It's rumored to be the first calculator to ever fly into
-space. It helped the crew write programs that perform calculations
-related to the spacecraft's orbit around the moon (Lunar Orbital
-Rendezvous or LOR).
+1974 [[3]](#ref-3). It's rumored to be the first
+calculator to ever fly into space. It helped the crew write
+programs that perform calculations related to the spacecraft's
+orbit around the moon (Lunar Orbital Rendezvous or LOR).
 * It was able to perform calculations both in algebraic a RPN mode.
 
 ## References
 
-[1] https://leachlegacy.ece.gatech.edu/revpol/
-[2] https://killerinnovations.com/interview-with-david-cochran-on-creating-the-hp35-calculator/
-[3] https://core.ac.uk/download/pdf/10564548.pdf
+[1] <a name="ref-1"></a>[Dr Marshall Leach Jr's page](https://leachlegacy.ece.gatech.edu/revpol/)
+[2] <a name="ref-2">[Interview with David Cochran](https://killerinnovations.com/interview-with-david-cochran-on-creating-the-hp35-calculator/)
+[3] <a name="ref-3"></a>[History of Space Shuttle Rendezvous, Oct 2011](https://core.ac.uk/download/pdf/10564548.pdf)
