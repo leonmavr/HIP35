@@ -205,8 +205,6 @@ double Hip35::EvalString(std::string expression) {
         const auto it = keypad_.reverse_keys.find(token);
         // then the user has entered a long key for an operation,
         // e.g. LOG10 and we reverse it to L
-        // TODO: what if we push a general register (e.g. a)
-        // but it's also in reverse keys? not working yet
         if (it != keypad_.reverse_keys.end()) {
             const auto short_key = it->second;
             tokens_no_ui_.push_back(short_key);
