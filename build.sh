@@ -3,3 +3,4 @@
 cmake . -Bbuild
 cd build
 make -j
+cd ..
