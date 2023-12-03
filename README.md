@@ -1,6 +1,22 @@
-# HIP35
+```
+ .----------------. .----------------. .----------------. .----------------. .----------------. .----------------. 
+| .--------------. | .--------------. | .--------------. | .--------------. | .--------------. | .--------------. |
+| |  ____  ____  | | |     _____    | | |   ______     | | |              | | |    ______    | | |   _______    | |
+| | |_   ||   _| | | |    |_   _|   | | |  |_   __ \   | | |              | | |   / ____ `.  | | |  |  _____|   | |
+| |   | |__| |   | | |      | |     | | |    | |__) |  | | |    ______    | | |   `'  __) |  | | |  | |____     | |
+| |   |  __  |   | | |      | |     | | |    |  ___/   | | |   |______|   | | |   _  |__ '.  | | |  '_.____''.  | |
+| |  _| |  | |_  | | |     _| |_    | | |   _| |_      | | |              | | |  | \____) |  | | |  | \____) |  | |
+| | |____||____| | | |    |_____|   | | |  |_____|     | | |              | | |   \______.'  | | |   \______.'  | |
+| |              | | |              | | |              | | |              | | |              | | |              | |
+| '--------------' | '--------------' | '--------------' | '--------------' | '--------------' | '--------------' |
+ '----------------' '----------------' '----------------' '----------------' '----------------' '----------------'
+```
+<sub>(ASCII art by [patorjk.com](https://patorjk.com/software/taag))</sub>
 
-## Introduction
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![C/C++ CI build & test](https://github.com/leonmavr/HIP35/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/leonmavr/HIP35/actions/workflows/c-cpp.yml)
+
+## 1. Introduction
 
 ### What's this project?
 HIP-35 is a calculator for hipsters. It emulates the RPN (reverse
@@ -16,9 +32,9 @@ acting as buffers.
 
 | HP-35 | HIP-35 |
 |---------|---------|
-| <img src="https://raw.githubusercontent.com/leonmavr/HIP35/master/assets/wiki_image.jpg" alt="HP 35 front face" width="200"/> | <img src="https://raw.githubusercontent.com/leonmavr/HIP35/master/assets/demo_screenshot.png" alt="hip 35 screenshot" width="400"/> |
+| <img src="https://raw.githubusercontent.com/leonmavr/HIP35/master/assets/wiki_image.jpg" alt="HP 35 front face" width="200"/> | <img src="https://raw.githubusercontent.com/leonmavr/HIP35/master/assets/demo_screenshot.png" alt="hip 35 screenshot" width="445"/> |
 
-## Usage
+## 2. Usage
 
 ### Dependencies
 
@@ -54,6 +70,14 @@ quit.
 A unit test executable is also generated at
 `./build/test/testhip35`.
 
+### Project directory structure
+
+Implementations are found at `lib/src` and header files at `lib/src`.
+Unit tests are found at `test/test.cpp`. 
+
+## 3. Demo
+
+TODO!!
 
 ## Basic theory
 ### What is RPN?
@@ -134,6 +158,14 @@ calculator to ever fly into space. It helped the crew write
 programs that perform calculations related to the spacecraft's
 orbit around the moon (Lunar Orbital Rendezvous or LOR).
 * It was able to perform calculations both in algebraic a RPN mode.
+
+## 4. Future ideas
+
+- [ ] Paste text into display
+- [ ] In headless mode (parsing a string), throw an error instead of
+      continuing when a token is unknown.
+- [ ] (ambitious) write a compiler for the HP35/HP35s programming
+	  language and be able to write routines by pressing a key.
 
 ## References
 
