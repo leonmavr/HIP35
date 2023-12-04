@@ -85,7 +85,7 @@ Enter (`<space>`) needs to be pressed to separated two successive
 numbers. When running the UI, press `q` to quit. `<Ctr-C>` is 
 not captured so it's the only way to quit. You can read more 
 at the [HP35 manual](https://literature.hpcalc.org/community/hp35-om-en-reddot.pdf)
-[[2]](#ref-4).
+[[4]](#ref-4).
 
 A unit test executable is also generated at
 `./build/test/testhip35`.
