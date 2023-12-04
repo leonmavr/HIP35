@@ -148,12 +148,12 @@ void Backend::Clx() {
     NotifyValue(Peek()); 
 }
 
-void Backend::Cls() {
+void Backend::Clr() {
     stack_->writeX(0.0);
     Enter();
     Enter();
     Enter();
-    NotifyOperation(key::kKeyCls); 
+    NotifyOperation(key::kKeyClr); 
     NotifyValue(Peek()); 
 }
 

@@ -34,11 +34,11 @@ static const StackKeys stack_keys = {
         "CLX",
         Point{3, 4},
         "CLX"}},
-    {kKeyCls, StackKeyInfo { 
-        [](backend::Backend& b) -> void { b.Cls(); },
-        "CLS",
+    {kKeyClr, StackKeyInfo { 
+        [](backend::Backend& b) -> void { b.Clr(); },
+        "CLR",
         Point{4, 0},
-        "CLS"}},
+        "CLR"}},
 };
 
 //----------------------------------------------------------------

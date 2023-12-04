@@ -240,7 +240,7 @@ public:
      */
     void Clx() override;
     /** @brief Set all registers (entire stack) to zero */
-    void Cls() override;
+    void Clr() override;
     /** @brief Insert the value of PI to register X */
     void Pi() override;
 

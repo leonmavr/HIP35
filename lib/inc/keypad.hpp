@@ -44,7 +44,7 @@ const std::string kKeySwap  = "<";
 const std::string kKeyEnter = " ";
 const std::string kKeyPi    = "p";
 const std::string kKeyClx   = "@";
-const std::string kKeyCls   = "$";
+const std::string kKeyClr   = "$";
 // numerical operations with 1 argument
 const std::string kKeyChs   = "!";
 const std::string kKeyInv   = "i";

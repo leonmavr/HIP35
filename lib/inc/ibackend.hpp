@@ -38,8 +38,8 @@ class IBackend {
         virtual void LastX() = 0;
         /** @brief Abstract method for the `CLX` key. */
         virtual void Clx() = 0;
-        /** @brief Abstract method for the `CLS` key. */
-        virtual void Cls() = 0;
+        /** @brief Abstract method for the `CLR` key. */
+        virtual void Clr() = 0;
         /** @brief Abstract method for the `PI` key. */
         virtual void Pi() = 0;
         // TODO:
