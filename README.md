@@ -1,6 +1,22 @@
-# HIP35
+```
+ .----------------. .----------------. .----------------. .----------------. .----------------. .----------------. 
+| .--------------. | .--------------. | .--------------. | .--------------. | .--------------. | .--------------. |
+| |  ____  ____  | | |     _____    | | |   ______     | | |              | | |    ______    | | |   _______    | |
+| | |_   ||   _| | | |    |_   _|   | | |  |_   __ \   | | |              | | |   / ____ `.  | | |  |  _____|   | |
+| |   | |__| |   | | |      | |     | | |    | |__) |  | | |    ______    | | |   `'  __) |  | | |  | |____     | |
+| |   |  __  |   | | |      | |     | | |    |  ___/   | | |   |______|   | | |   _  |__ '.  | | |  '_.____''.  | |
+| |  _| |  | |_  | | |     _| |_    | | |   _| |_      | | |              | | |  | \____) |  | | |  | \____) |  | |
+| | |____||____| | | |    |_____|   | | |  |_____|     | | |              | | |   \______.'  | | |   \______.'  | |
+| |              | | |              | | |              | | |              | | |              | | |              | |
+| '--------------' | '--------------' | '--------------' | '--------------' | '--------------' | '--------------' |
+ '----------------' '----------------' '----------------' '----------------' '----------------' '----------------'
+```
+<sub>(ASCII art by [patorjk.com](https://patorjk.com/software/taag))</sub>
 
-## Introduction
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![C/C++ CI build & test](https://github.com/leonmavr/HIP35/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/leonmavr/HIP35/actions/workflows/c-cpp.yml)
+
+## 1. Introduction
 
 ### What's this project?
 HIP-35 is a calculator for hipsters. It emulates the RPN (reverse
@@ -16,9 +32,9 @@ acting as buffers.
 
 | HP-35 | HIP-35 |
 |---------|---------|
-| <img src="https://raw.githubusercontent.com/leonmavr/HIP35/master/assets/wiki_image.jpg" alt="HP 35 front face" width="200"/> | <img src="https://raw.githubusercontent.com/leonmavr/HIP35/master/assets/demo_screenshot.png" alt="hip 35 screenshot" width="400"/> |
+| <img src="https://raw.githubusercontent.com/leonmavr/HIP35/master/assets/wiki_image.jpg" alt="HP 35 front face" width="200"/> | <img src="https://raw.githubusercontent.com/leonmavr/HIP35/master/assets/demo_screenshot.png" alt="hip 35 screenshot" width="445"/> |
 
-## Usage
+## 2. Usage
 
 ### Dependencies
 
@@ -46,16 +62,56 @@ The demo executable that runs the UI will be generated at
 ```
 That's it, have fun doing RPN calculations!
 
-It works like any RPN calculator however enter (`<space>`) needs to
-be pressed to separated two successive numbers. When running the UI,
-press `q` to quit. `<Ctr-C>` is not captured so it's the only way to
-quit.
+## The keys
+
+Most keys are self-explanatory. However, some are less straightforward.
+
+| key   | description             | syntax    | before            | argument | after             |
+|-------|-------------------------|-----------|-------------------|----------|-------------------|
+| CHS   | change sign of X        | `CHS`     | 4                 |          | -4                |
+| ENTER | duplicate X to Y        | `ENTER`   | `T,Z,Y,X=1,2,3,4` |          | `T,Z,Y,X=2,3,4,4` |
+| LASTX | last X before operation | `LASTX`   | `4 E 20 +` (X=24) |          | `X=20`            |
+| RDN   | rotate stack down       | `RDN`     | `T,Z,Y,X=1,2,3,4` |          | `T,Z,Y,X=4,3,2,1` |
+| STO   | store to A-J e.g. A = X | `STO a-j` | `X=3.14, A=0`     | a        | `X=3.14, A=3.14`  |
+| RCL   | recall to X e.g. X = A  | `RCL a-j` | `X=0, F=2.71`     | f        | `X=2.71, F=2.71`  |
+| EEX   | exponentiation of X     | `EEX N`   | 7                 | 3        | 7000              |
+| CLX   | clear register X        | `CLX`     | 12345             |          | 0                 |
+| CLR   | clear entire stack      | `CLR`     | `T,Z,Y,X=1,2,3,4` |          | `T,Z,Y,X=0,0,0,0` |
+| q     | quit application        | `q`       |                   |          |                   |
+
+
+
+Enter (`<space>`) needs to be pressed to separated two successive
+numbers. When running the UI, press `q` to quit. `<Ctr-C>` is 
+not captured so it's the only way to quit. You can read more 
+at the [HP35 manual](https://literature.hpcalc.org/community/hp35-om-en-reddot.pdf)
+[[2]](#ref-4).
 
 A unit test executable is also generated at
 `./build/test/testhip35`.
 
+### Project directory structure and source code
 
-## Basic theory
+Implementations are found at `lib/src` and header files at `lib/src`.
+Unit tests are found at `test/test.cpp`. 
+
+You can create an instance of the Hip35 class and run it either via 
+the UI or without it (given a string) as follows:
+```
+#include "hip35.h"
+//...
+auto hp = std::make_unique<Ui::Hip35>(Key::keypad);
+// using the UI
+hp->RunUI();
+// or without it
+auto result = hp->EvalString("430 ENTER 80 - 1.2 *");
+```
+
+## 3. Demo
+
+TODO!!
+
+## 4. Basic theory
 ### What is RPN?
 
 RPN allows a stack-based evaluation of numerical expressions,
@@ -68,7 +124,6 @@ or two operands preceeding it
 Physical calculators need a way to separate successive numbers,
 accomplished with the enter (E) key.
 
-
 For example:
 ```
 +------------+---------------+-------------------+-----------------------------------------------+
@@ -77,8 +132,8 @@ For example:
 +------------+---------------+-------------------+-----------------------------------------------+
 | 1 + 2      | 1 2 +         | 1 E 2 +           | [1], [1,1], [1,2], [3]                        |
 +------------+---------------+-------------------+-----------------------------------------------+
-| 1 + 2 + 3  | 1 2 3 + + or: | 1 E 2 E 3 + +     | ...[1,2], [1,2,2], [1,2,3], [1,5], [6]        |
-|            | 1 2 + 3 +     | 1 E 2 + 3 +       | ...[1,2], [3], [3,3], [6]                     |
+| 1 + 2 - 3  | 1 2 3 + - or: | 1 E 2 E 3 + -     | ...[1,2], [1,2,2], [1,2,3], [1,-1], [0]       |
+|            | 1 2 + 3 -     | 1 E 2 + 3 -       | ...[1,2], [3], [3,-3], [0]                    |
 +------------+---------------+-------------------+-----------------------------------------------+
 | (1+2)(3+4) | 1 2 + 3 4 + * | 1 E 2 + 3 E 4 + * | ...[1,2], [3], [3,3], [3,3,4], [3,7], [21]    |
 +------------+---------------+-------------------+-----------------------------------------------+
@@ -92,16 +147,16 @@ separated by space in this script so you don't need to press enter.
 ### Why RPN?
 
 RPN makes it very easy to compute long expressions containing
-lots of brackets [[1]](#ref-1). When using it, you don't need to think how
-terms are grouped anymore. With a little practice it's faster
-and it saves keystrokes to evaluate in RPN.
+lots of brackets [[1]](#ref-1). When using it, you don't need
+to think how terms are grouped anymore. With a little practice
+it's faster and it saves keystrokes to evaluate in RPN.
 
 ### HIP-35 additional features
 HIP-35 includes some minor additions compared to HP-35:
 * The display now has two rows, displaying the X and Y registers
 instead of just X.
-* There is space on the right to display the 10 general registers
-- back in the day users had to write down which register stores
+* There is space on the right to display the 10 general registers.
+Back in the day users had to write down which register stores
 what.
 * User can also enter negative numbers using the `~` as the unary
 minus. HP35 only supposed the `CHS` (change sign) operation for
@@ -111,12 +166,12 @@ that.
 keys are directly implemented in HIP-35.
 * The number format on the display is automatically adjusted based
 on the range the number is in.
-* The LASTX key from HP35s is ported as it makes calculations
-much easier.
+* The `LASTX` key from HP-35s is ported as it makes certain 
+calculations much faster.
 
 You can read more at the [wiki](https://en.wikipedia.org/wiki/HP-35)
 page, at [HP museum](https://www.hpmuseum.org/hp35.htm) or at the
-[HP35s manual](http://h10032.www1.hp.com/ctg/Manual/c01579350),
+[HP-35s manual](http://h10032.www1.hp.com/ctg/Manual/c01579350),
 which is its successor.
 
 ### Cool trivia
@@ -135,8 +190,18 @@ programs that perform calculations related to the spacecraft's
 orbit around the moon (Lunar Orbital Rendezvous or LOR).
 * It was able to perform calculations both in algebraic a RPN mode.
 
+## 5. Future ideas
+
+- [ ] Paste text into display
+- [ ] In headless mode (parsing a string), throw an error instead of
+      continuing when a token is unknown.
+- [ ] (ambitious) write a compiler for the HP35/HP35s programming
+	  language and be able to write routines by pressing a key.
+
 ## References
 
-[1] <a name="ref-1"></a>[Dr Marshall Leach Jr's page](https://leachlegacy.ece.gatech.edu/revpol/)
-[2] <a name="ref-2">[Interview with David Cochran](https://killerinnovations.com/interview-with-david-cochran-on-creating-the-hp35-calculator/)
-[3] <a name="ref-3"></a>[History of Space Shuttle Rendezvous, Oct 2011](https://core.ac.uk/download/pdf/10564548.pdf)
+[1] <a name="ref-1"></a>[Dr Marshall Leach Jr's page](https://leachlegacy.ece.gatech.edu/revpol/)  
+[2] <a name="ref-2">[Interview with David Cochran](https://killerinnovations.com/interview-with-david-cochran-on-creating-the-hp35-calculator/)  
+[3] <a name="ref-3"></a>[History of Space Shuttle Rendezvous, Oct 2011](https://core.ac.uk/download/pdf/10564548.pdf)  
+[3] <a name="ref-4"></a>[HP35 manual](https://literature.hpcalc.org/community/hp35-om-en-reddot.pdf)  
+
