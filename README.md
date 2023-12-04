@@ -203,5 +203,5 @@ orbit around the moon (Lunar Orbital Rendezvous or LOR).
 [1] <a name="ref-1"></a>[Dr Marshall Leach Jr's page](https://leachlegacy.ece.gatech.edu/revpol/)  
 [2] <a name="ref-2">[Interview with David Cochran](https://killerinnovations.com/interview-with-david-cochran-on-creating-the-hp35-calculator/)  
 [3] <a name="ref-3"></a>[History of Space Shuttle Rendezvous, Oct 2011](https://core.ac.uk/download/pdf/10564548.pdf)  
-[3] <a name="ref-4"></a>[HP35 manual](https://literature.hpcalc.org/community/hp35-om-en-reddot.pdf)  
+[4] <a name="ref-4"></a>[HP35 manual](https://literature.hpcalc.org/community/hp35-om-en-reddot.pdf)  
 
