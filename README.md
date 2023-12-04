@@ -62,18 +62,50 @@ The demo executable that runs the UI will be generated at
 ```
 That's it, have fun doing RPN calculations!
 
-It works like any RPN calculator however enter (`<space>`) needs to
-be pressed to separated two successive numbers. When running the UI,
-press `q` to quit. `<Ctr-C>` is not captured so it's the only way to
-quit.
+## The keys
+
+Most keys are self-explanatory. However, some are less straightforward.
+
+| key   | description             | syntax    | before            | argument | after             |
+|-------|-------------------------|-----------|-------------------|----------|-------------------|
+| CHS   | change sign of X        | `CHS`     | 4                 |          | -4                |
+| ENTER | duplicate X to Y        | `ENTER`   | `T,Z,Y,X=1,2,3,4` |          | `T,Z,Y,X=2,3,4,4` |
+| LASTX | last X before operation | `LASTX`   | `4 E 20 +` (X=24) |          | `X=20`            |
+| RDN   | rotate stack down       | `RDN`     | `T,Z,Y,X=1,2,3,4` |          | `T,Z,Y,X=4,3,2,1` |
+| STO   | store to A-J e.g. A = X | `STO a-j` | `X=3.14, A=0`     | a        | `X=3.14, A=3.14`  |
+| RCL   | recall to X e.g. X = A  | `RCL a-j` | `X=0, F=2.71`     | f        | `X=2.71, F=2.71`  |
+| EEX   | exponentiation of X     | `EEX N`   | 7                 | 3        | 7000              |
+| CLX   | clear register X        | `CLX`     | 12345             |          | 0                 |
+| CLR   | clear entire stack      | `CLR`     | `T,Z,Y,X=1,2,3,4` |          | `T,Z,Y,X=0,0,0,0` |
+| q     | quit application        | `q`       |                   |          |                   |
+
+
+
+Enter (`<space>`) needs to be pressed to separated two successive
+numbers. When running the UI, press `q` to quit. `<Ctr-C>` is 
+not captured so it's the only way to quit. You can read more 
+at the [HP35 manual](https://literature.hpcalc.org/community/hp35-om-en-reddot.pdf)
+[[2]](#ref-4).
 
 A unit test executable is also generated at
 `./build/test/testhip35`.
 
-### Project directory structure
+### Project directory structure and source code
 
 Implementations are found at `lib/src` and header files at `lib/src`.
 Unit tests are found at `test/test.cpp`. 
+
+You can create an instance of the Hip35 class and run it either via 
+the UI or without it (given a string) as follows:
+```
+#include "hip35.h"
+//...
+auto hp = std::make_unique<Ui::Hip35>(Key::keypad);
+// using the UI
+hp->RunUI();
+// or without it
+auto result = hp->EvalString("430 ENTER 80 - 1.2 *");
+```
 
 ## 3. Demo
 
@@ -92,7 +124,6 @@ or two operands preceeding it
 Physical calculators need a way to separate successive numbers,
 accomplished with the enter (E) key.
 
-
 For example:
 ```
 +------------+---------------+-------------------+-----------------------------------------------+
@@ -101,8 +132,8 @@ For example:
 +------------+---------------+-------------------+-----------------------------------------------+
 | 1 + 2      | 1 2 +         | 1 E 2 +           | [1], [1,1], [1,2], [3]                        |
 +------------+---------------+-------------------+-----------------------------------------------+
-| 1 + 2 + 3  | 1 2 3 + + or: | 1 E 2 E 3 + +     | ...[1,2], [1,2,2], [1,2,3], [1,5], [6]        |
-|            | 1 2 + 3 +     | 1 E 2 + 3 +       | ...[1,2], [3], [3,3], [6]                     |
+| 1 + 2 - 3  | 1 2 3 + - or: | 1 E 2 E 3 + -     | ...[1,2], [1,2,2], [1,2,3], [1,-1], [0]       |
+|            | 1 2 + 3 -     | 1 E 2 + 3 -       | ...[1,2], [3], [3,-3], [0]                    |
 +------------+---------------+-------------------+-----------------------------------------------+
 | (1+2)(3+4) | 1 2 + 3 4 + * | 1 E 2 + 3 E 4 + * | ...[1,2], [3], [3,3], [3,3,4], [3,7], [21]    |
 +------------+---------------+-------------------+-----------------------------------------------+
@@ -172,3 +203,5 @@ orbit around the moon (Lunar Orbital Rendezvous or LOR).
 [1] <a name="ref-1"></a>[Dr Marshall Leach Jr's page](https://leachlegacy.ece.gatech.edu/revpol/)  
 [2] <a name="ref-2">[Interview with David Cochran](https://killerinnovations.com/interview-with-david-cochran-on-creating-the-hp35-calculator/)  
 [3] <a name="ref-3"></a>[History of Space Shuttle Rendezvous, Oct 2011](https://core.ac.uk/download/pdf/10564548.pdf)  
+[3] <a name="ref-4"></a>[HP35 manual](https://literature.hpcalc.org/community/hp35-om-en-reddot.pdf)  
+
