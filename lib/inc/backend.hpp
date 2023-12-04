@@ -1,5 +1,5 @@
 #ifndef BACKEND_HPP
-#define BACKEND_HPP 
+#define BACKEND_HPP
 
 #include "ibackend.hpp"
 #include "observer.hpp"
@@ -10,7 +10,7 @@
 #include <cmath> // sin, cos, tan, log10, sqrt
 #include <vector> // vector
 #include <utility> // make_pair, pair
-#include <array> // array 
+#include <array> // array
 
 /**
  * @brief Subject class to observe in the observer design pattern.
@@ -57,7 +57,7 @@ typedef enum {
     kTypeOperand,        // essentially number
     kTypeStack,          // e.g. SWAP, RDN
     kTypeNumeric,        // e.g. +, SIN
-    kTypeEnter,          // ENTER key 
+    kTypeEnter,          // ENTER key
     kTypeStorage         // storage, load in general registers
 } TokenType;
 
@@ -97,18 +97,18 @@ typedef struct Flags {
 *        its operand(s) and when it's complete the bottom of the
 *        stack gets overwritten with its result.
 *        Below is an example to give you some intuition:
-*        `4 * (3 + 2)` or in RPN  `4 3 2 + *`; we do `3+2` first, 
+*        `4 * (3 + 2)` or in RPN  `4 3 2 + *`; we do `3+2` first,
 *        then `4*5`:
 *        @verbatim
 *        4 3 2 + *
 *          |     |    |     |    |  4  |   |     |   |     |
 *        4 |     | 3  |  4  | 2  |  3  | + |  4  | * |     | <- Y
 *          |  4  |    |  3  |    |  2  |   |  5  |   | 20  | <- X
-*          +-----+    +-----+    +-----+   +-----+   +-----+ 
+*          +-----+    +-----+    +-----+   +-----+   +-----+
 *        @endverbatim
-*        An expression does not have a unique RPN translation, e.g. 
-*         `4 * (3 + 2)` can also be evaluated as `3 2 + 4 *`.  
-*        This relies on automatically lifting the stack after each 
+*        An expression does not have a unique RPN translation, e.g.
+*         `4 * (3 + 2)` can also be evaluated as `3 2 + 4 *`.
+*        This relies on automatically lifting the stack after each
 *        calculation to make space for new operands. More details
 *        on how it works in each method's documentation.
 *
@@ -163,7 +163,7 @@ public:
      *        @verbatim
      *        (L means lift the stack, aka shift up)
      *        |     |     |     |     |     |      |     |
-     *        |  6  |  9  |  6  |  +  |     |  13  |  15 | 
+     *        |  6  |  9  |  6  |  +  |     |  13  |  15 |
      *        |  6  |     |  9  |     |  15 |      |  13 |
      *        +-----+     +-----+     +-----+      +-----+
      *            L = false     L = true    L = false
@@ -181,7 +181,7 @@ public:
      *        X->   1          2       |   x     +------> X   |
      *                                 |   -------------------+
      *        @endverbatim
-     */                                
+     */
     void Rdn() override;
     /**
      * @brief Emulate enter key; shift the stack up, discarding T
@@ -211,7 +211,7 @@ public:
      *        on the X and Y registers (2-operand keys, e.g. +).
      *        If an 1-op calculation write the result directly to the
      *        X register. 2-op calculations is entered, use reg. X, Y
-     *        as inputs, write output to Y and shift down the stack. 
+     *        as inputs, write output to Y and shift down the stack.
      *        Example:
      *
      *        @verbatim
@@ -226,12 +226,12 @@ public:
      *        y->   ------------> Y     |  y->   ---+  +-----> Y
      *        x->   -----f(x)---> X     |  x->   ---+-f(x,y)-> X
      *        @endverbatim
-     *         
+     *
      * @param operation What numerical operation to perform. This
-     *                  can be one of the keys of function_key_1op_ 
+     *                  can be one of the keys of function_key_1op_
      *                  or function_key_2op_ - see `IBackend` class
      *
-     * @return The calculation's result 
+     * @return The calculation's result
      */
     double Calculate(std::string operation) override;
     /**
@@ -244,20 +244,30 @@ public:
     /** @brief Insert the value of PI to register X */
     void Pi() override;
 
-    /**
-     * @brief TODO
-     */
+	/**
+	 * @brief If register X is zero, it sets it to 1.
+	 *        Else, it multiplies with with 10^N, where
+	 *        N is the argument AFTER eex is pressed.
+	 *
+	 * @param token A number (positive or negative)
+	 */
     void Eex(std::optional<double> token) override;
     /**
-    * @brief TODO
+    * @brief Copies data of register X into a general
+	*        register labelled A-J.
     *
-    * @param idx
+    * @param name The name of the general register where
+	*             to copy X. It can be A-J or a-j.
+	*             Invalid indexes are ignored.
     */
     void Sto(std::string name) override;
     /**
-    * @brief TODO
+    * @brief Copies data of a regenral register labeled
+	*        A-J into register X.
     *
-    * @param idx
+    * @param name The name of the general register where
+	*             to copy X. It can be A-J or a-j.
+	*             Invalid indexes are ignored.
     */
     void Rcl(std::string name) override;
     /** Overrides the << operator for the class, e.g.std::cout << <Instance>; */
@@ -268,7 +278,7 @@ private:
     const key::Keypad& keypad_;
     // owns the stack - unique_ptr manages its lifetime and deallocation
     std::unique_ptr<Stack> stack_;
-    // LASTX register; stores the value of X before a function is invoked 
+    // LASTX register; stores the value of X before a function is invoked
     double lastx_;
     /**
      * @brief General purpose storage registers (indexed 0 to 9) to
@@ -277,7 +287,7 @@ private:
     std::array<double, 10> sto_regs_;
     /**
      * @brief Maps a register name as defined in Key namespace to
-     *        and index of the `sto_regs_` array. This way, the user 
+     *        and index of the `sto_regs_` array. This way, the user
      *        can store or load from a general register given its name,
      *        e.g. "A" -> 0, "B" -> 1, etc.
      */
