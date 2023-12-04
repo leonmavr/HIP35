@@ -100,7 +100,7 @@ the UI or without it (given a string) as follows:
 ```
 #include "hip35.h"
 //...
-auto hp = std::make_unique<Ui::Hip35>(Key::keypad);
+auto hp = std::make_unique<Ui::Hip35>(key::keypad);
 // using the UI
 hp->RunUI();
 // or without it
