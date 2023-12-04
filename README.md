@@ -39,7 +39,8 @@ acting as buffers.
 ### Dependencies
 
 CMake is required to build the project and ncurses for the frontend.
-Install both by:
+Also you need to make sure your compuler supports **C++17** or higher.
+Install both packages by:
 
 | Arch-based                     | Debian-based                                       |
 |--------------------------------|----------------------------------------------------|
@@ -204,6 +205,16 @@ orbit around the moon (Lunar Orbital Rendezvous or LOR).
       continuing when a token is unknown.
 - [ ] (ambitious) write a compiler for the HP35/HP35s programming
 	  language and be able to write routines by pressing a key.
+
+## 6. Donations
+
+I'm looking to raise about 150-200 euros to buy a second hand
+HP-35 calculator so I can compare my emulator against it. Feel
+free to donate any amount to:
+
+
+<img src="https://www.paypalobjects.com/webstatic/mktg/logo-center/PP_Acceptance_Marks_for_LogoCenter_266x142.png" alt="paypal link" height="30"/> [leonmavr](https://paypal.me/leonmavr)  
+<img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg" alt="bitcoin link" height="30"/> ``36e6wNQ64dGXGDKQMn8LzWC3zSon1SvVJQ``
 
 ## References
 
