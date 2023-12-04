@@ -39,7 +39,8 @@ acting as buffers.
 ### Dependencies
 
 CMake is required to build the project and ncurses for the frontend.
-Install both by:
+Also you need to make sure your compuler supports **C++17** or higher.
+Install both packages by:
 
 | Arch-based                     | Debian-based                                       |
 |--------------------------------|----------------------------------------------------|
