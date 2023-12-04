@@ -22,9 +22,9 @@ int ntest_result = NTEST_PASS;
 #define STR_NAME(s) #s
 
 #define GET_FIRST(args) GET_FIRST_(args)
-#define GET_FIRST_(N, ...) N 
+#define GET_FIRST_(N, ...) N
 
-// ## pastes the comma-separated variable arguments when present, 
+// ## pastes the comma-separated variable arguments when present,
 // but removes the preceeding comma when they are not present
 // based on @user1187902's: https://stackoverflow.com/a/16926582
 #define COUNT_ARGS(...) COUNT_ARGS_(,##__VA_ARGS__, 6, 5, 4, 3, 2, 1, 0)
@@ -46,11 +46,12 @@ int ntest_result = NTEST_PASS;
         if (COUNT_ARGS(__VA_ARGS__) == 1)                                    \
            epsilon = CHECK_EMPTY(epsilon, GET_FIRST(__VA_ARGS__));           \
         if (fabs(actual_value - expected_value) < epsilon)                   \
-            printf("[v] Assertion at line %d passed.\n", __LINE__);          \
+            printf("[v] Assertion at line %d of file %s passed.\n",          \
+				   __LINE__, __FILENAME__);                                  \
         else {                                                               \
             fprintf(stderr, "[x] Assertion at line %d of file %s failed:\n"  \
                             "    Values of %s and %s are not close\n",       \
-                    __LINE__,__FILENAME__, STR_VAL(actual),                  \
+                    __LINE__, __FILE__, STR_VAL(actual),                     \
                     STR_VAL(expected));                                      \
             ntest_result = NTEST_FAIL;                                       \
         }                                                                    \
@@ -60,10 +61,11 @@ int ntest_result = NTEST_PASS;
 #define NTEST_ASSERT(condition)                                               \
     do {                                                                      \
         if (condition)                                                        \
-            printf("[v] Assertion at line %d passed.\n", __LINE__);           \
+            printf("[v] Assertion at line %d of file %s passed.\n",           \
+				   __LINE__, __FILENAME__);                                   \
         else {                                                                \
             fprintf(stderr, "[x] Assertion at line %d of file %s failed:\n"   \
-                            "    %s\n", __LINE__, __FILENAME__, #condition);  \
+                            "    %s\n", __LINE__, __FILE__, #condition);      \
             ntest_result = NTEST_FAIL;                                        \
         }                                                                     \
     } while(0)

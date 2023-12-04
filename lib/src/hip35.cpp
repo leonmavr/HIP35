@@ -9,7 +9,7 @@
 
 namespace Ui {
 
-Hip35::Hip35(const Key::Keypad& keypad):
+Hip35::Hip35(const key::Keypad& keypad):
         delay_ms_(std::chrono::milliseconds(100)),
         tokens_no_ui_(),
         keypad_(keypad) {
@@ -68,7 +68,7 @@ double Hip35::RunUI(bool run_headless) {
         const auto it3 = keypad_.double_arg_keys.find(keypress);
         const auto it4 = keypad_.storage_keys.find(keypress);
 
-        if (keypress == Key::kKeyEnter)
+        if (keypress == key::kKeyEnter)
             key_type = backend::kTypeEnter;
         else if (it1 != keypad_.stack_keys.end())
             key_type = backend::kTypeStack;
@@ -100,7 +100,7 @@ double Hip35::RunUI(bool run_headless) {
         //------------------------------------------------------
         // Call Backend instance to execute 
         //------------------------------------------------------
-        if (keypress == Key::kKeyEex) {
+        if (keypress == key::kKeyEex) {
             // it can be unset (empty operand) or a decimal
             std::optional<double> opt_operand;
             if (IsDecimal(operand))
@@ -119,10 +119,10 @@ double Hip35::RunUI(bool run_headless) {
                 // don't do anything and wait for next key
             }
             operation = observer_->GetState().first;
-            if (operation == Key::kKeyStore) {
+            if (operation == key::kKeyStore) {
                 const double regx = observer_->GetState().second.first;
                 frontend_->PrintGenRegister(keypress, regx);
-            } else if (operation == Key::kKeyRcl) {
+            } else if (operation == key::kKeyRcl) {
                 // registers have changed due to RCL
                 PrintRegs();
             }
@@ -150,7 +150,7 @@ double Hip35::RunUI(bool run_headless) {
             PrintRegs();
             operand = "";
             is_prev_op_storage = true;
-        } else if (keypress == Key::kKeyEnter) {
+        } else if (keypress == key::kKeyEnter) {
             if (!operand.empty())
                 backend_->Insert(std::stod(operand));
             backend_->Enter();
@@ -171,11 +171,11 @@ double Hip35::RunUI(bool run_headless) {
             operation = observer_->GetState().first;
             regx = observer_->GetState().second.first; 
             regy = observer_->GetState().second.second;
-            if (operation == Key::kKeyEex) {
+            if (operation == key::kKeyEex) {
                 // EEX was pressed - show the result for the curently typed operand
                 if (!run_headless)
                     frontend_->PrintRegisters(std::pow(10, std::stod(operand)) * regx, regy);
-            } else if (operation != Key::kKeyClx) {
+            } else if (operation != key::kKeyClx) {
                 // We're about to insert to register X so display current
                 // token at X as if the stack was lifted already
                 if (!run_headless)

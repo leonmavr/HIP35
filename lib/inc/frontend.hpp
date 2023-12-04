@@ -24,7 +24,7 @@ typedef struct {
 class Frontend
 {
 public:
-    Frontend(const Key::Keypad& keypad);
+    Frontend(const key::Keypad& keypad);
     ~Frontend();
     /**
      * @brief Draw a calculator's key on the screen. When given a
@@ -98,7 +98,7 @@ private:
     void SetUiDimensions();
 
     // reference to keypad - we draw the interface based on it
-    const Key::Keypad& keypad_;
+    const key::Keypad& keypad_;
     //------------------------------------------------------
     // screen and keypad dimensions 
     //------------------------------------------------------
@@ -121,12 +121,12 @@ private:
     // 10 general registers
     //------------------------------------------------------
     // top left position of the general register display area
-    Key::Point gen_regs_top_left_;
-    std::unordered_map<std::string, Key::Point> gen_reg_area_;
+    key::Point gen_regs_top_left_;
+    std::unordered_map<std::string, key::Point> gen_reg_area_;
     // how many characters each general register can display
     unsigned gen_reg_width_;
     // maps the display key of each gen. register to its coordinates
-    std::unordered_map<std::string, Key::Point> gen_regs_;
+    std::unordered_map<std::string, key::Point> gen_regs_;
     //------------------------------------------------------
     // ncurses and terminal 
     //------------------------------------------------------

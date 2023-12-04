@@ -132,7 +132,7 @@ typedef struct Flags {
 class Backend: public IBackend, public Subject {
 public:
     Backend() = delete;
-    Backend(const Key::Keypad& keypad);
+    Backend(const key::Keypad& keypad);
     Backend(const Backend& other) :
         keypad_(other.keypad_),
         stack_(std::make_unique<Stack>(*other.stack_)),
@@ -265,7 +265,7 @@ public:
 
 private:
     /** reference to a keypad that describes the calculator's key configuration */
-    const Key::Keypad& keypad_;
+    const key::Keypad& keypad_;
     // owns the stack - unique_ptr manages its lifetime and deallocation
     std::unique_ptr<Stack> stack_;
     // LASTX register; stores the value of X before a function is invoked 

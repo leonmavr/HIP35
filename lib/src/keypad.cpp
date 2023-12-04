@@ -1,7 +1,7 @@
 #include "keypad.hpp" 
 #include "backend.hpp" 
 
-namespace Key {
+namespace key {
 
 static const StackKeys stack_keys = {
     {kKeyRdn, StackKeyInfo { 
@@ -206,4 +206,4 @@ const Keypad keypad{stack_keys,
                     eex_key,
                     reverse_keys};
 
-} // namespace Key
+} // namespace key

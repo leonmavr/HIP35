@@ -17,7 +17,7 @@ class Hip35
 {
 public:
     Hip35() = delete;
-    Hip35(const Key::Keypad& keypad);
+    Hip35(const key::Keypad& keypad);
     ~Hip35() { delete observer_; }
     double RunUI(bool run_headless = false);
     double EvalString(std::string expression);
@@ -30,7 +30,7 @@ private:
     // how many milliseconds to keep a button highlighted for after being pressed
     std::chrono::milliseconds delay_ms_;
     std::vector<std::string> tokens_no_ui_;
-    const Key::Keypad& keypad_;
+    const key::Keypad& keypad_;
 };
 
 } // namespace Ui

@@ -3,7 +3,7 @@
 #include <iostream>
 
 int main() {
-    auto hp = std::make_unique<Ui::Hip35>(Key::keypad);
+    auto hp = std::make_unique<Ui::Hip35>(key::keypad);
     // --pN shall mean page N from the manual:
     // http://h10032.www1.hp.com/ctg/Manual/c01579350
 

@@ -137,7 +137,7 @@ namespace gui {
 //-------------------------------------------------------------//
 // Class methods                                               // 
 //-------------------------------------------------------------//
-Frontend::Frontend(const Key::Keypad& keypad):
+Frontend::Frontend(const key::Keypad& keypad):
     keypad_(keypad),
     key_width_(12),
     key_height_(3),
@@ -163,7 +163,7 @@ Frontend::~Frontend() {
 
 void Frontend::SetUiDimensions() {
     // find max x and y of keys in the grid
-    std::vector<Key::Point> grid_coords;
+    std::vector<key::Point> grid_coords;
     for (const auto& pair: keypad_.stack_keys)
         grid_coords.push_back(pair.second.point);
     for (const auto& pair: keypad_.single_arg_keys)
@@ -175,10 +175,10 @@ void Frontend::SetUiDimensions() {
     for (const auto& pair: keypad_.eex_key)
         grid_coords.push_back(pair.second.point);
     auto it = std::max_element(grid_coords.begin(), grid_coords.end(),
-        [] (const Key::Point& p1, const Key::Point& p2) { return p1.x < p2.x; });
+        [] (const key::Point& p1, const key::Point& p2) { return p1.x < p2.x; });
     max_width_pixels_ = it->x; 
     it = std::max_element(grid_coords.begin(), grid_coords.end(),
-        [] (const Key::Point& p1, const Key::Point& p2) { return p1.y < p2.y; });
+        [] (const key::Point& p1, const key::Point& p2) { return p1.y < p2.y; });
     max_height_pixels_ = it->y; 
 
     //------------------------------------------------------
@@ -202,9 +202,9 @@ void Frontend::SetUiDimensions() {
     max_width_pixels_ += 3;
     constexpr unsigned offsety = 3;
     // this is the top left point where general register will be printed
-    gen_regs_top_left_ = Key::Point{max_width_pixels_, offsety};
-    for (unsigned i = 0; i < Key::kNamesGenRegs.size(); ++i)
-        gen_regs_[Key::kNamesGenRegs[i]] = Key::Point{max_width_pixels_, offsety + i};
+    gen_regs_top_left_ = key::Point{max_width_pixels_, offsety};
+    for (unsigned i = 0; i < key::kNamesGenRegs.size(); ++i)
+        gen_regs_[key::kNamesGenRegs[i]] = key::Point{max_width_pixels_, offsety + i};
     // make enough horizontal space for general register display
     max_width_pixels_ += gen_reg_width_ + 3;
 }
@@ -221,7 +221,7 @@ static inline std::string ToLower(std::string s) {
 
 void Frontend::PrintGenRegister(const std::string& name, double val)  {
     // where to print the number
-    Key::Point xy;
+    key::Point xy;
     if (gen_regs_.find(ToLower(name)) != gen_regs_.end())
         xy = gen_regs_[ToLower(name)];
     else if (gen_regs_.find(ToUpper(name)) != gen_regs_.end())
@@ -261,32 +261,32 @@ bool Frontend::DrawKey(const std::string& key, bool highlight) {
     // whether the keypress corresponds to a key in the keypad
     bool found = false;
 
-    Key::Point grid_pos{0, 0};
+    key::Point grid_pos{0, 0};
     std::string text_on_key = "";
     // search which map key belongs to and get the info from there
     if (it1 != keypad_.stack_keys.end()) {
         grid_pos = it1->second.point;
-        text_on_key = Key::AnnotateKey(
+        text_on_key = key::AnnotateKey(
                it1, key);
         found = true;
     } else if (it2 != keypad_.single_arg_keys.end()) {
         grid_pos = it2->second.point;
-        text_on_key = Key::AnnotateKey(
+        text_on_key = key::AnnotateKey(
                it2, key);
         found = true;
     } else if (it3 != keypad_.double_arg_keys.end()) {
         grid_pos = it3->second.point;
-        text_on_key = Key::AnnotateKey(
+        text_on_key = key::AnnotateKey(
                it3, key);
         found = true;
     } else if (it4 != keypad_.storage_keys.end()) {
         grid_pos = it4->second.point;
-        text_on_key = Key::AnnotateKey(
+        text_on_key = key::AnnotateKey(
                it4, key);
         found = true;
     } else if (it5 != keypad_.eex_key.end()) {
         grid_pos = it5->second.point;
-        text_on_key = Key::AnnotateKey(
+        text_on_key = key::AnnotateKey(
                it5, key);
         found = true;
     }

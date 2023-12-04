@@ -33,7 +33,7 @@ namespace backend {
  *        keys w/o taking width and height into account. So
  *        two adjacent keys will be (x, y), (x+1, y).
  */
-namespace Key {
+namespace key {
 
 // define key presses to call calculator functions
 // for their implementation see the mapping in this file
@@ -85,7 +85,7 @@ typedef struct {
 struct StackKeyInfo {
     std::function<void(backend::Backend& b)> function;
     std::string annotation;
-    Key::Point point;
+    key::Point point;
     std::string long_key;
 };
 /**
@@ -116,7 +116,7 @@ using StackKeys = std::unordered_map<std::string, StackKeyInfo>;
 struct SingleKeyInfo {
     std::function<double(double)> function;
     std::string annotation;
-    Key::Point point;
+    key::Point point;
     std::string long_key;
 };
 /** @copydoc StackKeys */
@@ -126,7 +126,7 @@ using SingleArgKeys = std::unordered_map<std::string, SingleKeyInfo>;
 struct DoubleKeyInfo {
     std::function<double(double, double)> function;
     std::string annotation;
-    Key::Point point;
+    key::Point point;
     std::string long_key;
 };
 using DoubleArgKeys = std::unordered_map<std::string, DoubleKeyInfo>;
@@ -134,7 +134,7 @@ using DoubleArgKeys = std::unordered_map<std::string, DoubleKeyInfo>;
 struct StorageKeyInfo {
     std::function<void(backend::Backend& b, std::string name)> function;
     std::string annotation;
-    Key::Point point;
+    key::Point point;
     std::string long_key;
 };
 /** @copydoc StackKeys */
@@ -143,7 +143,7 @@ using StorageKeys = std::unordered_map<std::string, StorageKeyInfo>;
 struct KeyInfoEex {
     std::function<void(backend::Backend&, std::optional<double>)> function;
     std::string annotation;
-    Key::Point point;
+    key::Point point;
     std::string long_key;
 };
 /** @copydoc StackKeys */
@@ -189,6 +189,6 @@ static std::string AnnotateKey(T& it, const std::string keypress) {
 extern const Keypad keypad;
 
 
-} // namespace Key
+} // namespace key
 
 #endif /* KEYPAD_HPP */

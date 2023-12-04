@@ -32,7 +32,7 @@ void Subject::NotifyOperation(const std::string& operation) {
 
 namespace backend {
 
-Backend::Backend(const Key::Keypad& keypad):
+Backend::Backend(const key::Keypad& keypad):
     keypad_(keypad),
     stack_(std::make_unique<Stack>()),
     lastx_(0.0),
@@ -40,7 +40,7 @@ Backend::Backend(const Key::Keypad& keypad):
 { 
     // map a general register name to the index of the gr array
     std::size_t i = 0;
-    for (const auto& n: Key::kNamesGenRegs)
+    for (const auto& n: key::kNamesGenRegs)
         gen_regs_name2idx[n] = i++;
     // initialize flags
     flags_.shift_up = true;
@@ -57,7 +57,7 @@ void Backend::Rdn() {
     flags_.eex_pressed = false;
     // inform the observer
     NotifyValue(Peek());
-    NotifyOperation(Key::kKeyRdn);
+    NotifyOperation(key::kKeyRdn);
 }
 
 void Backend::SwapXY() {
@@ -65,7 +65,7 @@ void Backend::SwapXY() {
     flags_.eex_pressed = false;
     // inform the observer
     NotifyValue(Peek());
-    NotifyOperation(Key::kKeySwap);
+    NotifyOperation(key::kKeySwap);
 }
 
 void Backend::Insert(double num) {
@@ -91,7 +91,7 @@ void Backend::Enter() {
     // notify class observer since enter manipulates the stack
     NotifyValue(Peek());
     // don't forget to notify the observer so we can use the event later
-    NotifyOperation(Key::kKeyEnter);
+    NotifyOperation(key::kKeyEnter);
 }
 
 void Backend::LastX() {
@@ -101,7 +101,7 @@ void Backend::LastX() {
     flags_.eex_pressed = false;
     // inform the observer
     NotifyValue(Peek());
-    NotifyOperation(Key::kKeyLastX);
+    NotifyOperation(key::kKeyLastX);
 }
 
 double Backend::Calculate(std::string operation) {
@@ -144,7 +144,7 @@ void Backend::Clx() {
     stack_->writeX(0.0);
     flags_.shift_up = false;
     // inform the observer 
-    NotifyOperation(Key::kKeyClx); 
+    NotifyOperation(key::kKeyClx); 
     NotifyValue(Peek()); 
 }
 
@@ -153,7 +153,7 @@ void Backend::Cls() {
     Enter();
     Enter();
     Enter();
-    NotifyOperation(Key::kKeyCls); 
+    NotifyOperation(key::kKeyCls); 
     NotifyValue(Peek()); 
 }
 
@@ -161,7 +161,7 @@ void Backend::Pi() {
     flags_.eex_pressed = false;
     Insert(M_PI);
     // inform the observer 
-    NotifyOperation(Key::kKeyPi); 
+    NotifyOperation(key::kKeyPi); 
     NotifyValue(Peek()); 
 }
 
@@ -181,7 +181,7 @@ void Backend::Eex(std::optional<double> token) {
         stack_->writeX(*token);
     flags_.shift_up = false;
     flags_.eex_pressed = true;
-    NotifyOperation(Key::kKeyEex); 
+    NotifyOperation(key::kKeyEex); 
     NotifyValue(Peek()); 
 }
 
@@ -211,7 +211,7 @@ void Backend::Sto(std::string name) {
     flags_.shift_up = true;
     flags_.eex_pressed = false;
 
-    NotifyOperation(Key::kKeyStore); 
+    NotifyOperation(key::kKeyStore); 
     // doesn't change the stack so no values sent to observer
 }
 
@@ -234,7 +234,7 @@ void Backend::Rcl(std::string name) {
         (*stack_)[IDX_REG_X] = sto_regs_[idx];
     flags_.shift_up = true;
     flags_.eex_pressed = false;
-    NotifyOperation(Key::kKeyRcl); 
+    NotifyOperation(key::kKeyRcl); 
     NotifyValue(Peek()); 
 }
 
