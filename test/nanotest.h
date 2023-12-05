@@ -2,7 +2,27 @@
  * This is a tiny header-only unit testing framework for
  * C and C++. It is compatible with GNU-based compilers
  * and has not been tested in anything else.
+ *
+ * Features:
+ * --  Macros for float comparison check and condition 
+ *     truth/false check.
+ * --  Report of passed assertions.
+ * --  Error report of failed assertion with valiable names
+ *     and their values.
+ *
+ * Examples:
+ *    float engineering_pi = 3;
+ *    float actual_pi = 3.14159;
+ *    NTEST_ASSERT_FLOAT_CLOSE(engineering_pi, actual_pi);
+ *    float tolerance = 0.1;
+ *    NTEST_ASSERT_FLOAT_CLOSE(3.1, actual_pi. tolerance);
+ *    NTEST_ASSERT(3 == 3);
+ *    // ...you can return the status of the tests; != 0
+ *    // if at least one fails
+ *    return ntest_result;
+ *
  * Author: L Mavropalias 2023
+ * License: MIT
  */
 extern "C" {
 
@@ -52,10 +72,10 @@ int ntest_result = NTEST_PASS;
             printf("[v] Assertion at line %d of file %s passed.\n",          \
 				   __LINE__, __FILENAME__);                                  \
         else {                                                               \
-            fprintf(stderr, "[x] Assertion at line %d of file %s failed:\n"  \
-                            "    Values of %s and %s are not close\n",       \
-                    __LINE__, __FILE__, STR_VAL(actual),                     \
-                    STR_VAL(expected));                                      \
+            fprintf(stderr, "[x] Assertion at line %d (%s) failed:\n"        \
+                            "    %s = %.4f and %s = %.4f are not close\n",   \
+                    __LINE__, __FILE__, STR_NAME(actual), actual_value,      \
+                    STR_NAME(expected), expected_value);                     \
             ntest_result = NTEST_FAIL;                                       \
         }                                                                    \
     } while(0)
@@ -72,7 +92,7 @@ int ntest_result = NTEST_PASS;
             printf("[v] Assertion at line %d of file %s passed.\n",           \
 				   __LINE__, __FILENAME__);                                   \
         else {                                                                \
-            fprintf(stderr, "[x] Assertion at line %d of file %s failed:\n"   \
+            fprintf(stderr, "[x] Assertion at line %d (%s) failed:\n"         \
                             "    %s\n", __LINE__, __FILE__, #condition);      \
             ntest_result = NTEST_FAIL;                                        \
         }                                                                     \

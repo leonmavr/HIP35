@@ -49,7 +49,7 @@ int main() {
     // sin(6) * tan(60/2)
     NTEST_ASSERT_FLOAT_CLOSE(hp->EvalString(""
         "60 SIN LASTX 2 / TAN *"),                               0.5);
-    // --56 (three below)
+    // --56 (two below)
     NTEST_ASSERT_FLOAT_CLOSE(hp->EvalString(""
         "16 ENTER 19 - LASTX + LASTX *"),                        16*19);
     NTEST_ASSERT_FLOAT_CLOSE(hp->EvalString(""
@@ -58,8 +58,9 @@ int main() {
     // store/recall                                                     //
     //------------------------------------------------------------------//
     // NOTE:
-    // store/recall do not work in EvalString yet. To see why,
-    // read TODO comment in method's definition
+    // store/recall do not work in EvalString yet however it
+    // works in the UI. To see why, read TODO comment in
+    // method's definition
 
     //------------------------------------------------------------------//
     // postfix exponent (EEX)                                           //
