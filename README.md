@@ -82,9 +82,9 @@ Most keys are self-explanatory. However, some are less straightforward.
 
 
 
-Enter (`<space>`) needs to be pressed to separated two successive
+Enter (`<space>`) needs to be pressed to separate two successive
 numbers. When running the UI, press `q` to quit. `<Ctr-C>` is 
-not captured so it's the only way to quit. You can read more 
+not captured so `q` is the only way to quit. You can read more 
 at the [HP35 manual](https://literature.hpcalc.org/community/hp35-om-en-reddot.pdf)
 [[4]](#ref-4).
 
