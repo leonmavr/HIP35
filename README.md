@@ -63,6 +63,9 @@ The demo executable that runs the UI will be generated at
 ```
 That's it, have fun doing RPN calculations!
 
+A unit test executable is also generated at
+`./build/test/testhip35`.
+
 ## The keys
 
 Most keys are self-explanatory. However, some are less straightforward.
@@ -88,13 +91,9 @@ not captured so `q` is the only way to quit. You can read more
 at the [HP35 manual](https://literature.hpcalc.org/community/hp35-om-en-reddot.pdf)
 [[4]](#ref-4).
 
-A unit test executable is also generated at
-`./build/test/testhip35`.
-
 ### Project directory structure and source code
 
-Implementations are found at `lib/src` and header files at `lib/src`.
-Unit tests are found at `test/test.cpp`. 
+Implementations are found at `lib/src` and header files at `lib/inc`. The demo application is at `demo/main.cpp` and unit tests are found at `test/test.cpp`. 
 
 You can create an instance of the Hip35 class and run it either via 
 the UI or without it (given a string) as follows:
