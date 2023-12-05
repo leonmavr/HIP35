@@ -14,6 +14,9 @@ extern "C" {
 #define NTEST_FAIL 1
 int ntest_result = NTEST_PASS;
 
+//------------------------------------------------------------//
+// Helper (internal) macros                                   //
+//------------------------------------------------------------//
 // credits @red1ynx (https://stackoverflow.com/a/8488201)
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
@@ -32,12 +35,12 @@ int ntest_result = NTEST_PASS;
 // empty="", a=1, b=3, c=37, d=6, e=5, f=4, --> cnt=3
 #define COUNT_ARGS_(empty, a, b, c, d, e, f, cnt, ...) cnt
 
+// CHecks if parameter is empty; if so it substitutes it with a
+// default value so the compiler doesn't complain #args is fixed.
 // credits @p00ya (https://stackoverflow.com/a/62650578)
 #define CHECK_EMPTY(default_val, ...) (default_val CHECK_EMPTY_(__VA_ARGS__))
 #define CHECK_EMPTY_(...) ,##__VA_ARGS__
 
-// unit test macros
-#define NTEST_ASSERT_FLOAT_CLOSE(...) NTEST_ASSERT_FLOAT_CLOSE_(__VA_ARGS__)
 #define NTEST_ASSERT_FLOAT_CLOSE_(actual, expected, ...)                     \
     do {                                                                     \
         const float actual_value = (actual);                                 \
@@ -57,6 +60,11 @@ int ntest_result = NTEST_PASS;
         }                                                                    \
     } while(0)
 
+
+//------------------------------------------------------------//
+// External use macros                                        //
+//------------------------------------------------------------//
+#define NTEST_ASSERT_FLOAT_CLOSE(...) NTEST_ASSERT_FLOAT_CLOSE_(__VA_ARGS__)
 
 #define NTEST_ASSERT(condition)                                               \
     do {                                                                      \
