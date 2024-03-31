@@ -23,12 +23,16 @@ HIP-35 is a calculator for hipsters. It emulates the RPN (reverse
 Polish notation) mode of HP-35 from 1972. It runs a terminal UI
 built with ncurses that displays the current result on a display.
 
-### Why RPN?
+### ⚫ Why RPN?
 
 Because it genally involves less keystrokes and it's faster than
-algebraic notation calculations.
+algebraic notation calculations.  
 
-### The memory
+How? RPN makes it very easy to compute long expressions containing
+lots of brackets [[1]](#ref-1). When using it, you don't need
+to think how terms are grouped anymore.
+
+### ⚫ The memory
 HP-35 had a stack-based memory of 4 registers `X`, `Y`, `Z`, `T`
 with `X` being the bottom (entry). That stack shifts (lifts or
 drops) automatically as calculations are performed. There are
@@ -41,7 +45,7 @@ acting as buffers.
 
 ## 2. Usage
 
-### Dependencies
+### ⚫ Dependencies
 
 CMake is required to build the project and ncurses for the frontend.
 Also you need to make sure your compuler supports **C++17** or higher.
@@ -71,7 +75,7 @@ That's it, have fun doing RPN calculations!
 A unit test executable is also generated at
 `./build/test/testhip35`.
 
-## The keys
+### ⚫ The keys
 
 Most keys are self-explanatory. However, some are less straightforward.
 
@@ -96,7 +100,7 @@ not captured so `q` is the only way to quit. You can read more
 at the [HP35 manual](https://literature.hpcalc.org/community/hp35-om-en-reddot.pdf)
 [[4]](#ref-4).
 
-### Project directory structure and source code
+### ⚫ Project directory structure and source code
 
 Implementations are found at `lib/src` and header files at `lib/inc`. The demo application is at `demo/main.cpp` and unit tests are found at `test/test.cpp`. 
 
@@ -124,7 +128,7 @@ https://github.com/leonmavr/HIP35/assets/13514096/ee05b992-8901-4ffe-9649-71dfb9
 
 
 ## 4. Basic theory
-### What is RPN?
+### ⚫ What is RPN?
 
 RPN allows a stack-based evaluation of numerical expressions,
 eliminating the need of brackets. There are two main ideas behind
@@ -156,12 +160,6 @@ You can practise more with RPN by using the script `docs/rpn.py`
 which evaluates RPN expressions from a string. Numbers are
 separated by space in this script so you don't need to press enter.
 
-### Why RPN?
-
-RPN makes it very easy to compute long expressions containing
-lots of brackets [[1]](#ref-1). When using it, you don't need
-to think how terms are grouped anymore. With a little practice
-it's faster and it saves keystrokes to evaluate in RPN.
 
 ### HIP-35 additional features
 HIP-35 includes some minor additions compared to HP-35:
@@ -186,7 +184,7 @@ page, at [HP museum](https://www.hpmuseum.org/hp35.htm) or at the
 [HP-35s manual](http://h10032.www1.hp.com/ctg/Manual/c01579350),
 which is its successor.
 
-### Cool trivia
+### ⚫ Cool trivia
 
 * HP35 was the first ever scientific pocket calculator. It was
   released in 1972. Before that, the only practical portable
