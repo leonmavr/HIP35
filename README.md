@@ -55,7 +55,7 @@ Install both packages by:
 |--------------------------------|----------------------------------------------------|
 | `sudo pacman -S cmake ncurses` | `sudo apt install cmake libncurses5 libncursesw5`  |
 
-### Compilation
+### ⚫ Compilation
 The build system is based on CMake. To build the project run:
 ```
 cmake . -Bbuild
@@ -161,7 +161,7 @@ which evaluates RPN expressions from a string. Numbers are
 separated by space in this script so you don't need to press enter.
 
 
-### HIP-35 additional features
+### ⚫ HIP-35 additional features
 HIP-35 includes some minor additions compared to HP-35:
 * The display now has two rows, displaying the X and Y registers
 instead of just X.
