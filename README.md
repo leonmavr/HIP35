@@ -118,11 +118,11 @@ auto result = hp->EvalString("430 ENTER 80 - 1.2 *");
 
 ## 3. Demo
 
-A fraction consisting of many terms:
+Second order equation by using storage/recall:
 
 https://github.com/leonmavr/HIP35/assets/13514096/911e7cce-2db0-4705-92fd-c3dfa6142de6
 
-Second order equation by using storage/recall:
+The fraction `sqrt(2 + (sin(25) + pi/2)^2)/3`:
 
 https://github.com/leonmavr/HIP35/assets/13514096/ee05b992-8901-4ffe-9649-71dfb9cda71c
 
