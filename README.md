@@ -23,6 +23,11 @@ HIP-35 is a calculator for hipsters. It emulates the RPN (reverse
 Polish notation) mode of HP-35 from 1972. It runs a terminal UI
 built with ncurses that displays the current result on a display.
 
+### Why RPN?
+
+Because it genally involves less keystrokes and it's faster than
+algebraic notation calculations.
+
 ### The memory
 HP-35 had a stack-based memory of 4 registers `X`, `Y`, `Z`, `T`
 with `X` being the bottom (entry). That stack shifts (lifts or
